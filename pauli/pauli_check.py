@@ -1,8 +1,8 @@
 import numpy as np
 import numba
 
-# Assuming matrix of size 2^n by 2^n, returns whether matrix is in the Pauli group. Assumes matrix entries all in 1,-1,i,-i: fix that?
-def is_pauli(matrix : np.ndarray) -> bool:
+# Assuming matrix of size 2^n by 2^n, returns whether matrix is in the Pauli group.
+def is_pauli(matrix : np.ndarray, allow_global_factor = False) -> bool:
     size = matrix.shape[0]
     n = int(np.log2(size))
 
@@ -18,7 +18,7 @@ def is_pauli(matrix : np.ndarray) -> bool:
 
     phase = matrix[first_col_nonzero[0], 0]
 
-    if not is_valid_pauli_entry(phase):
+    if not (allow_global_factor or is_valid_pauli_entry(phase)):
         #print('reject due to first col invalid entry')
         return False
     

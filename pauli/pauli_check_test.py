@@ -23,6 +23,26 @@ class Test_Pauli_Check(unittest.TestCase):
         pauli = pauli_check.generate_pauli(n,s,p,q)
         self.assertTrue(pauli_check.is_pauli(pauli))
 
+    def test_is_pauli_rejects_five_qubit_pauli_with_global_factor(self):
+        n = 5
+        s = 1j
+        p = 28 # binary 10110
+        q = 3  # binary 00011
+
+        matrix = 2*pauli_check.generate_pauli(n,s,p,q)
+        
+        self.assertFalse(pauli_check.is_pauli(matrix))
+
+    def test_is_pauli_accpets_five_qubit_pauli_with_global_factor_when_flagged(self):
+        n = 5
+        s = 1j
+        p = 28 # binary 10110
+        q = 3  # binary 00011
+
+        matrix = (3-2j)*pauli_check.generate_pauli(n,s,p,q)
+        
+        self.assertTrue(pauli_check.is_pauli(matrix, allow_global_factor = True))
+
     def test_is_pauli_rejects_pauli_with_extra_entry(self):
         n = 3
         s = 1
