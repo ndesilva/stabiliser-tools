@@ -14,7 +14,7 @@ class Test_Pauli_Check(unittest.TestCase):
 
         self.assertTrue(pauli_check.is_pauli(pauli))
 
-    def test_is_pauli_accepts_five_qubits(self):
+    def test_is_pauli_accepts_five_qubit_pauli(self):
         n = 5
         s = 1j
         p = 28 # binary 10110
@@ -113,13 +113,13 @@ class Test_Pauli_Check(unittest.TestCase):
 
         self.assertTrue(np.array_equal(pauli_check.generate_pauli(n,s,p,q), pauli))  
     
-    def test_mod2product_returns_1(self):
+    def test_phase_mod2product_returns_1(self):
         x = 26 #binary 11010
         y = 19 #binary 10011
 
         self.assertEqual(pauli_check.phase_mod2product(x,y), 1)
 
-    def test_mod2product_returns_minus_1(self):
+    def test_phase_mod2product_returns_minus_1(self):
         x = 51 #binary 110011
         y = 49 #binary 110101
 
