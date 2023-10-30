@@ -1,4 +1,5 @@
 import numpy as np
+import numba
 
 # Assuming matrix of size 2^n by 2^n, returns whether matrix is in the Pauli group. Assumes matrix entries all in 1,-1,i,-i: fix that?
 def is_pauli(matrix : np.ndarray) -> bool:
@@ -6,19 +7,19 @@ def is_pauli(matrix : np.ndarray) -> bool:
     n = int(np.log2(size))
 
     if np.count_nonzero(matrix) != size:
-        print('reject due to total non-zero')
+        #print('reject due to total non-zero')
         return False
     
     first_col_nonzero = np.nonzero(matrix[:,0])[0]
 
     if len(first_col_nonzero) != 1:
-        print('reject due to first col non-zero')
+        #print('reject due to first col non-zero')
         return False
 
     phase = matrix[first_col_nonzero[0], 0]
 
     if not is_valid_pauli_entry(phase):
-        print('reject due to first col invalid entry')
+        #print('reject due to first col invalid entry')
         return False
     
     p = first_col_nonzero
@@ -36,7 +37,7 @@ def is_pauli(matrix : np.ndarray) -> bool:
             case -1:
                 q |= col #add a Z operator corresponding to this column
             case _:
-                print('reject due to q col invalid entry')
+                #print('reject due to q col invalid entry')
                 return False
     
     for col in range(1, size): # we are repeating the q columns here, speed up?
@@ -44,7 +45,7 @@ def is_pauli(matrix : np.ndarray) -> bool:
         value = phase*phase_mod2product(q, col)
 
         if entry != value: # if on every loop is maybe not ideal; how to speed this up?
-            print('reject due to a remaining entry invalid')
+            #print('reject due to a remaining entry invalid')
             return False
         
     return True
@@ -60,6 +61,7 @@ def generate_pauli(n : int, s : complex, p : int, q : int) -> np.ndarray:
     return matrix
 
 # returns (-1) ** the mod 2 inner product of the binary representations of x, y
+@numba.njit()
 def phase_mod2product(x : int, y : int) -> int:
     prod = x & y
 
@@ -71,6 +73,7 @@ def phase_mod2product(x : int, y : int) -> int:
 
     return 1-2*wt
 
+@numba.njit()
 def is_valid_pauli_entry(entry : float) -> bool:
     match entry:
         case 1:
@@ -84,6 +87,7 @@ def is_valid_pauli_entry(entry : float) -> bool:
         case _:
             return False
 
+@numba.njit()
 def is_pm_one(entry : float) -> bool:
     match entry:
         case 1:
