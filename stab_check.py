@@ -67,6 +67,8 @@ def gf2elim(M):
 
 
 def is_stab(state: np.ndarray) -> bool:
+    # Check if the support is an affine space by checking if the shifted
+    # support is a vector space
     exponents = dict((2**k, k) for k in range(12))
 
     nonzero_indices = np.nonzero(state)[0]
@@ -82,6 +84,8 @@ def is_stab(state: np.ndarray) -> bool:
     if supp.shape[0] != k:
         return False
 
+    # Now check if the amplitudes can be described by a quadratic polynomial
+    # (quadratic form + constant)
     st = (1 - state[nonzero_indices]) // 2
     st = st[0] ^ st
 
