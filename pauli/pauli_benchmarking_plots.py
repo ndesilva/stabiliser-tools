@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-data_filename = 'pauli_benchmarking_data.py'
+data_filename = './pauli/pauli_benchmarking_data.py'
 
 with open(data_filename, 'rb') as fl:
     qubit_numbers = np.load(fl)

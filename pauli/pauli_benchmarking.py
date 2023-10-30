@@ -4,7 +4,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
-data_filename = 'pauli_benchmarking_data.py'
+data_filename = './pauli/pauli_benchmarking_data.py'
 
 reps = int(1e3)
 
