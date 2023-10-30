@@ -22,8 +22,7 @@ def is_pauli(matrix : np.ndarray, allow_global_factor = False) -> bool:
         #print('reject due to first col invalid entry')
         return False
     
-    p = first_col_nonzero
-
+    p = first_col_nonzero[0]
     q = 0
 
     for j in range(n):
@@ -63,15 +62,15 @@ def generate_pauli(n : int, s : complex, p : int, q : int) -> np.ndarray:
 # returns (-1) ** the mod 2 inner product of the binary representations of x, y
 @numba.njit()
 def phase_mod2product(x : int, y : int) -> int:
-    prod = x & y
+    product = x & y
 
-    wt = 0
+    pairity = 0
     
-    while prod:
-        wt ^= 1
-        prod &= prod -1
+    while product:
+        pairity ^= 1
+        product &= product -1
 
-    return 1-2*wt
+    return 1-2*pairity
 
 @numba.njit()
 def is_valid_pauli_entry(entry : float) -> bool:
