@@ -13,9 +13,7 @@ def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:
     # check support is a power of 2
     if not k.is_integer():
         return False
-    
     k = int(k)
-    n = int(np.log2(state_vector))
 
     shift = nonzero_indices[0]
 
