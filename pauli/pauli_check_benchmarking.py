@@ -2,7 +2,7 @@ import random
 import pauli_check
 import time
 import numpy as np
-import matplotlib.pyplot as plt
+from pauli_class import Pauli
 
 data_filename = './pauli/pauli_benchmarking_data.py'
 
@@ -36,11 +36,12 @@ def time_with_generator(matrix_geneneration) -> np.ndarray:
 
 '''Given a randomly generated Pauli, check how long it takes to accept'''
 def random_pauli(size : int, n : int) -> np.ndarray:
-    s = random.choice(pauli_entries)
+    s = random.randrange(2)
+    t = random.randrange(2)
     p = random.randrange(size)
     q = random.randrange(size)
 
-    return pauli_check.generate_pauli(n, s, p, q)
+    return Pauli(n, p, q, s, t).generate_matrix()
 
 '''Given a radomly generated matrix, check how long it takes to reject'''
 def random_matrix(size : int, n : int) -> np.ndarray:
@@ -48,11 +49,12 @@ def random_matrix(size : int, n : int) -> np.ndarray:
 
 '''Given a random Pauli, break it in one entry, check how long it takes to reject'''
 def random_almost_pauli(size : int, n : int):
-    s = random.choice(pauli_entries)
+    s = random.randrange(2)
+    t = random.randrange(2)
     p = random.randrange(size)
     q = random.randrange(size)
 
-    matrix = pauli_check.generate_pauli(n, s, p, q)
+    matrix = Pauli(n, p, q, s, t).generate_matrix()
 
     i = random.randrange(size)
     j = random.randrange(size)
