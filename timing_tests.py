@@ -37,19 +37,25 @@ def f2_linear_function_matrix(integer):
     vector = np.array([int(c) for c in format(integer, '06b')])
     return np.dot(lvec, vector) % 2
 
+def imaginary_part_linear(integer):
+    return 1+(1j-1)*integer
+
+def imaginary_part_power(integer):
+    return (1j)**integer
+
 print(f2_linear_function_bitwise(6), f2_linear_function_bitwise(3), f2_linear_function_bitwise(50))
 print(f2_linear_function_matrix(6), f2_linear_function_matrix(3), f2_linear_function_matrix(50))
 
     
-functions_to_time = [f2_linear_function_bitwise, f2_linear_function_matrix]
-reps = int(1e7)
+functions_to_time = [imaginary_part_linear, imaginary_part_power]
+reps = int(1e6)
 
 for function in functions_to_time:
 
     timer = 0
 
     for i in range(reps):
-        r = random.randrange(2**6)
+        r = random.choice([0,1])
        
         st = time.time()       
         
