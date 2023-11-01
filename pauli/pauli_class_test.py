@@ -1,8 +1,8 @@
 import unittest
 import numpy as np
-from pauli_class import Pauli
+from .pauli_class import Pauli
 
-class Test_Pauli_Check(unittest.TestCase):
+class Test_Pauli_Class(unittest.TestCase):
     def test_generate_pauli_single_qubit(self):
         pauli = Pauli(1, 1, 1, 0, 1)
 

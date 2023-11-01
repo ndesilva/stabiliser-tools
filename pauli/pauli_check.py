@@ -1,6 +1,6 @@
 import numpy as np
 import numba
-from pauli_class import Pauli
+from .pauli_class import Pauli
 
 # Assuming matrix of size 2^n by 2^n, returns whether matrix is in the Pauli group.
 def is_pauli(matrix : np.ndarray, allow_global_factor = False) -> bool:
