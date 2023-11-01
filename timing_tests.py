@@ -1,5 +1,7 @@
 import time
 import random
+import functools
+import numpy as np
 
 pauli_entries = [1, -1, 1j, -1j]
 
@@ -23,7 +25,23 @@ def or_check(float):
     else:
         return False
     
-functions_to_time = [list_check, match_check, or_check]
+l = [32,16,8,4,2]
+
+def f2_linear_function_bitwise(integer):
+    b = [ integer & index == index for index in l]
+    return int(functools.reduce(lambda x,y : x^y, b))
+
+lvec = np.array([1,1,0,1,1,0])
+
+def f2_linear_function_matrix(integer):
+    vector = np.array([int(c) for c in format(integer, '06b')])
+    return np.dot(lvec, vector) % 2
+
+print(f2_linear_function_bitwise(6), f2_linear_function_bitwise(3), f2_linear_function_bitwise(50))
+print(f2_linear_function_matrix(6), f2_linear_function_matrix(3), f2_linear_function_matrix(50))
+
+    
+functions_to_time = [f2_linear_function_bitwise, f2_linear_function_matrix]
 reps = int(1e7)
 
 for function in functions_to_time:
@@ -31,7 +49,7 @@ for function in functions_to_time:
     timer = 0
 
     for i in range(reps):
-        r = random.choice([1, -1, 1j, -1j, 0.9, -0.9, 0.77, 0.005, 0, 0.1, -0.1j])
+        r = random.randrange(2**6)
        
         st = time.time()       
         

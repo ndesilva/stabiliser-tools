@@ -23,7 +23,7 @@ ConstraintMatrices = [np.array(x, dtype=np.int8) for x in CM]
 #                 [0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1],
 #                 [0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0],
 #                 [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0]], dtype=np.int8)
-# @numba.jit(nopython=True, parallel=False)
+# @numba.njit(parallel=False)
 # def gf2elim(M):
 #     m, n = M.shape
 #     i = 0
