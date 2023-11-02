@@ -25,7 +25,7 @@ def or_check(float):
     else:
         return False
     
-l = [32,16,8,4,2]
+l = [32,16,4,2]
 
 def f2_linear_function_bitwise(integer):
     b = [ integer & index == index for index in l]
@@ -37,6 +37,18 @@ def f2_linear_function_matrix(integer):
     vector = np.array([int(c) for c in format(integer, '06b')])
     return np.dot(lvec, vector) % 2
 
+l_int = 54
+
+def f2_linear_function_int(integer):
+    prod = l_int & integer
+    wt = 0
+
+    while prod:
+        prod &= prod - 1
+        wt ^=1
+
+    return wt
+
 def imaginary_part_linear(integer):
     return 1+(1j-1)*integer
 
@@ -45,9 +57,10 @@ def imaginary_part_power(integer):
 
 print(f2_linear_function_bitwise(6), f2_linear_function_bitwise(3), f2_linear_function_bitwise(50))
 print(f2_linear_function_matrix(6), f2_linear_function_matrix(3), f2_linear_function_matrix(50))
+print(f2_linear_function_int(6), f2_linear_function_int(3), f2_linear_function_int(50))
 
     
-functions_to_time = [imaginary_part_linear, imaginary_part_power]
+functions_to_time = [f2_linear_function_bitwise, f2_linear_function_matrix, f2_linear_function_int]
 reps = int(1e6)
 
 for function in functions_to_time:
@@ -55,7 +68,7 @@ for function in functions_to_time:
     timer = 0
 
     for i in range(reps):
-        r = random.choice([0,1])
+        r = random.randrange(64)
        
         st = time.time()       
         

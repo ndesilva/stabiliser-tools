@@ -1,7 +1,7 @@
 import numpy as np
 import functools
 from operator import itemgetter
-from F2_helper.F2_helper import evaluate_poly
+from F2_helper.F2_helper import sign_mod2product, imag_mod2product, sign_evaluate_poly
 
 # Assuming vector of length 2^n, returns whether vector is a stabiliser state. Currently assumes all entries are +-1, generalise to complex entries
 def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:    
@@ -44,8 +44,8 @@ def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:
         #print('reject due to first non-zero entry invalid entry')
         return False
 
-    linear_real_part = []
-    imag_part = []
+    linear_real_part = 0
+    imag_part = 0
 
     # get linear terms
     for index in weight_one_bitstrings:
@@ -53,12 +53,12 @@ def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:
             case 1:
                 pass
             case -1:
-                linear_real_part.append(index)
+                linear_real_part |= index
             case 1j:
-                imag_part.append(index)
+                imag_part |= index
             case -1j:
-                linear_real_part.append(index)
-                imag_part.append(index)
+                linear_real_part |= index
+                imag_part |= index
             case _:
                 return False
     
@@ -69,7 +69,7 @@ def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:
         for b in range(a+1, dimension):
             index = (1 << a) | (1 << b)
             
-            linear_part = (1-2*evaluate_poly(linear_real_part, index))*(1+(1j-1)*evaluate_poly(imag_part, index))
+            linear_part = sign_mod2product(index, linear_real_part)*imag_mod2product(index, imag_part)
 
             value = non_zero_coeffs[index]/(phase*linear_part)
 
@@ -80,12 +80,9 @@ def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:
                     quadratic_real_part.append(index)
                 case _:
                     return False
-    
-    # Combine real and quadratic terms in a quadratic form
-    real_part = linear_real_part + quadratic_real_part
 
     for index in range(1<<dimension): # We are repeating columns of Hamming weight 1,2 - fast way to not do this?
-        value = phase * (1-2*evaluate_poly(real_part, index)) * (1+(1j-1)*evaluate_poly(imag_part, index))
+        value = phase * imag_mod2product(index, imag_part) * sign_mod2product(index, linear_real_part) * sign_evaluate_poly(quadratic_real_part, index))
 
         if non_zero_coeffs[index] != value:
             return False
