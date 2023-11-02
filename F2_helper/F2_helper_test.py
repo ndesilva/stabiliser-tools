@@ -1,5 +1,5 @@
 import unittest
-from .F2_helper import *
+from F2_helper.F2_helper import *
 
 class Test_Pauli_Class(unittest.TestCase): 
     def test_mod2product(self):

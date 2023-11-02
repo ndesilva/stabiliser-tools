@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from .Stabiliser_State import Stabiliser_State
+from stabiliser_state.Stabiliser_State import Stabiliser_State
 
 class Test_Stabiliser_State_Class(unittest.TestCase):
     def test_generate_state_vector_case_one(self):

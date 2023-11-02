@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
-from .stabiliser_check import is_stabiliser_state
-from .Stabiliser_State import Stabiliser_State
+from stabiliser_state.stabiliser_check import is_stabiliser_state
+from stabiliser_state.Stabiliser_State import Stabiliser_State
 
 class Test_Stabiliser_State_Check(unittest.TestCase):
 

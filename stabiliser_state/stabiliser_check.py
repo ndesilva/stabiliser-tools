@@ -2,9 +2,10 @@ import numpy as np
 import functools
 from operator import itemgetter
 from F2_helper.F2_helper import sign_mod2product, imag_mod2product, sign_evaluate_poly
+from stabiliser_state.Stabiliser_State import Stabiliser_State
 
 # Assuming vector of length 2^n, returns whether vector is a stabiliser state. Currently assumes all entries are +-1, generalise to complex entries
-def is_stabiliser_state(state_vector : np.ndarray, allow_global_factor = False) -> bool:    
+def is_stabiliser_state(state_vector : np.ndarray, allow_global_factor = False) -> bool | Stabiliser_State:    
     nonzero_indices = np.nonzero(state_vector)[0]
     support_size = len(nonzero_indices)
     
