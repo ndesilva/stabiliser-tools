@@ -51,7 +51,7 @@ class Stabiliser_State():
         return f2.sign_evaluate_poly(self.quadratic_form, afffine_space_index)*f2.sign_mod2product(self.real_linear_part, afffine_space_index)*f2.imag_mod2product(self.imaginary_part, afffine_space_index)
     
     # WARNING: assumes that the basis vectors are in reduced row echelon form (as will be the case if they were generated from the state_vector) - TODO change this?
-    def get_stabiliser_group_generators(self) -> list[Pauli]:        
+    def get_stabiliser_group_generators(self) -> list[Pauli]:  # TODO test this & refactor     
         pauli_group = []
         
         # pivot column indices, assumig that the vector_basis is already in reduced row echelon form
