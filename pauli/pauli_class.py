@@ -1,5 +1,5 @@
 import numpy as np
-
+from F2_helper.F2_helper import phase_mod2product
 class Pauli:
     def __init__(self, number_qubits : int, x_vector : int, y_vector : int, sign_bit : int, i_bit : int):
         self.number_qubits = number_qubits
@@ -14,22 +14,9 @@ class Pauli:
         matrix = np.zeros((size, size), dtype=complex)
 
         for j in range(size):
-            matrix[j^self.x_vector, j] = self.get_phase()*Pauli.phase_mod2product(j, self.y_vector)
+            matrix[j^self.x_vector, j] = self.get_phase()*phase_mod2product(j, self.y_vector)
 
         return matrix
     
     def get_phase(self) -> complex:
         return (1-2*self.sign_bit)*(1+(1j-1)*self.i_bit)
-
-    # returns (-1) ** the mod 2 inner product of the binary representations of x, y
-    @staticmethod
-    def phase_mod2product(x : int, y : int) -> int:
-        product = x & y
-
-        pairity = 0
-        
-        while product:
-            pairity ^= 1
-            product &= product -1
-
-        return 1-2*pairity

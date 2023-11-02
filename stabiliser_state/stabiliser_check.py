@@ -1,6 +1,7 @@
 import numpy as np
 import functools
 from operator import itemgetter
+from F2_helper.F2_helper import evaluate_poly
 
 # Assuming vector of length 2^n, returns whether vector is a stabiliser state. Currently assumes all entries are +-1, generalise to complex entries
 def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:    
@@ -8,12 +9,12 @@ def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:
     nonzero_indices = np.nonzero(state_vector)[0]
     support_size = len(nonzero_indices)
     
-    k = np.log2(support_size)
+    dimension = np.log2(support_size)
 
     # check support is a power of 2
-    if not k.is_integer():
+    if not dimension.is_integer():
         return False
-    k = int(k)
+    dimension = int(dimension)
 
     shift = nonzero_indices[0]
 
@@ -25,19 +26,19 @@ def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:
 
     vector_space_indicies = [pair[0] for pair in vector_space_value_pairs]
     
-    weight_one_bitstrings = [1<<j for j in range(k)]
+    weight_one_bitstrings = [1<<j for j in range(dimension)]
     basis_vectors = [vector_space_indicies[index] for index in weight_one_bitstrings]
 
     # Csing lemma, check that the indicies form an F2 vector space
-    for j in range(2**k): # we check the basis vectors again here, fast way to not do that?
-        vectors = [(j & weight_one_bitstrings[l] == weight_one_bitstrings[l])*basis_vectors[l] for l in range(k)]
+    for j in range(1<<dimension): # we check the basis vectors again here, fast way to not do that?
+        vectors = [(j & weight_one_bitstrings[l] == weight_one_bitstrings[l])*basis_vectors[l] for l in range(dimension)]
         value = functools.reduce(lambda x,y : x^y, vectors)
 
         if vector_space_indicies[j] != value:
             return False
     
     non_zero_coeffs = [pair[1] for pair in vector_space_value_pairs]
-    phase = non_zero_coeffs[0]
+    phase = non_zero_coeffs[0]*(np.sqrt(support_size))
 
     if not (allow_global_factor or is_valid_stabiliser_entry(phase)):
         #print('reject due to first non-zero entry invalid entry')
@@ -64,8 +65,8 @@ def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:
     quadratic_real_part = []
 
     # get quadratic terms:
-    for a in range(k-1):
-        for b in range(a+1, k):
+    for a in range(dimension-1):
+        for b in range(a+1, dimension):
             index = (1 << a) | (1 << b)
             
             linear_part = (1-2*evaluate_poly(linear_real_part, index))*(1+(1j-1)*evaluate_poly(imag_part, index))
@@ -83,17 +84,13 @@ def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:
     # Combine real and quadratic terms in a quadratic form
     real_part = linear_real_part + quadratic_real_part
 
-    for index in range(2**k): # We are repeating columns of Hamming weight 1,2 - fast way to not do this?
+    for index in range(1<<dimension): # We are repeating columns of Hamming weight 1,2 - fast way to not do this?
         value = phase * (1-2*evaluate_poly(real_part, index)) * (1+(1j-1)*evaluate_poly(imag_part, index))
 
         if non_zero_coeffs[index] != value:
             return False
         
     return True
-
-def evaluate_poly(non_zero_coeffs : list[int], integer : int) -> int:
-    terms = [ integer & index == index for index in non_zero_coeffs]
-    return int(functools.reduce(lambda x,y : x^y, terms))
 
 def is_valid_stabiliser_entry(entry : float) -> bool:
     match entry:
