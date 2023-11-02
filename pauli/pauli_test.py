@@ -1,10 +1,11 @@
 import unittest
 import numpy as np
-from .pauli_class import Pauli
+from .Pauli import Pauli
 
 class Test_Pauli_Class(unittest.TestCase):
+    
     def test_generate_pauli_single_qubit(self):
-        pauli = Pauli(1, 1, 1, 0, 1)
+        pauli = Pauli(1, 1, 1, 1, 1)
 
         Y = np.array([[0, -1j],[1j, 0]]) # type: ignore
 

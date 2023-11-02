@@ -1,21 +1,23 @@
 import numpy as np
 from F2_helper.F2_helper import sign_mod2product
+
 class Pauli:
-    def __init__(self, number_qubits : int, x_vector : int, y_vector : int, sign_bit : int, i_bit : int):
+    # Pauli is (-1)^sign bit * (-i) * (i_bit) * X^x_vector * Z^z_vector
+    def __init__(self, number_qubits : int, x_vector : int, z_vector : int, sign_bit : int, i_bit : int):
         self.number_qubits = number_qubits
         self.x_vector = x_vector
-        self.y_vector = y_vector
+        self.z_vector = z_vector
         
         self.sign_bit = sign_bit
         self.i_bit = i_bit
 
-        self.phase = (1-2*self.sign_bit)*(1+(1j-1)*self.i_bit)
+        self.phase = (1-2*self.sign_bit)*(1+(-1j-1)*self.i_bit)
 
     def generate_matrix(self) -> np.ndarray:
         size = 2**self.number_qubits
         matrix = np.zeros((size, size), dtype=complex)
 
         for j in range(size):
-            matrix[j^self.x_vector, j] = self.phase*sign_mod2product(j, self.y_vector)
+            matrix[j^self.x_vector, j] = self.phase*sign_mod2product(j, self.z_vector)
 
         return matrix

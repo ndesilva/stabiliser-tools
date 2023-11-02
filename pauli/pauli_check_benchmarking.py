@@ -2,7 +2,7 @@ import random
 import pauli_check
 import time
 import numpy as np
-from pauli_class import Pauli
+from pauli.Pauli import Pauli
 
 data_filename = './pauli/pauli_benchmarking_data.py'
 

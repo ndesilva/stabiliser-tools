@@ -4,8 +4,7 @@ from operator import itemgetter
 from F2_helper.F2_helper import sign_mod2product, imag_mod2product, sign_evaluate_poly
 
 # Assuming vector of length 2^n, returns whether vector is a stabiliser state. Currently assumes all entries are +-1, generalise to complex entries
-def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:    
-    
+def is_stabiliser_state(state_vector : np.ndarray, allow_global_factor = False) -> bool:    
     nonzero_indices = np.nonzero(state_vector)[0]
     support_size = len(nonzero_indices)
     
@@ -13,6 +12,7 @@ def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:
 
     # check support is a power of 2
     if not dimension.is_integer():
+        #print('support not power of 2')
         return False
     dimension = int(dimension)
 
@@ -32,16 +32,17 @@ def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:
     # Csing lemma, check that the indicies form an F2 vector space
     for j in range(1<<dimension): # we check the basis vectors again here, fast way to not do that?
         vectors = [(j & weight_one_bitstrings[l] == weight_one_bitstrings[l])*basis_vectors[l] for l in range(dimension)]
-        value = functools.reduce(lambda x,y : x^y, vectors)
+        value = functools.reduce(lambda x,y : x^y, vectors, 0)
 
         if vector_space_indicies[j] != value:
+            #print('Support not affine space')
             return False
     
     non_zero_coeffs = [pair[1] for pair in vector_space_value_pairs]
-    phase = non_zero_coeffs[0]*(np.sqrt(support_size))
+    first_entry = non_zero_coeffs[0]
 
-    if not (allow_global_factor or is_valid_stabiliser_entry(phase)):
-        #print('reject due to first non-zero entry invalid entry')
+    if not (allow_global_factor or is_valid_stabiliser_entry(first_entry*(np.sqrt(support_size)))):
+        #print('invalid first entry')
         return False
 
     linear_real_part = 0
@@ -49,7 +50,7 @@ def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:
 
     # get linear terms
     for index in weight_one_bitstrings:
-        match non_zero_coeffs[index]/phase:
+        match non_zero_coeffs[index]/first_entry:
             case 1:
                 pass
             case -1:
@@ -60,6 +61,7 @@ def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:
                 linear_real_part |= index
                 imag_part |= index
             case _:
+                #print('invalid linear term')
                 return False
     
     quadratic_real_part = []
@@ -71,7 +73,7 @@ def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:
             
             linear_part = sign_mod2product(index, linear_real_part)*imag_mod2product(index, imag_part)
 
-            value = non_zero_coeffs[index]/(phase*linear_part)
+            value = non_zero_coeffs[index]/(first_entry*linear_part)
 
             match value:
                 case 1:
@@ -79,14 +81,17 @@ def is_pauli(state_vector : np.ndarray, allow_global_factor = False) -> bool:
                 case -1:
                     quadratic_real_part.append(index)
                 case _:
+                    #print('invalid quadratic term')
                     return False
 
     for index in range(1<<dimension): # We are repeating columns of Hamming weight 1,2 - fast way to not do this?
-        value = phase * imag_mod2product(index, imag_part) * sign_mod2product(index, linear_real_part) * sign_evaluate_poly(quadratic_real_part, index))
+        value = first_entry*imag_mod2product(index, imag_part)*sign_mod2product(index, linear_real_part)*sign_evaluate_poly(quadratic_real_part, index)
 
         if non_zero_coeffs[index] != value:
+            #print('inconsistent remainder')
             return False
         
+    #print('State accepted \n')
     return True
 
 def is_valid_stabiliser_entry(entry : float) -> bool:
