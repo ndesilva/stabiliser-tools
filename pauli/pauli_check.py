@@ -1,11 +1,11 @@
 import numpy as np
 import numba
-from F2_helper.F2_helper import sign_mod2product
+import F2_helper.F2_helper as f2
 
 # Assuming matrix of size 2^n by 2^n, returns whether matrix is in the Pauli group.
 def is_pauli(matrix : np.ndarray, allow_global_factor = False) -> bool:
     size = matrix.shape[0]
-    n = int(np.log2(size))
+    n = f2.fast_log2(size)
 
     if np.count_nonzero(matrix) != size:
         #print('reject due to total non-zero')
@@ -42,7 +42,7 @@ def is_pauli(matrix : np.ndarray, allow_global_factor = False) -> bool:
     
     for col in range(1, size): # we are repeating the q columns here, speed up?
         entry = matrix[col ^ q, col]
-        value = phase*sign_mod2product(p, col)
+        value = phase*f2.sign_mod2product(p, col)
 
         if entry != value: # if on every loop is maybe not ideal; how to speed this up?
             #print('reject due to a remaining entry invalid')

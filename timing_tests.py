@@ -2,6 +2,7 @@ import time
 import random
 import functools
 import numpy as np
+from F2_helper.F2_helper import num_bin_digits, get_bit_at
 
 pauli_entries = [1, -1, 1j, -1j]
 
@@ -59,8 +60,13 @@ print(f2_linear_function_bitwise(6), f2_linear_function_bitwise(3), f2_linear_fu
 print(f2_linear_function_matrix(6), f2_linear_function_matrix(3), f2_linear_function_matrix(50))
 print(f2_linear_function_int(6), f2_linear_function_int(3), f2_linear_function_int(50))
 
+def log2(power2):
+    return int(np.log2(power2))
+
+def get_bit_at_using_bin(int, i):
+    return bin(int)[2+i]
     
-functions_to_time = [f2_linear_function_bitwise, f2_linear_function_matrix, f2_linear_function_int]
+functions_to_time = [get_bit_at, get_bit_at_using_bin]
 reps = int(1e6)
 
 for function in functions_to_time:
@@ -69,10 +75,11 @@ for function in functions_to_time:
 
     for i in range(reps):
         r = random.randrange(64)
+        j = random.randrange(num_bin_digits(r))
        
         st = time.time()       
         
-        function(r)
+        function(r, j)
         
         et = time.time()
         timer += et - st

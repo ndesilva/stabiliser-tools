@@ -1,6 +1,6 @@
-from .pauli_check import is_pauli
+from pauli.pauli_check import is_pauli
 import unittest
-from .Pauli import Pauli
+from pauli.Pauli import Pauli
 
 class Test_Pauli_Check(unittest.TestCase):
 

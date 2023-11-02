@@ -1,21 +1,20 @@
 import numpy as np
 import functools
 from operator import itemgetter
-from F2_helper.F2_helper import sign_mod2product, imag_mod2product, sign_evaluate_poly
+import F2_helper.F2_helper as f2
 from stabiliser_state.Stabiliser_State import Stabiliser_State
 
 # Assuming vector of length 2^n, returns whether vector is a stabiliser state. Currently assumes all entries are +-1, generalise to complex entries
-def is_stabiliser_state(state_vector : np.ndarray, allow_global_factor = False) -> bool | Stabiliser_State:    
+def is_stabiliser_state(state_vector : np.ndarray, allow_global_factor = False, return_state = False) -> bool | Stabiliser_State:    
     nonzero_indices = np.nonzero(state_vector)[0]
     support_size = len(nonzero_indices)
     
-    dimension = np.log2(support_size)
+    dimension = f2.fast_log2(support_size)
 
     # check support is a power of 2
-    if not dimension.is_integer():
+    if 1 << dimension != support_size:
         #print('support not power of 2')
         return False
-    dimension = int(dimension)
 
     shift = nonzero_indices[0]
 
@@ -32,7 +31,7 @@ def is_stabiliser_state(state_vector : np.ndarray, allow_global_factor = False) 
 
     # Csing lemma, check that the indicies form an F2 vector space
     for j in range(1<<dimension): # we check the basis vectors again here, fast way to not do that?
-        vectors = [(j & weight_one_bitstrings[l] == weight_one_bitstrings[l])*basis_vectors[l] for l in range(dimension)]
+        vectors = [f2.get_bit_at(j, l)*basis_vectors[l] for l in range(dimension)]
         value = functools.reduce(lambda x,y : x^y, vectors, 0)
 
         if vector_space_indicies[j] != value:
@@ -72,7 +71,7 @@ def is_stabiliser_state(state_vector : np.ndarray, allow_global_factor = False) 
         for b in range(a+1, dimension):
             index = (1 << a) | (1 << b)
             
-            linear_part = sign_mod2product(index, linear_real_part)*imag_mod2product(index, imag_part)
+            linear_part = f2.sign_mod2product(index, linear_real_part)*f2.imag_mod2product(index, imag_part)
 
             value = non_zero_coeffs[index]/(first_entry*linear_part)
 
@@ -86,14 +85,18 @@ def is_stabiliser_state(state_vector : np.ndarray, allow_global_factor = False) 
                     return False
 
     for index in range(1<<dimension): # We are repeating columns of Hamming weight 1,2 - fast way to not do this?
-        value = first_entry*imag_mod2product(index, imag_part)*sign_mod2product(index, linear_real_part)*sign_evaluate_poly(quadratic_real_part, index)
+        value = first_entry*f2.imag_mod2product(index, imag_part)*f2.sign_mod2product(index, linear_real_part)*f2.sign_evaluate_poly(quadratic_real_part, index)
 
         if non_zero_coeffs[index] != value:
             #print('inconsistent remainder')
             return False
         
     #print('State accepted \n')
-    return True
+    if return_state: # TODO implement test case for this, might need to implement __eq__(): for stabiliser state class for this, should be do able in O(ploy(k)) time
+        n = f2.fast_log2(len(state_vector))
+        return Stabiliser_State(n, quadratic_real_part, linear_real_part, imag_part, basis_vectors, shift, global_factor = first_entry*(np.sqrt(support_size)))
+    else:
+        return True
 
 def is_valid_stabiliser_entry(entry : float) -> bool:
     match entry:
