@@ -1,3 +1,4 @@
+import math
 import time
 import random
 import functools
@@ -56,17 +57,19 @@ def imaginary_part_linear(integer):
 def imaginary_part_power(integer):
     return (1j)**integer
 
-print(f2_linear_function_bitwise(6), f2_linear_function_bitwise(3), f2_linear_function_bitwise(50))
-print(f2_linear_function_matrix(6), f2_linear_function_matrix(3), f2_linear_function_matrix(50))
-print(f2_linear_function_int(6), f2_linear_function_int(3), f2_linear_function_int(50))
-
 def log2(power2):
     return int(np.log2(power2))
 
 def get_bit_at_using_bin(int, i):
     return bin(int)[2+i]
+
+def math_sqrt(x):
+    return math.sqrt(x)
+
+def np_sqrt(x):
+    return np.sqrt(x)
     
-functions_to_time = [get_bit_at, get_bit_at_using_bin]
+functions_to_time = [math_sqrt, np_sqrt]
 reps = int(1e6)
 
 for function in functions_to_time:
@@ -74,12 +77,11 @@ for function in functions_to_time:
     timer = 0
 
     for i in range(reps):
-        r = random.randrange(64)
-        j = random.randrange(num_bin_digits(r))
+        r = random.randrange(1<<10)
        
         st = time.time()       
         
-        function(r, j)
+        function(r)
         
         et = time.time()
         timer += et - st

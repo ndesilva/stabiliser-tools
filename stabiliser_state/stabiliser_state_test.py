@@ -1,3 +1,4 @@
+import math
 import unittest
 import numpy as np
 from stabiliser_state.Stabiliser_State import Stabiliser_State
@@ -17,7 +18,7 @@ class Test_Stabiliser_State_Class(unittest.TestCase):
         self.assertEqual(state.global_factor, -2j)
 
     def test_from_state_vector_raises_error_when_not_stab_state(self):
-        non_stab_state = (1/np.sqrt(2))*np.array([1, 1/np.sqrt(2)*(1 + 1j)]) # T state is not stabiliser!
+        non_stab_state = (1/math.sqrt(2))*np.array([1, 1/math.sqrt(2)*(1 + 1j)]) # T state is not stabiliser!
 
         self.assertRaises(ValueError, Stabiliser_State.from_statevector, non_stab_state)
 
@@ -30,7 +31,7 @@ class Test_Stabiliser_State_Class(unittest.TestCase):
         shift = 0
 
         state = Stabiliser_State(number_qubits, quadratic_form, real_linear_part, imag_part, vector_basis, shift)
-        expected_vector = 1/(np.sqrt(2))*np.array([1, 1j])
+        expected_vector = 1/(math.sqrt(2))*np.array([1, 1j])
 
         self.assertTrue(np.array_equal(state.generate_state_vector(), expected_vector))
 
@@ -43,7 +44,7 @@ class Test_Stabiliser_State_Class(unittest.TestCase):
         shift = 1
 
         state = Stabiliser_State(number_qubits, quadratic_form, real_linear_part, imag_part, vector_basis, shift)
-        expected_vector = 1/(np.sqrt(2))*np.array([0, -1])
+        expected_vector = 1/(math.sqrt(2))*np.array([0, -1])
 
         self.assertTrue(np.array_equal(state.generate_state_vector(), expected_vector))
 
@@ -62,14 +63,38 @@ class Test_Stabiliser_State_Class(unittest.TestCase):
         self.assertTrue(np.array_equal(state.generate_state_vector(), expected_vector))
 
     def test_row_reduce_basis(self):
-        number_qubits = 3
-        quadratic_form = []
-        real_linear_part = 0
-        imag_part = 0
+        number_qubits = 5
+        quadratic_form = [3]
+        real_linear_part = 1
+        imag_part = 1
         vector_basis = [13, 22, 26]
         shift = 2
 
         state = Stabiliser_State(number_qubits, quadratic_form, real_linear_part, imag_part, vector_basis, shift)
+        initial_state_vector = state.generate_state_vector()
         state.row_reduce_basis()
 
         self.assertEqual(state.vector_basis, [22, 12, 1])
+        self.assertTrue(np.array_equal(initial_state_vector, state.generate_state_vector()))
+
+    def test_get_stabiliser_group_generators(self):
+        number_qubits = 5
+        vector_basis = [16, 9, 2] # already row reduced
+        shift = 1
+        linear_part = 5
+        imag_part = 5
+        quadratic_form = [6, 3]
+        global_phase = math.sqrt(3)
+
+        state = Stabiliser_State(number_qubits, quadratic_form, linear_part, imag_part, vector_basis, shift, global_factor = global_phase)
+        state_vector = state.generate_state_vector()
+        pauli_group = state.get_stabiliser_group_generators()
+
+        print(state_vector)
+        print('##############')
+
+        for pauli in pauli_group:
+            print(pauli.generate_matrix()@state_vector)
+            print(np.array_equal(state_vector, pauli.generate_matrix()@state_vector))
+            #self.assertTrue(np.array_equal(state_vector, pauli.generate_matrix()@state_vector))
+

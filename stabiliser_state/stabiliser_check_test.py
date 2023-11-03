@@ -1,3 +1,4 @@
+import math
 import unittest
 import numpy as np
 from stabiliser_state.stabiliser_check import is_stabiliser_state
@@ -39,7 +40,7 @@ class Test_Stabiliser_State_Check(unittest.TestCase):
         self.assertFalse(is_stabiliser_state(state))
     
     def test_is_stab_state_accpets_with_global_factor_when_flagged(self):
-        state = (1/np.sqrt(2))*(1+1j)*self.five_stab_state.generate_state_vector()
+        state = (1/math.sqrt(2))*(1+1j)*self.five_stab_state.generate_state_vector()
 
         self.assertTrue(is_stabiliser_state(state, allow_global_factor = True))
 

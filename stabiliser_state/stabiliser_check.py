@@ -1,5 +1,5 @@
+import math
 import numpy as np
-import functools
 from operator import itemgetter
 import F2_helper.F2_helper as f2
 from stabiliser_state.Stabiliser_State import Stabiliser_State
@@ -33,8 +33,7 @@ def is_stabiliser_state(state_vector : np.ndarray, allow_global_factor = False, 
     # Using lemma, check that the indicies form an F2 vector space. If the support is the whole space, this is not needed
     if dimension != n:
         for j in range(1<<dimension): # we check the basis vectors again here, fast way to not do that?
-            vectors = [f2.get_bit_at(j, l)*basis_vectors[l] for l in range(dimension)]
-            value = functools.reduce(lambda x,y : x^y, vectors, 0)
+            value = f2.get_vector_expansion(dimension, basis_vectors, j)
 
             if vector_space_indicies[j] != value:
                 #print('Support not affine space')
@@ -43,7 +42,7 @@ def is_stabiliser_state(state_vector : np.ndarray, allow_global_factor = False, 
     non_zero_coeffs = [pair[1] for pair in vector_space_value_pairs]
     first_entry = non_zero_coeffs[0]
 
-    if not (allow_global_factor or is_valid_stabiliser_entry(first_entry*(np.sqrt(support_size)))):
+    if not (allow_global_factor or is_valid_stabiliser_entry(first_entry*(math.sqrt(support_size)))):
         #print('invalid first entry')
         return False
 
@@ -95,7 +94,7 @@ def is_stabiliser_state(state_vector : np.ndarray, allow_global_factor = False, 
         
     #print('State accepted \n')
     if return_state: # TODO implement test case for this, might need to implement __eq__(): for stabiliser state class for this, should be do able in O(ploy(k)) time
-        return Stabiliser_State(n, quadratic_real_part, linear_real_part, imag_part, basis_vectors, shift, global_factor = first_entry*(np.sqrt(support_size)) )
+        return Stabiliser_State(n, quadratic_real_part, linear_real_part, imag_part, basis_vectors, shift, global_factor = first_entry*(math.sqrt(support_size)) )
     else:
         return True
 

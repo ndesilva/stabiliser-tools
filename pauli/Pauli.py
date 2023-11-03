@@ -21,3 +21,16 @@ class Pauli:
             matrix[j^self.x_vector, j] = self.phase*sign_mod2product(j, self.z_vector)
 
         return matrix
+    
+    def __eq__(self, other : object) -> bool:
+        if not isinstance(other, Pauli):
+            return False
+        
+        result = True
+        result &= (self.sign_bit == other.sign_bit)
+        result &= (self.i_bit == other.i_bit)
+        result &= (self.number_qubits == other.number_qubits)
+        result &= (self.x_vector == other.x_vector)
+        result &= (self.z_vector == other.z_vector)
+
+        return result

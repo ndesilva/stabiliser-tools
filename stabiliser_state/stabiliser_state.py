@@ -1,4 +1,5 @@
 from __future__ import annotations
+import math
 
 import numpy as np
 import functools
@@ -36,23 +37,19 @@ class Stabiliser_State():
         
         state_vector = np.zeros(size, dtype=complex)
         dimension = len(self.vector_basis)
-        normalisation = self.global_factor/np.sqrt(1 << dimension)
+        normalisation = self.global_factor/math.sqrt(1 << dimension)
 
         for j in range(1 << dimension):
-            index = self.get_state_vector_index(j)
+            index = f2.get_vector_expansion(dimension, self.vector_basis, j) ^ self.shift
             phase = self.get_phase(j)
             state_vector[index] = normalisation*phase
         
         return state_vector
     
-    def get_state_vector_index(self, affine_space_index : int) -> int:
-        vectors = [self.vector_basis[index]*(f2.get_bit_at(affine_space_index, index)) for index in range(self.dimension)]
-        return functools.reduce(lambda x,y : x^y, vectors) ^ self.shift
-    
     def get_phase(self, afffine_space_index : int) -> complex:
         return f2.sign_evaluate_poly(self.quadratic_form, afffine_space_index)*f2.sign_mod2product(self.real_linear_part, afffine_space_index)*f2.imag_mod2product(self.imaginary_part, afffine_space_index)
     
-    def row_reduce_basis(self):
+    def row_reduce_basis(self): # TODO this also needs to update the linear and quadratic parts
         self.vector_basis.sort(reverse = True)
     
         for j in range(self.dimension):
@@ -96,11 +93,13 @@ class Stabiliser_State():
             # add l_i * l_j part
             beta = imag_bit*self.imaginary_part
 
-            for j in range(self.number_qubits): #faster way to do this?
+            for j in range(self.dimension): #faster way to do this? set membership query is O(1) as opposed to O(n)
                 beta ^= (1<<j)*( (1<<i | 1<<j) in self.quadratic_form) # add Q + Q^t part
 
-            sign_bit = f2.get_bit_at(self.real_linear_part, i) ^ imag_bit ^ f2.mod2product(beta, self.shift)
+
+            beta_vector = f2.get_vector_expansion(self.dimension, self.vector_basis, beta)
+            sign_bit = f2.get_bit_at(self.real_linear_part, i) ^ imag_bit ^ f2.mod2product(beta_vector, self.shift)
             
-            pauli_group.append(Pauli(self.number_qubits, self.vector_basis[i], beta, sign_bit, imag_bit))
+            pauli_group.append(Pauli(self.number_qubits, self.vector_basis[i], beta_vector, sign_bit, imag_bit))
         
         return pauli_group

@@ -52,3 +52,11 @@ class Test_Pauli_Class(unittest.TestCase):
 
         self.assertEqual(sign_evaluate_poly(poly, point_1), 1)
         self.assertEqual(sign_evaluate_poly(poly, point_2), -1)
+
+    def test_get_vector_expansion(self):
+        basis = [22, 17 ,23]
+        dimension = 3
+        coefficients = 5
+
+        expected_value = 1
+        self.assertEqual(get_vector_expansion(dimension, basis, coefficients), expected_value)
