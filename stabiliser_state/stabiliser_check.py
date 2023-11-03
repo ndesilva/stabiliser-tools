@@ -4,12 +4,13 @@ from operator import itemgetter
 import F2_helper.F2_helper as f2
 from stabiliser_state.Stabiliser_State import Stabiliser_State
 
-# Assuming vector of length 2^n, returns whether vector is a stabiliser state. Currently assumes all entries are +-1, generalise to complex entries
+# Assuming vector of length 2^n, returns whether vector is a stabiliser state.
 def is_stabiliser_state(state_vector : np.ndarray, allow_global_factor = False, return_state = False) -> bool | Stabiliser_State:    
     nonzero_indices = np.nonzero(state_vector)[0]
     support_size = len(nonzero_indices)
     
     dimension = f2.fast_log2(support_size)
+    n = f2.fast_log2(len(state_vector))
 
     # check support is a power of 2
     if 1 << dimension != support_size:
@@ -29,14 +30,15 @@ def is_stabiliser_state(state_vector : np.ndarray, allow_global_factor = False, 
     weight_one_bitstrings = [1<<j for j in range(dimension)]
     basis_vectors = [vector_space_indicies[index] for index in weight_one_bitstrings]
 
-    # Csing lemma, check that the indicies form an F2 vector space
-    for j in range(1<<dimension): # we check the basis vectors again here, fast way to not do that?
-        vectors = [f2.get_bit_at(j, l)*basis_vectors[l] for l in range(dimension)]
-        value = functools.reduce(lambda x,y : x^y, vectors, 0)
+    # Using lemma, check that the indicies form an F2 vector space. If the support is the whole space, this is not needed
+    if dimension != n:
+        for j in range(1<<dimension): # we check the basis vectors again here, fast way to not do that?
+            vectors = [f2.get_bit_at(j, l)*basis_vectors[l] for l in range(dimension)]
+            value = functools.reduce(lambda x,y : x^y, vectors, 0)
 
-        if vector_space_indicies[j] != value:
-            #print('Support not affine space')
-            return False
+            if vector_space_indicies[j] != value:
+                #print('Support not affine space')
+                return False
     
     non_zero_coeffs = [pair[1] for pair in vector_space_value_pairs]
     first_entry = non_zero_coeffs[0]
@@ -93,8 +95,7 @@ def is_stabiliser_state(state_vector : np.ndarray, allow_global_factor = False, 
         
     #print('State accepted \n')
     if return_state: # TODO implement test case for this, might need to implement __eq__(): for stabiliser state class for this, should be do able in O(ploy(k)) time
-        n = f2.fast_log2(len(state_vector))
-        return Stabiliser_State(n, quadratic_real_part, linear_real_part, imag_part, basis_vectors, shift, global_factor = first_entry*(np.sqrt(support_size)))
+        return Stabiliser_State(n, quadratic_real_part, linear_real_part, imag_part, basis_vectors, shift, global_factor = first_entry*(np.sqrt(support_size)) )
     else:
         return True
 

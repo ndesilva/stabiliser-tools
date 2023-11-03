@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 import functools
 import stabiliser_state.stabiliser_check as sc
@@ -7,7 +9,7 @@ from pauli.Pauli import Pauli
 class Stabiliser_State():
 
     @staticmethod
-    def from_statevector(state_vector : np.ndarray): # TODO test that this works
+    def from_statevector(state_vector : np.ndarray) -> Stabiliser_State:
         state = sc.is_stabiliser_state(state_vector, return_state = True, allow_global_factor = True)
 
         if not state:
@@ -50,12 +52,24 @@ class Stabiliser_State():
     def get_phase(self, afffine_space_index : int) -> complex:
         return f2.sign_evaluate_poly(self.quadratic_form, afffine_space_index)*f2.sign_mod2product(self.real_linear_part, afffine_space_index)*f2.imag_mod2product(self.imaginary_part, afffine_space_index)
     
-    # WARNING: assumes that the basis vectors are in reduced row echelon form (as will be the case if they were generated from the state_vector) - TODO change this?
-    def get_stabiliser_group_generators(self) -> list[Pauli]:  # TODO test this & refactor     
+    def row_reduce_basis(self):
+        self.vector_basis.sort(reverse = True)
+    
+        for j in range(self.dimension):
+            pivot_row = self.vector_basis[j]
+            pivot_index = f2.fast_log2(pivot_row)
+
+            for i in range(self.dimension):
+                self.vector_basis[i] ^= (1 - (i == j)) * f2.get_bit_at(self.vector_basis[i], pivot_index) * pivot_row
+    
+    def get_stabiliser_group_generators(self) -> list[Pauli]:  # TODO test this & refactor  
+        # needed for finding the basis of the null space
+        self.row_reduce_basis()
+        
         pauli_group = []
         
-        # pivot column indices, assumig that the vector_basis is already in reduced row echelon form
-        pivot_indicies = [f2.num_bin_digits(vector) for vector in self.vector_basis]
+        # pivot column indices, as vector_basis is now in reduced row echelon form
+        pivot_indicies = [f2.fast_log2(vector) for vector in self.vector_basis]
         
         # get basis of null space of matrix with basis vectors as rows by iterating through the non-pivot columns. These correspond to Z-type stabilisers
         for j in range(self.number_qubits):
