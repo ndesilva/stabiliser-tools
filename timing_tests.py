@@ -3,7 +3,8 @@ import time
 import random
 import functools
 import numpy as np
-from F2_helper.F2_helper import num_bin_digits, get_bit_at
+from stabiliser_state.Stabiliser_State import Stabiliser_State
+import numba
 
 pauli_entries = [1, -1, 1j, -1j]
 
@@ -68,17 +69,47 @@ def math_sqrt(x):
 
 def np_sqrt(x):
     return np.sqrt(x)
-    
-functions_to_time = [math_sqrt, np_sqrt]
-reps = int(1e6)
+
+def rref_binary(xmatr_aug):
+    """
+    'rref' function specifically for augmented check matrices.
+
+    """
+    num_rows, num_cols = xmatr_aug.shape
+    xmatr_aug = np.copy(xmatr_aug)
+
+    row_to_comp = 0
+    for j in range(num_cols):
+        col = xmatr_aug[row_to_comp:, j]
+        if np.count_nonzero(col) > 0:
+            i = np.nonzero(col)[0][0] + row_to_comp
+            temp = np.copy(xmatr_aug[i, :])
+            xmatr_aug[i, :] = xmatr_aug[row_to_comp, :]
+            xmatr_aug[row_to_comp, :] = temp
+
+            for ii in range(num_rows):
+                if ii != row_to_comp and xmatr_aug[ii, j] != 0:
+                    xmatr_aug[ii, :] ^= xmatr_aug[row_to_comp, :]
+
+            row_to_comp += 1
+            if row_to_comp == num_rows:
+                break
+
+    return xmatr_aug
+
+def row_reduce(state : Stabiliser_State):
+    state.row_reduce_basis()
+
+functions_to_time = [rref_binary]
+reps = int(1e4)
 
 for function in functions_to_time:
 
     timer = 0
 
     for i in range(reps):
-        r = random.randrange(1<<10)
-       
+        r = np.random.randint(2, size=(20,20))
+
         st = time.time()       
         
         function(r)

@@ -1,8 +1,8 @@
 from __future__ import annotations
 import math
+import numba
 
 import numpy as np
-import functools
 import stabiliser_state.stabiliser_check as sc
 import F2_helper.F2_helper as f2
 from pauli.Pauli import Pauli
@@ -89,15 +89,12 @@ class Stabiliser_State():
         for i in range(self.dimension):
             
             imag_bit = f2.get_bit_at(self.imaginary_part, i)
+            beta_vector = 0
 
-            # add l_i * l_j part
-            beta = imag_bit*self.imaginary_part
-
+            # cursed for loop, as discussed with Ming
             for j in range(self.dimension): #faster way to do this? set membership query is O(1) as opposed to O(n)
-                beta ^= (1<<j)*( (1<<i | 1<<j) in self.quadratic_form) # add Q + Q^t part
+                beta_vector ^= (1<<pivot_indicies[j]) * ( ( (1 <<i | 1 <<j) in self.quadratic_form ) ^ imag_bit* f2.get_bit_at(self.imaginary_part,j) )
 
-
-            beta_vector = f2.get_vector_expansion(self.dimension, self.vector_basis, beta)
             sign_bit = f2.get_bit_at(self.real_linear_part, i) ^ imag_bit ^ f2.mod2product(beta_vector, self.shift)
             
             pauli_group.append(Pauli(self.number_qubits, self.vector_basis[i], beta_vector, sign_bit, imag_bit))

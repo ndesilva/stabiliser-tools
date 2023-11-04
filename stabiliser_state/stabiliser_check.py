@@ -2,10 +2,10 @@ import math
 import numpy as np
 from operator import itemgetter
 import F2_helper.F2_helper as f2
-from stabiliser_state.Stabiliser_State import Stabiliser_State
+import stabiliser_state.Stabiliser_State as ss
 
 # Assuming vector of length 2^n, returns whether vector is a stabiliser state.
-def is_stabiliser_state(state_vector : np.ndarray, allow_global_factor = False, return_state = False) -> bool | Stabiliser_State:    
+def is_stabiliser_state(state_vector : np.ndarray, allow_global_factor = False, return_state = False) -> bool | ss.Stabiliser_State:    
     nonzero_indices = np.nonzero(state_vector)[0]
     support_size = len(nonzero_indices)
     
@@ -94,7 +94,7 @@ def is_stabiliser_state(state_vector : np.ndarray, allow_global_factor = False, 
         
     #print('State accepted \n')
     if return_state: # TODO implement test case for this, might need to implement __eq__(): for stabiliser state class for this, should be do able in O(ploy(k)) time
-        return Stabiliser_State(n, quadratic_real_part, linear_real_part, imag_part, basis_vectors, shift, global_factor = first_entry*(math.sqrt(support_size)) )
+        return ss.Stabiliser_State(n, quadratic_real_part, linear_real_part, imag_part, basis_vectors, shift, global_factor = first_entry*(math.sqrt(support_size)) )
     else:
         return True
 
