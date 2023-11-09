@@ -7,6 +7,23 @@ class Test_Clifford_Check(unittest.TestCase):
     unscaled_hadmard = np.array([[1,1],[1,-1]])
     hadamard = (1/math.sqrt(2)) * np.array([[1,1],[1,-1]])
     
+    three_qubit_clifford = np.array([[ 0. +0.5j,  0. +0.5j,  0. +0.j ,  0. +0.j ,  0. -0.5j,  0. -0.5j,
+         0. +0.j ,  0. +0.j ],
+       [ 0. +0.j ,  0. +0.j ,  0. +0.5j,  0. -0.5j,  0. +0.j ,  0. +0.j ,
+         0. -0.5j,  0. +0.5j],
+       [ 0. +0.j ,  0. +0.j ,  0. +0.5j,  0. +0.5j,  0. +0.j ,  0. +0.j ,
+         0. -0.5j,  0. -0.5j],
+       [ 0. +0.5j,  0. -0.5j,  0. +0.j ,  0. +0.j ,  0. -0.5j,  0. +0.5j,
+         0. +0.j ,  0. +0.j ],
+       [ 0. +0.j ,  0. +0.j ,  0.5+0.j ,  0.5+0.j ,  0. +0.j ,  0. +0.j ,
+         0.5+0.j ,  0.5+0.j ],
+       [ 0.5+0.j , -0.5+0.j ,  0. +0.j ,  0. +0.j ,  0.5+0.j , -0.5+0.j ,
+         0. +0.j ,  0. +0.j ],
+       [ 0.5+0.j ,  0.5+0.j ,  0. +0.j ,  0. +0.j ,  0.5+0.j ,  0.5+0.j ,
+         0. +0.j ,  0. +0.j ],
+       [ 0. +0.j ,  0. +0.j ,  0.5+0.j , -0.5+0.j ,  0. +0.j ,  0. +0.j ,
+         0.5+0.j , -0.5+0.j ]])
+
     def test_is_full_rank_accepts_when_full_rank(self):
         vectors = [18, 21, 30] # 10010, 10101, 11110
 
@@ -53,3 +70,29 @@ class Test_Clifford_Check(unittest.TestCase):
         matrix_product = cc.multiply_by_hadamard_product(test_matrix, 3)
 
         self.assertTrue(np.allclose(matrix_product, expected_product))
+
+    def test_columns_consistent_accepts(self):
+        matrix = self.three_qubit_clifford
+        
+        self.assertTrue(cc.columns_consistent(matrix, 3, False))
+
+    def test_columns_consistent_rejects_when_not_full_rank(self):
+        pass
+
+    def test_columns_consistent_rejects_when_inconsistent(self):
+        pass
+
+    def test_columns_consistent_rejects_when_remaining_column_not_stabilised(self):
+        pass
+
+    def test_columns_consistent_rejects_when_initial_column_not_stabilised(self):
+        pass
+
+    def test_columns_consistent_rejects_when_initial_column_not_stabiliser_state(self):
+        pass
+
+    def test_is_clifford_accepts(self):
+        pass
+
+    def test_is_clifford_rejects_when_columns_have_wrong_relative_phase(self):
+        pass
