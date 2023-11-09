@@ -22,7 +22,7 @@ class Pauli:
 
         return matrix
     
-    def check_state_phase(self, state_vector : np.ndarray) -> int | None:
+    def get_sign_eigenvalue(self, state_vector : np.ndarray) -> int | None:
         n = f2.fast_log2(len(state_vector))
 
         if n != self.number_qubits:
@@ -33,6 +33,8 @@ class Pauli:
         while not state_vector[index ^ self.x_vector]:
             if state_vector[index]:
                 return None
+            
+            index += 1
             
         factor = self.phase * state_vector[index] * f2.sign_mod2product(self.z_vector, index) / state_vector[index ^ self.x_vector]
 
@@ -45,7 +47,7 @@ class Pauli:
                 return None
 
         for remaining_index in range(index + 1, 1 << n):
-            if self.phase * state_vector[remaining_index] * f2.sign_mod2product(self.z_vector, remaining_index) != factor * state_vector[index ^ self.x_vector]:
+            if self.phase * state_vector[remaining_index] * f2.sign_mod2product(self.z_vector, remaining_index) != factor * state_vector[remaining_index ^ self.x_vector]:
                 return None
             
         return bit
