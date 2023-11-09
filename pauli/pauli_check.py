@@ -1,5 +1,4 @@
 import numpy as np
-import numba
 import F2_helper.F2_helper as f2
 
 # Assuming matrix of size 2^n by 2^n, returns whether matrix is in the Pauli group.

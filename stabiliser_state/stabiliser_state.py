@@ -1,6 +1,5 @@
 from __future__ import annotations
 import math
-import numba
 
 import numpy as np
 import stabiliser_state.stabiliser_check as sc
@@ -11,12 +10,12 @@ class Stabiliser_State():
 
     @staticmethod
     def from_statevector(state_vector : np.ndarray) -> Stabiliser_State:
-        state = sc.is_stabiliser_state(state_vector, return_state = True, allow_global_factor = True)
+        state = sc.Stabiliser_Checker().load_vector(state_vector, allow_global_factor = True)
 
-        if not state:
+        if not state.valid_state:
             raise ValueError('State vector does not describe a stabiliser state')
 
-        return state
+        return state.get_stab_state()
 
     def __init__(self, number_qubits: int, quadratic_form : list[int], real_linear_part : int, imaginary_part : int, vector_basis : list[int], shift : int, global_factor : complex = 1):
         self.number_qubits = number_qubits
