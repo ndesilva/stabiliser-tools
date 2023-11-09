@@ -55,6 +55,20 @@ def columns_consistent(matrix : np.ndarray, number_qubits : int, allow_global_fa
     
     return True
 
+def is_full_rank(vectors : list[int], number_qubits : int) -> bool:
+    # row reduce the vectors to row echelon form, stopping if we ever get an all zero vector
+    for i in range(number_qubits):
+
+        pivot_index = f2.fast_log2(vectors[i])
+
+        if pivot_index == -1:
+            return False
+        
+        for j in range(i+1, number_qubits): # only need row echelon form (not reduced) to check LI
+            vectors[j] ^= (i!=j) * f2.get_bit_at(vectors[j], pivot_index) * vectors[i]
+
+    return True
+
 def multiply_by_hadamard_product(matrix : np.ndarray, number_qubits : int) -> np.ndarray:
     for j in range(number_qubits):
         unscaled_multiply_by_hadmard_at(matrix, j, number_qubits)
@@ -71,16 +85,3 @@ def unscaled_multiply_by_hadmard_at(matrix : np.ndarray, hadamard_index : int, n
 
             matrix[:, first_col_index] += matrix[:, second_col_index]
             matrix[:, second_col_index] = matrix[:, first_col_index] - 2*matrix[:, second_col_index] # since first column is set first, this is now the difference
-
-def is_full_rank(vectors : list[int], number_qubits : int) -> bool:
-    for i in range(number_qubits):
-
-        pivot_index = f2.fast_log2(vectors[i])
-
-        if pivot_index == -1:
-            return False
-        
-        for j in range(number_qubits):
-            vectors[j] ^= (i!=j) * f2.get_bit_at(vectors[j], pivot_index) * vectors[i]
-
-    return True
