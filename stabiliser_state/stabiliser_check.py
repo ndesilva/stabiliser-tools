@@ -114,7 +114,6 @@ class Stabiliser_Checker:
         
         raise ValueError('Stabiliser state has not been loaded or attempted to load an invalid state')
 
-
 def is_valid_stabiliser_entry(entry : float) -> bool:
     match entry:
         case 1:
