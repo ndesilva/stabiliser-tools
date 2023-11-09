@@ -1,5 +1,5 @@
 import numpy as np
-from F2_helper.F2_helper import sign_mod2product
+import F2_helper.F2_helper as f2
 
 class Pauli:
     # Pauli is (-1)^sign bit * (-i) * (i_bit) * X^x_vector * Z^z_vector
@@ -18,9 +18,37 @@ class Pauli:
         matrix = np.zeros((size, size), dtype=complex)
 
         for j in range(size):
-            matrix[j^self.x_vector, j] = self.phase*sign_mod2product(j, self.z_vector)
+            matrix[j^self.x_vector, j] = self.phase*f2.sign_mod2product(j, self.z_vector)
 
         return matrix
+    
+    def check_state_phase(self, state_vector : np.ndarray) -> int | None:
+        n = f2.fast_log2(len(state_vector))
+
+        if n != self.number_qubits:
+            raise ValueError('State vector and Paulis have different size')
+        
+        index = 0
+
+        while not state_vector[index ^ self.x_vector]:
+            if state_vector[index]:
+                return None
+            
+        factor = self.phase * state_vector[index] * f2.sign_mod2product(self.z_vector, index) / state_vector[index ^ self.x_vector]
+
+        match factor:
+            case 1:
+                bit = 0
+            case -1:
+                bit = 1
+            case _:
+                return None
+
+        for remaining_index in range(index + 1, 1 << n):
+            if self.phase * state_vector[remaining_index] * f2.sign_mod2product(self.z_vector, remaining_index) != factor * state_vector[index ^ self.x_vector]:
+                return None
+            
+        return bit
     
     def __eq__(self, other : object) -> bool:
         if not isinstance(other, Pauli):
