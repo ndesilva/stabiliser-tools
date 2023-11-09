@@ -60,3 +60,15 @@ class Test_Pauli_Class(unittest.TestCase):
 
         expected_value = 1
         self.assertEqual(get_vector_expansion(dimension, basis, coefficients), expected_value)
+
+    def test_fast_log2_non_power_2(self):
+        x = 9
+        self.assertEqual(fast_log2(x), 3)
+
+    def test_fast_log2_power_2(self):
+        x = 16
+        self.assertEqual(fast_log2(x), 4)
+
+    def test_fast_log2_on_0(self):
+        x = 0
+        self.assertEqual(fast_log2(x), -1)
