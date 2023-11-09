@@ -92,7 +92,9 @@ class Test_Clifford_Check(unittest.TestCase):
         pass
 
     def test_is_clifford_accepts(self):
-        pass
+        matrix = self.three_qubit_clifford
+        
+        self.assertTrue(cc.is_clifford(matrix))
 
     def test_is_clifford_rejects_when_columns_have_wrong_relative_phase(self):
         pass
