@@ -34,7 +34,7 @@ class Stabiliser_Checker:
         vector_space_indicies = [pair[0] for pair in vector_space_value_pairs]
         
         weight_one_bitstrings = [1<<j for j in range(dimension)]
-        self.basis_vectors = [vector_space_indicies[index] for index in weight_one_bitstrings]
+        self.basis_vectors = [int(vector_space_indicies[index]) for index in weight_one_bitstrings]
 
         # Using lemma, check that the indicies form an F2 vector space. If the support is the whole space, this is not needed
         if dimension != self.n:

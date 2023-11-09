@@ -48,7 +48,7 @@ class Stabiliser_State():
     def get_phase(self, afffine_space_index : int) -> complex:
         return f2.sign_evaluate_poly(self.quadratic_form, afffine_space_index)*f2.sign_mod2product(self.real_linear_part, afffine_space_index)*f2.imag_mod2product(self.imaginary_part, afffine_space_index)
     
-    def row_reduce_basis(self): # TODO this also needs to update the linear and quadratic parts
+    def row_reduce_basis(self):
         quadratic_dictionary = self.get_quadratic_form_as_dictionary()
 
         for j in range(self.dimension):
