@@ -7,6 +7,17 @@ class Test_Clifford_Check(unittest.TestCase):
     unscaled_hadmard = np.array([[1,1],[1,-1]])
     hadamard = (1/math.sqrt(2)) * np.array([[1,1],[1,-1]])
     
+    def test_is_full_rank_accepts_when_full_rank(self):
+        vectors = [18, 21, 30] # 10010, 10101, 11110
+
+        self.assertTrue(cc.is_full_rank(vectors, 3))
+
+    def test_is_full_rank_rejects_when_lin_dep(self):
+        vectors = [45, 26, 10, 61] 
+
+        self.assertTrue(vectors[0] ^ vectors[1] == vectors[2] ^ vectors[3])
+        self.assertFalse(cc.is_full_rank(vectors, 4))
+
     def test_unscaled_multiply_by_hadmard_at_index_0(self):
         test_matrix = np.random.rand(8,8)
         single_hadamard = np.kron(np.eye(4), self.unscaled_hadmard)
