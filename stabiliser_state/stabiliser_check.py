@@ -8,7 +8,7 @@ import stabiliser_state.Stabiliser_State as ss
 
 class Stabiliser_Checker:
     def __init__(self):
-        self.valid_state = False
+        self.is_stab_state = False
 
     def load_vector(self, state_vector : np.ndarray, allow_global_factor = False) -> Stabiliser_Checker:
         nonzero_indices = np.nonzero(state_vector)[0]
@@ -20,7 +20,7 @@ class Stabiliser_Checker:
         # check support is a power of 2
         if 1 << dimension != support_size:
             #print('support not power of 2')
-            self.valid_state = False
+            self.is_stab_state = False
             return self
 
         self.shift = nonzero_indices[0]
@@ -43,7 +43,7 @@ class Stabiliser_Checker:
 
                 if vector_space_indicies[j] != value:
                     #print('Support not affine space')
-                    self.valid_state = False
+                    self.is_stab_state = False
                     return self
         
         non_zero_coeffs = [pair[1] for pair in vector_space_value_pairs]
@@ -51,7 +51,7 @@ class Stabiliser_Checker:
 
         if not (allow_global_factor or is_valid_stabiliser_entry(first_entry*(math.sqrt(support_size)))):
             #print('invalid first entry')
-            self.valid_state = False
+            self.is_stab_state = False
             return self
 
         self.linear_real_part = 0
@@ -71,7 +71,7 @@ class Stabiliser_Checker:
                     self.imag_part |= index
                 case _:
                     #print('invalid linear term')
-                    self.valid_state = False
+                    self.is_stab_state = False
                     return self
         
         self.quadratic_real_part = []
@@ -92,7 +92,7 @@ class Stabiliser_Checker:
                         self.quadratic_real_part.append(index)
                     case _:
                         #print('invalid quadratic term')
-                        self.valid_state = False
+                        self.is_stab_state = False
                         return self
 
         for index in range(1<<dimension): # We are repeating columns of Hamming weight 1,2 - fast way to not do this?
@@ -100,19 +100,19 @@ class Stabiliser_Checker:
 
             if non_zero_coeffs[index] != value:
                 #print('inconsistent remainder')
-                self.valid_state = False
+                self.is_stab_state = False
                 return self
         
         self.global_factor = first_entry*(math.sqrt(support_size))
 
-        self.valid_state = True
+        self.is_stab_state = True
         return self
     
     def get_stab_state(self) -> ss.Stabiliser_State:
-        if self.valid_state:
+        if self.is_stab_state:
             return ss.Stabiliser_State(self.n, self.quadratic_real_part, self.linear_real_part, self.imag_part, self.basis_vectors, self.shift, global_factor=self.global_factor)
         
-        raise UnboundLocalError('Stabiliser state has not been loaded or attempted to load an invalid state')
+        raise ValueError('Stabiliser state has not been loaded or attempted to load an invalid state')
 
 
 def is_valid_stabiliser_entry(entry : float) -> bool:

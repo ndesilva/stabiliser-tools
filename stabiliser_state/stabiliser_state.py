@@ -12,7 +12,7 @@ class Stabiliser_State():
     def from_statevector(state_vector : np.ndarray) -> Stabiliser_State:
         state = sc.Stabiliser_Checker().load_vector(state_vector, allow_global_factor = True)
 
-        if not state.valid_state:
+        if not state.is_stab_state:
             raise ValueError('State vector does not describe a stabiliser state')
 
         return state.get_stab_state()
