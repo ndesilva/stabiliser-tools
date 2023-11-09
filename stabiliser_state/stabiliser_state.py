@@ -50,15 +50,50 @@ class Stabiliser_State():
         return f2.sign_evaluate_poly(self.quadratic_form, afffine_space_index)*f2.sign_mod2product(self.real_linear_part, afffine_space_index)*f2.imag_mod2product(self.imaginary_part, afffine_space_index)
     
     def row_reduce_basis(self): # TODO this also needs to update the linear and quadratic parts
-        self.vector_basis.sort(reverse = True)
-    
+        quadratic_dictionary = self.get_quadratic_form_as_dictionary()
+
         for j in range(self.dimension):
             pivot_row = self.vector_basis[j]
             pivot_index = f2.fast_log2(pivot_row)
 
             for i in range(self.dimension):
-                self.vector_basis[i] ^= (1 - (i == j)) * f2.get_bit_at(self.vector_basis[i], pivot_index) * pivot_row
+                if f2.get_bit_at(self.vector_basis[i], pivot_index) and i != j:
+                    self.vector_basis[i] ^= self.vector_basis[j]
+                    
+                    self.imaginary_part ^= (1<<i)*f2.get_bit_at(self.imaginary_part, j)
+
+                    for k in range(self.dimension):
+                        quadratic_dictionary[(1 << k | 1 << i)] ^= quadratic_dictionary[( 1 << k ^ 1 << j)] # rather than deal with k = j case, just put that in the 0 bin
+
+                    quadratic_dictionary[ 1<<i ] ^= quadratic_dictionary[ 1<<j ]
     
+        self.update_class_quadratic_form(quadratic_dictionary)
+
+    def get_quadratic_form_as_dictionary(self) -> dict[int, int]:
+        quadratic_dictionary = {(1<<j)|(1<<i) : 0 for i in range(self.dimension - 1) for j in range(i+1, self.dimension)} 
+        quadratic_dictionary[0] = 0
+
+        for coeff in self.quadratic_form:
+            quadratic_dictionary[coeff] = 1
+
+        for i in range(self.dimension):
+            quadratic_dictionary[1<<i] = f2.get_bit_at(self.real_linear_part, i)
+
+        return quadratic_dictionary
+    
+    def update_class_quadratic_form(self, quadratic_dictionary):
+        self.real_linear_part = 0
+
+        for i in range(self.dimension):
+            self.real_linear_part |= (1<<i) * quadratic_dictionary[1<<i]
+            quadratic_dictionary[ 1<<i ] = 0
+
+        self.quadratic_form = []
+        
+        for index, included in quadratic_dictionary.items():
+            if included:
+                self.quadratic_form.append(index)
+
     def get_stabiliser_group_generators(self) -> list[Pauli]:  # TODO test this & refactor  
         # needed for finding the basis of the null space
         self.row_reduce_basis()
