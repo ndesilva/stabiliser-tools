@@ -5,6 +5,7 @@ import numpy as np
 import stabiliser_state.stabiliser_from_state_vector as sc
 import F2_helper.F2_helper as f2
 from pauli.Pauli import Pauli
+from stabiliser_state.Check_Matrix import Check_Matrix as cm
 
 class Stabiliser_State():
 
@@ -46,7 +47,7 @@ class Stabiliser_State():
         
         return state_vector
     
-    def get_stabiliser_group_generators(self) -> list[Pauli]:  # TODO refactor  
+    def get_stabiliser_group_generators(self) -> cm:  # TODO refactor  
         # needed for finding the basis of the null space
         self.__row_reduce_basis()
         
@@ -60,7 +61,7 @@ class Stabiliser_State():
         # now do X-type stabilisers
         self.__add_x_type_stabilisers(pauli_group, pivot_indicies)
         
-        return pauli_group
+        return cm(pauli_group, assume_valid = True, reduced_form = True)
     
     def __get_phase(self, afffine_space_index : int) -> complex:
         return f2.sign_evaluate_poly(self.quadratic_form, afffine_space_index)*f2.sign_mod2product(self.real_linear_part, afffine_space_index)*f2.imag_mod2product(self.imaginary_part, afffine_space_index)

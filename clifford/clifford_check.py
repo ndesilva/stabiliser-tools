@@ -23,7 +23,7 @@ def columns_consistent(matrix : np.ndarray, number_qubits : int, allow_global_fa
     if not first_col_state.is_stab_state:
         return False
     
-    first_col_stab_group = first_col_state.get_stab_state().get_stabiliser_group_generators()
+    first_col_stab_group = first_col_state.get_stab_state().get_stabiliser_group_generators().paulis
 
     pauli_patterns = [0 for _ in range(number_qubits)]
 

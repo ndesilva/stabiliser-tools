@@ -123,7 +123,7 @@ class Test_Stabiliser_State_Class(unittest.TestCase):
         state_vector = state.generate_state_vector()
         pauli_group = state.get_stabiliser_group_generators()
 
-        for pauli in pauli_group:
+        for pauli in pauli_group.paulis:
             self.assertTrue(np.array_equal(state_vector, pauli.generate_matrix()@state_vector))
 
-        self.assertEqual(len(pauli_group), 5)
+        self.assertEqual(len(pauli_group.paulis), 5)
