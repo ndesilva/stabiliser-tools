@@ -39,8 +39,8 @@ def columns_consistent(matrix : np.ndarray, number_qubits : int, allow_global_fa
             pauli_patterns[pauli_index] |= phase_bit * (1<<j)
 
 
-    if not is_full_rank(pauli_patterns, number_qubits):
-        return False
+    # if not is_full_rank(pauli_patterns, number_qubits):
+    #     return False
 
     for pauli_index in range(number_qubits):
         pauli = first_col_stab_group[pauli_index]
