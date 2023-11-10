@@ -4,7 +4,7 @@ import F2_helper.F2_helper as f2
 import math
 
 # Assuming a 2^n by 2^n matrix, decide whether it is a stabiliser state
-def is_clifford(matrix : np.ndarray, allow_global_factor = False) -> bool: # TODO test
+def is_clifford(matrix : np.ndarray, allow_global_factor = False) -> bool: 
     n = f2.fast_log2(matrix.shape[0])
 
     if not columns_consistent(matrix, n, allow_global_factor):
@@ -17,7 +17,7 @@ def is_clifford(matrix : np.ndarray, allow_global_factor = False) -> bool: # TOD
     
     return True
 
-def columns_consistent(matrix : np.ndarray, number_qubits : int, allow_global_factor : bool) -> bool: # TODO test
+def columns_consistent(matrix : np.ndarray, number_qubits : int, allow_global_factor : bool) -> bool:
     first_col_state = sc.Stabiliser_Checker().load_vector(matrix[:, 0], allow_global_factor)
 
     if not first_col_state.is_stab_state:
@@ -54,7 +54,7 @@ def columns_consistent(matrix : np.ndarray, number_qubits : int, allow_global_fa
     
     return True
 
-def is_full_rank(vectors : list[int], number_vectors : int) -> bool: # TODO test
+def is_full_rank(vectors : list[int], number_vectors : int) -> bool:
     # copy the vectors list to not alter it
     vectors_copy = vectors.copy()
 

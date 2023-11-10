@@ -93,7 +93,7 @@ class Stabiliser_State():
             if included:
                 self.quadratic_form.append(index)
 
-    def get_stabiliser_group_generators(self) -> list[Pauli]:  # TODO test this & refactor  
+    def get_stabiliser_group_generators(self) -> list[Pauli]:  # TODO refactor  
         # needed for finding the basis of the null space
         self.row_reduce_basis()
         
