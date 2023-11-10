@@ -66,7 +66,7 @@ class Stabiliser_State():
     def __get_phase(self, afffine_space_index : int) -> complex:
         return f2.sign_evaluate_poly(self.quadratic_form, afffine_space_index)*f2.sign_mod2product(self.real_linear_part, afffine_space_index)*f2.imag_mod2product(self.imaginary_part, afffine_space_index)
     
-    def __row_reduce_basis(self):
+    def __row_reduce_basis(self): # TODO test self.row_reduced flag is working
         if not self.row_reduced:
             quadratic_dictionary = self.__get_quadratic_form_as_dictionary()
             self.__do_row_reduction(quadratic_dictionary) # Note that as we change the basis, we also need to change the quadratic form
