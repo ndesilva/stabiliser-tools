@@ -127,3 +127,21 @@ class Test_Stabiliser_State_Class(unittest.TestCase):
             self.assertTrue(np.array_equal(state_vector, pauli.generate_matrix()@state_vector))
 
         self.assertEqual(len(pauli_group.paulis), 5)
+
+    def test_get_stabiliser_group_generators_basis_not_row_reduced(self):
+        number_qubits = 5
+        vector_basis = [17, 20 , 30]
+        shift = 1
+        linear_part = 5
+        imag_part = 5
+        quadratic_form = [6, 3]
+        global_phase = math.sqrt(8)
+
+        state = Stabiliser_State(number_qubits, quadratic_form, linear_part, imag_part, vector_basis, shift, global_factor = global_phase)
+        state_vector = state.generate_state_vector()
+        pauli_group = state.get_stabiliser_group_generators()
+
+        for pauli in pauli_group.paulis:
+            self.assertTrue(np.array_equal(state_vector, pauli.generate_matrix()@state_vector))
+
+        self.assertEqual(len(pauli_group.paulis), 5)
