@@ -6,8 +6,10 @@ import clifford.clifford_check as cc
 class Test_Clifford_Check(unittest.TestCase):
     unscaled_hadmard = np.array([[1,1],[1,-1]])
     hadamard = (1/math.sqrt(2)) * np.array([[1,1],[1,-1]])
-    
-    three_qubit_clifford = np.array([[ 0. +0.5j,  0. +0.5j,  0. +0.j ,  0. +0.j ,  0. -0.5j,  0. -0.5j,
+
+    @staticmethod
+    def get_three_qubit_clifford() -> np.ndarray:
+        return np.array([[ 0. +0.5j,  0. +0.5j,  0. +0.j ,  0. +0.j ,  0. -0.5j,  0. -0.5j,
          0. +0.j ,  0. +0.j ],
        [ 0. +0.j ,  0. +0.j ,  0. +0.5j,  0. -0.5j,  0. +0.j ,  0. +0.j ,
          0. -0.5j,  0. +0.5j],
@@ -72,7 +74,7 @@ class Test_Clifford_Check(unittest.TestCase):
         self.assertTrue(np.allclose(matrix_product, expected_product))
 
     def test_columns_consistent_accepts(self):
-        matrix = self.three_qubit_clifford
+        matrix = self.get_three_qubit_clifford()
         
         self.assertTrue(cc.columns_consistent(matrix, 3, False))
 
@@ -88,11 +90,14 @@ class Test_Clifford_Check(unittest.TestCase):
     def test_columns_consistent_rejects_when_initial_column_not_stabilised(self):
         pass
 
-    def test_columns_consistent_rejects_when_initial_column_not_stabiliser_state(self):
-        pass
+    def test_columns_consistent_rejects_when_first_column_not_stabiliser_state(self):
+        matrix = self.get_three_qubit_clifford()
+        matrix[0,0] = 0
+
+        self.assertFalse(cc.is_clifford(matrix))
 
     def test_is_clifford_accepts(self):
-        matrix = self.three_qubit_clifford
+        matrix = self.get_three_qubit_clifford()
         
         self.assertTrue(cc.is_clifford(matrix))
 
