@@ -45,6 +45,22 @@ class Stabiliser_State():
         
         return state_vector
     
+    def get_stabiliser_group_generators(self) -> list[Pauli]:  # TODO refactor  
+        # needed for finding the basis of the null space
+        self.__row_reduce_basis()
+        
+        pauli_group = []
+        
+        # pivot column indices, as vector_basis is now in reduced row echelon form
+        pivot_indicies = [f2.fast_log2(vector) for vector in self.vector_basis]
+        
+        self.__add_pure_z_stabilisers(pauli_group, pivot_indicies)
+
+        # now do X-type stabilisers
+        self.__add_x_type_stabilisers(pauli_group, pivot_indicies)
+        
+        return pauli_group
+    
     def __get_phase(self, afffine_space_index : int) -> complex:
         return f2.sign_evaluate_poly(self.quadratic_form, afffine_space_index)*f2.sign_mod2product(self.real_linear_part, afffine_space_index)*f2.imag_mod2product(self.imaginary_part, afffine_space_index)
     
@@ -96,22 +112,6 @@ class Stabiliser_State():
         for index, included in quadratic_dictionary.items():
             if included:
                 self.quadratic_form.append(index)
-
-    def get_stabiliser_group_generators(self) -> list[Pauli]:  # TODO refactor  
-        # needed for finding the basis of the null space
-        self.__row_reduce_basis()
-        
-        pauli_group = []
-        
-        # pivot column indices, as vector_basis is now in reduced row echelon form
-        pivot_indicies = [f2.fast_log2(vector) for vector in self.vector_basis]
-        
-        self.__add_pure_z_stabilisers(pauli_group, pivot_indicies)
-
-        # now do X-type stabilisers
-        self.__add_x_type_stabilisers(pauli_group, pivot_indicies)
-        
-        return pauli_group
 
     def __add_pure_z_stabilisers(self, pauli_group, pivot_indicies):
         for j in range(self.number_qubits):
