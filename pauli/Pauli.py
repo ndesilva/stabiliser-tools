@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 import F2_helper.F2_helper as f2
 
@@ -21,6 +23,13 @@ class Pauli:
             matrix[j^self.x_vector, j] = self.phase*f2.sign_mod2product(j, self.z_vector)
 
         return matrix
+    
+    def multiply_by_pauli_on_right(self, other_pauli : Pauli):
+        self.sign_bit ^= other_pauli.sign_bit ^ f2.mod2product(self.z_vector, other_pauli.x_vector) ^ (self.i_bit & other_pauli.i_bit)
+        self.i_bit ^= other_pauli.i_bit
+
+        self.x_vector ^= other_pauli.x_vector
+        self.z_vector ^= other_pauli.z_vector
     
     def get_sign_eigenvalue(self, state_vector : np.ndarray) -> int | None:
         n = f2.fast_log2(len(state_vector))

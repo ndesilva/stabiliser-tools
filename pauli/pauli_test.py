@@ -59,5 +59,25 @@ class Test_Pauli_Class(unittest.TestCase):
         self.assertTrue(np.array_equal(-1j*state_vector, pauli.generate_matrix()@state_vector))
         self.assertIsNone(pauli.get_sign_eigenvalue(state_vector))
 
+    def test_multiply_on_the_right_no_overlap(self):
+        pauli_one = Pauli(2, 3, 2, 0, 0) # XZ X
+        pauli_two = Pauli(2, 1, 2, 1, 1) #(-1)(-i) Z X
+
+        expected_pauli = Pauli(2, 2, 0, 1, 1) # (-1)(-i) X 1
+
+        pauli_one.multiply_by_pauli_on_right(pauli_two)
+
+        self.assertEqual(pauli_one, expected_pauli)
+
+    def test_multiply_on_the_right_overlap(self):
+        pauli_one = Pauli(3, 6, 3, 1, 1) #(-1)(-i) X XZ Z
+        pauli_two = Pauli(3, 2, 5, 1, 1) #(-1)(-i) Z X  Z
+
+        expected_pauli = Pauli(3, 4, 6, 0, 0) # XZ Z 1
+
+        pauli_one.multiply_by_pauli_on_right(pauli_two)
+
+        self.assertEqual(pauli_one, expected_pauli)
+
 if __name__ == '__main__':
     unittest.main()
