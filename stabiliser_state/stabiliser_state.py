@@ -2,7 +2,7 @@ from __future__ import annotations
 import math
 
 import numpy as np
-import stabiliser_state.stabiliser_check as sc
+import stabiliser_state.stabiliser_from_state_vector as sc
 import F2_helper.F2_helper as f2
 from pauli.Pauli import Pauli
 
@@ -10,7 +10,7 @@ class Stabiliser_State():
 
     @staticmethod
     def from_statevector(state_vector : np.ndarray, assume_stab_state : bool = False) -> Stabiliser_State:
-        state = sc.Stabiliser_Checker(state_vector, allow_global_factor = True, assume_stab_state = assume_stab_state)
+        state = sc.Stabiliser_From_State_Vector(state_vector, allow_global_factor = True, assume_stab_state = assume_stab_state)
 
         if not state.is_stab_state:
             raise ValueError('State vector does not describe a stabiliser state')

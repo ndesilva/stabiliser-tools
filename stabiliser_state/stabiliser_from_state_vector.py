@@ -6,7 +6,7 @@ from operator import itemgetter
 import F2_helper.F2_helper as f2
 import stabiliser_state.Stabiliser_State as ss
 
-class Stabiliser_Checker:
+class Stabiliser_From_State_Vector:
     def __init__(self, state_vector : np.ndarray, allow_global_factor = False, assume_stab_state = False):
         self.is_stab_state = False
         
