@@ -9,8 +9,8 @@ from pauli.Pauli import Pauli
 class Stabiliser_State():
 
     @staticmethod
-    def from_statevector(state_vector : np.ndarray) -> Stabiliser_State:
-        state = sc.Stabiliser_Checker().load_vector(state_vector, allow_global_factor = True)
+    def from_statevector(state_vector : np.ndarray, assume_stab_state : bool = False) -> Stabiliser_State:
+        state = sc.Stabiliser_Checker(state_vector, allow_global_factor = True, assume_stab_state = assume_stab_state)
 
         if not state.is_stab_state:
             raise ValueError('State vector does not describe a stabiliser state')
@@ -129,7 +129,7 @@ class Stabiliser_State():
                 sign_bit = f2.mod2product(alpha, self.shift)
 
                 pauli_group.append(Pauli(self.number_qubits, 0, alpha, sign_bit, 0))
-                
+
     def __add_x_type_stabilisers(self, pauli_group, pivot_indicies):
         for i in range(self.dimension):
             imag_bit = f2.get_bit_at(self.imaginary_part, i)
