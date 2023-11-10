@@ -88,7 +88,10 @@ class Test_Clifford_Check(unittest.TestCase):
         pass
 
     def test_columns_consistent_rejects_when_initial_column_not_stabilised(self):
-        pass
+        matrix = self.get_three_qubit_clifford()
+        matrix[0,1] = 0
+
+        self.assertFalse(cc.is_clifford(matrix))
 
     def test_columns_consistent_rejects_when_first_column_not_stabiliser_state(self):
         matrix = self.get_three_qubit_clifford()
