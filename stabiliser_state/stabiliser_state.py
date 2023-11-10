@@ -50,7 +50,7 @@ class Stabiliser_State():
     
     def __row_reduce_basis(self):
         quadratic_dictionary = self.__get_quadratic_form_as_dictionary()
-        self.__do_row_reduction(quadratic_dictionary) # Note that as we change the basis, we also need to change the 
+        self.__do_row_reduction(quadratic_dictionary) # Note that as we change the basis, we also need to change the quadratic form
         self.__set_quadratic_form_from_dict(quadratic_dictionary)
 
     def __do_row_reduction(self, quadratic_dictionary):
