@@ -40,35 +40,39 @@ class Stabiliser_State():
 
         for j in range(1 << dimension):
             index = f2.get_vector_expansion(dimension, self.vector_basis, j) ^ self.shift
-            phase = self.get_phase(j)
+            phase = self.__get_phase(j)
             state_vector[index] = normalisation*phase
         
         return state_vector
     
-    def get_phase(self, afffine_space_index : int) -> complex:
+    def __get_phase(self, afffine_space_index : int) -> complex:
         return f2.sign_evaluate_poly(self.quadratic_form, afffine_space_index)*f2.sign_mod2product(self.real_linear_part, afffine_space_index)*f2.imag_mod2product(self.imaginary_part, afffine_space_index)
     
-    def row_reduce_basis(self):
-        quadratic_dictionary = self.get_quadratic_form_as_dictionary()
+    def __row_reduce_basis(self):
+        quadratic_dictionary = self.__get_quadratic_form_as_dictionary()
+        self.__do_row_reduction(quadratic_dictionary) # Note that as we change the basis, we also need to change the 
+        self.__set_quadratic_form_from_dict(quadratic_dictionary)
 
+    def __do_row_reduction(self, quadratic_dictionary):
         for j in range(self.dimension):
             pivot_row = self.vector_basis[j]
             pivot_index = f2.fast_log2(pivot_row)
 
             for i in range(self.dimension):
                 if f2.get_bit_at(self.vector_basis[i], pivot_index) and i != j:
-                    self.vector_basis[i] ^= self.vector_basis[j]
+                    self.__add_ej_to_ei(quadratic_dictionary, j, i)
+
+    def __add_ej_to_ei(self, quadratic_dictionary, j, i):
+        self.vector_basis[i] ^= self.vector_basis[j]
                     
-                    self.imaginary_part ^= (1<<i)*f2.get_bit_at(self.imaginary_part, j)
+        self.imaginary_part ^= (1<<i)*f2.get_bit_at(self.imaginary_part, j)
 
-                    for k in range(self.dimension):
-                        quadratic_dictionary[(1 << k | 1 << i)] ^= quadratic_dictionary[( 1 << k ^ 1 << j)] # rather than deal with k = j case, just put that in the 0 bin
+        for k in range(self.dimension):
+            quadratic_dictionary[(1 << k | 1 << i)] ^= quadratic_dictionary[( 1 << k ^ 1 << j)] # rather than deal with k = j case, just put that in the 0 bin
 
-                    quadratic_dictionary[ 1<<i ] ^= quadratic_dictionary[ 1<<j ]
-    
-        self.update_class_quadratic_form(quadratic_dictionary)
+        quadratic_dictionary[ 1<<i ] ^= quadratic_dictionary[ 1<<j ]
 
-    def get_quadratic_form_as_dictionary(self) -> dict[int, int]:
+    def __get_quadratic_form_as_dictionary(self) -> dict[int, int]:
         quadratic_dictionary = {(1<<j)|(1<<i) : 0 for i in range(self.dimension - 1) for j in range(i+1, self.dimension)} 
         quadratic_dictionary[0] = 0
 
@@ -80,7 +84,7 @@ class Stabiliser_State():
 
         return quadratic_dictionary
     
-    def update_class_quadratic_form(self, quadratic_dictionary):
+    def __set_quadratic_form_from_dict(self, quadratic_dictionary):
         self.real_linear_part = 0
 
         for i in range(self.dimension):
@@ -95,14 +99,21 @@ class Stabiliser_State():
 
     def get_stabiliser_group_generators(self) -> list[Pauli]:  # TODO refactor  
         # needed for finding the basis of the null space
-        self.row_reduce_basis()
+        self.__row_reduce_basis()
         
         pauli_group = []
         
         # pivot column indices, as vector_basis is now in reduced row echelon form
         pivot_indicies = [f2.fast_log2(vector) for vector in self.vector_basis]
         
-        # get basis of null space of matrix with basis vectors as rows by iterating through the non-pivot columns. These correspond to Z-type stabilisers
+        self.__add_pure_z_stabilisers(pauli_group, pivot_indicies)
+
+        # now do X-type stabilisers
+        self.__add_x_type_stabilisers(pauli_group, pivot_indicies)
+        
+        return pauli_group
+
+    def __add_pure_z_stabilisers(self, pauli_group, pivot_indicies):
         for j in range(self.number_qubits):
             if j in pivot_indicies:
                 pass
@@ -118,10 +129,9 @@ class Stabiliser_State():
                 sign_bit = f2.mod2product(alpha, self.shift)
 
                 pauli_group.append(Pauli(self.number_qubits, 0, alpha, sign_bit, 0))
-
-        # now do X-type stabilisers
+                
+    def __add_x_type_stabilisers(self, pauli_group, pivot_indicies):
         for i in range(self.dimension):
-            
             imag_bit = f2.get_bit_at(self.imaginary_part, i)
             beta_vector = 0
 
@@ -132,5 +142,3 @@ class Stabiliser_State():
             sign_bit = f2.get_bit_at(self.real_linear_part, i) ^ imag_bit ^ f2.mod2product(beta_vector, self.shift)
             
             pauli_group.append(Pauli(self.number_qubits, self.vector_basis[i], beta_vector, sign_bit, imag_bit))
-        
-        return pauli_group

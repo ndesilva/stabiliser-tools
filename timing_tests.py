@@ -98,7 +98,7 @@ def rref_binary(xmatr_aug):
     return xmatr_aug
 
 def row_reduce(state : Stabiliser_State):
-    state.row_reduce_basis()
+    state.__row_reduce_basis()
 
 functions_to_time = [rref_binary]
 reps = int(1e4)

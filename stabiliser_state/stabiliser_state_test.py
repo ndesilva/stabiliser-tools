@@ -75,7 +75,7 @@ class Test_Stabiliser_State_Class(unittest.TestCase):
 
         expected_dict = {0:0, 1:1, 2:0, 4:0, 3:1, 5:0, 6:0}
 
-        self.assertEqual(expected_dict, state.get_quadratic_form_as_dictionary())
+        self.assertEqual(expected_dict, state._Stabiliser_State__get_quadratic_form_as_dictionary())
 
     def test_update_class_quadratic_form(self):
         number_qubits = 3
@@ -89,7 +89,7 @@ class Test_Stabiliser_State_Class(unittest.TestCase):
         state = Stabiliser_State(number_qubits, quadratic_form, real_linear_part, imag_part, vector_basis, shift, global_factor = global_factor)
 
         quadratic_dictionary = {0:0, 1:1, 2:0, 4:1, 3:0, 5:1, 6:1}
-        state.update_class_quadratic_form(quadratic_dictionary)
+        state._Stabiliser_State__set_quadratic_form_from_dict(quadratic_dictionary)
 
         self.assertEqual(5, state.real_linear_part)
         self.assertEqual([5,6], state.quadratic_form)
@@ -105,7 +105,7 @@ class Test_Stabiliser_State_Class(unittest.TestCase):
 
         state = Stabiliser_State(number_qubits, quadratic_form, real_linear_part, imag_part, vector_basis, shift, global_factor = gloal_factor)
         initial_state_vector = state.generate_state_vector()
-        state.row_reduce_basis()
+        state._Stabiliser_State__row_reduce_basis()
 
         self.assertEqual(state.vector_basis, [12, 22, 1])
         self.assertTrue(np.array_equal(initial_state_vector, state.generate_state_vector()))
