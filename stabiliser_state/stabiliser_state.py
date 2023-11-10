@@ -17,7 +17,7 @@ class Stabiliser_State():
 
         return state.get_stab_state()
 
-    def __init__(self, number_qubits: int, quadratic_form : list[int], real_linear_part : int, imaginary_part : int, vector_basis : list[int], shift : int, global_factor : complex = 1):
+    def __init__(self, number_qubits: int, quadratic_form : list[int], real_linear_part : int, imaginary_part : int, vector_basis : list[int], shift : int, global_factor : complex = 1, row_reduced = False):
         self.number_qubits = number_qubits
         
         self.quadratic_form = quadratic_form
@@ -28,6 +28,7 @@ class Stabiliser_State():
         self.shift = shift
 
         self.global_factor = global_factor
+        self.row_reduced = False
 
         self.dimension = len(self.vector_basis)
     
@@ -65,9 +66,12 @@ class Stabiliser_State():
         return f2.sign_evaluate_poly(self.quadratic_form, afffine_space_index)*f2.sign_mod2product(self.real_linear_part, afffine_space_index)*f2.imag_mod2product(self.imaginary_part, afffine_space_index)
     
     def __row_reduce_basis(self):
-        quadratic_dictionary = self.__get_quadratic_form_as_dictionary()
-        self.__do_row_reduction(quadratic_dictionary) # Note that as we change the basis, we also need to change the quadratic form
-        self.__set_quadratic_form_from_dict(quadratic_dictionary)
+        if not self.row_reduced:
+            quadratic_dictionary = self.__get_quadratic_form_as_dictionary()
+            self.__do_row_reduction(quadratic_dictionary) # Note that as we change the basis, we also need to change the quadratic form
+            self.__set_quadratic_form_from_dict(quadratic_dictionary)
+
+        self.row_reduced = True
 
     def __do_row_reduction(self, quadratic_dictionary):
         for j in range(self.dimension):

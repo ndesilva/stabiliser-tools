@@ -58,7 +58,7 @@ class Stabiliser_From_State_Vector:
     
     def get_stab_state(self) -> ss.Stabiliser_State:
         if self.is_stab_state:
-            return ss.Stabiliser_State(self.n, self.quadratic_real_part, self.linear_real_part, self.imag_part, self.basis_vectors, self.shift, global_factor=self.global_factor)
+            return ss.Stabiliser_State(self.n, self.quadratic_real_part, self.linear_real_part, self.imag_part, self.basis_vectors, self.shift, global_factor=self.global_factor, row_reduced = True)
         
         raise ValueError('State is not a stabiliser state')
     
