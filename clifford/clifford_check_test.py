@@ -78,26 +78,30 @@ class Test_Clifford_Check(unittest.TestCase):
         
         self.assertTrue(cc.columns_consistent(matrix, 3, False))
 
-    def test_columns_consistent_rejects_when_not_full_rank(self):
-        pass
-
     def test_columns_consistent_rejects_when_inconsistent(self):
-        pass
+        matrix = self.get_three_qubit_clifford()
+
+        matrix[:, 7] = matrix [:, 0]
+
+        self.assertFalse(cc.columns_consistent(matrix, 3, True))
 
     def test_columns_consistent_rejects_when_remaining_column_not_stabilised(self):
-        pass
+        matrix = self.get_three_qubit_clifford()
+        matrix[0,7] = 1
+
+        self.assertFalse(cc.columns_consistent(matrix, 3, True))
 
     def test_columns_consistent_rejects_when_initial_column_not_stabilised(self):
         matrix = self.get_three_qubit_clifford()
         matrix[0,1] = 0
 
-        self.assertFalse(cc.is_clifford(matrix))
+        self.assertFalse(cc.columns_consistent(matrix, 3, True))
 
     def test_columns_consistent_rejects_when_first_column_not_stabiliser_state(self):
         matrix = self.get_three_qubit_clifford()
         matrix[0,0] = 0
 
-        self.assertFalse(cc.is_clifford(matrix))
+        self.assertFalse(cc.columns_consistent(matrix, 3, True))
 
     def test_is_clifford_accepts(self):
         matrix = self.get_three_qubit_clifford()
@@ -105,4 +109,9 @@ class Test_Clifford_Check(unittest.TestCase):
         self.assertTrue(cc.is_clifford(matrix))
 
     def test_is_clifford_rejects_when_columns_have_wrong_relative_phase(self):
-        pass
+        matrix = self.get_three_qubit_clifford()
+
+        matrix[:, 7] *= 1j
+
+        self.assertTrue(cc.columns_consistent(matrix, 3, False))
+        self.assertFalse(cc.is_clifford(matrix))
