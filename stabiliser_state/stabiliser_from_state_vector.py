@@ -55,7 +55,6 @@ class Stabiliser_From_State_Vector:
         self.global_factor = self.first_entry*(math.sqrt(self.support_size))
 
         self.is_stab_state = True
-        return
     
     def get_stab_state(self) -> ss.Stabiliser_State:
         if self.is_stab_state:
