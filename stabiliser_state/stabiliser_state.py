@@ -2,7 +2,8 @@ from __future__ import annotations
 import math
 
 import numpy as np
-import stabiliser_state.stabiliser_from_state_vector as sc
+import stabiliser_state.stabiliser_from_state_vector as ssv
+import stabiliser_state.stabiliser_from_check_matrix as scm
 import F2_helper.F2_helper as f2
 from pauli.Pauli import Pauli
 from stabiliser_state.Check_Matrix import Check_Matrix as cm
@@ -10,8 +11,12 @@ from stabiliser_state.Check_Matrix import Check_Matrix as cm
 class Stabiliser_State():
 
     @staticmethod
+    def from_check_matrix(check_matrix : cm) -> Stabiliser_State: # TODO test
+        return scm.Stabiliser_From_Check_Matrix(check_matrix).get_stab_state()
+    
+    @staticmethod
     def from_statevector(state_vector : np.ndarray, assume_stab_state : bool = False) -> Stabiliser_State:
-        state = sc.Stabiliser_From_State_Vector(state_vector, allow_global_factor = True, assume_stab_state = assume_stab_state)
+        state = ssv.Stabiliser_From_State_Vector(state_vector, allow_global_factor = True, assume_stab_state = assume_stab_state)
 
         if not state.is_stab_state:
             raise ValueError('State vector does not describe a stabiliser state')
@@ -47,7 +52,7 @@ class Stabiliser_State():
         
         return state_vector
     
-    def get_stabiliser_group_generators(self) -> cm:  # TODO refactor  
+    def get_check_matrix(self) -> cm:  # TODO refactor  
         # needed for finding the basis of the null space
         self.__row_reduce_basis()
         
@@ -61,7 +66,7 @@ class Stabiliser_State():
         # now do X-type stabilisers
         self.__add_x_type_stabilisers(pauli_group, pivot_indicies)
         
-        return cm(pauli_group, assume_valid = True, reduced_form = True)
+        return cm(pauli_group, reduced_form = True)
     
     def __get_phase(self, afffine_space_index : int) -> complex:
         return f2.sign_evaluate_poly(self.quadratic_form, afffine_space_index)*f2.sign_mod2product(self.real_linear_part, afffine_space_index)*f2.imag_mod2product(self.imaginary_part, afffine_space_index)

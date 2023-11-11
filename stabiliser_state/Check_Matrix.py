@@ -1,9 +1,29 @@
+from __future__ import annotations
+import stabiliser_state.Stabiliser_State as ss
+import stabiliser_state.stabiliser_from_state_vector as ssv
+
+import numpy as np
 import pauli.Pauli as p
 import F2_helper.F2_helper as f2
 
 class Check_Matrix():
-    def __init__(self, paulis : list[p.Pauli], assume_valid : bool = False, reduced_form : bool = False):
+
+    @staticmethod
+    def from_stabiliser_state(stab_state : ss.Stabiliser_State) -> Check_Matrix: # TODO test
+        return stab_state.get_check_matrix()
+    
+    @staticmethod
+    def from_statevector(state_vector : np.ndarray, assume_stab_state : bool = False) -> Check_Matrix: # TODO test
+        state = ssv.Stabiliser_From_State_Vector(state_vector, allow_global_factor = True, assume_stab_state = assume_stab_state)
+
+        if not state.is_stab_state:
+            raise ValueError('State vector does not describe a stabiliser state')
+
+        return Check_Matrix.from_stabiliser_state(state.get_stab_state())
+
+    def __init__(self, paulis : list[p.Pauli], reduced_form : bool = False):
         self.paulis = paulis
+        self.reduced_form = reduced_form
         self.number_qubits = len(paulis)
 
         self.non_zero_x : list[p.Pauli] = []
@@ -11,9 +31,35 @@ class Check_Matrix():
         
         self.__extract_zero_x_paulis()
 
-        if not reduced_form:
-            self.__put_into_reduced_form()
-        
+    def get_stabiliser_state(self) -> ss.Stabiliser_State: # TODO test
+        self.__put_into_reduced_form()
+    
+        vector_basis = [pauli.x_vector for pauli in self.non_zero_x]
+        dimension = len(vector_basis)
+
+        shift_vector = self.__get_shift_vector()
+
+        imag_part = 0
+        linear_real_part = 0
+        quadratic_form = []
+
+        for j in range(dimension):
+            v_j = vector_basis[j]
+            beta_j = self.non_zero_x[j].z_vector
+            imag_bit = self.non_zero_x[j].i_bit
+
+            imag_part |= (1 << j) * imag_bit
+            linear_real_part |= (1 << j) * ( self.non_zero_x[j].sign_bit ^ f2.mod2product(beta_j, v_j ^ shift_vector) )
+
+            for i in range(j):
+                v_i = vector_basis[i]
+                other_imag_bit = self.non_zero_x[i].sign_bit
+
+                if f2.mod2product(beta_j, v_i) ^ other_imag_bit*imag_bit:
+                    quadratic_form.append( 1 << i | 1 << j)
+
+        return ss.Stabiliser_State(self.number_qubits, quadratic_form, linear_real_part, imag_part, vector_basis, vector_shift, row_reduced = True)
+
     def __put_into_reduced_form(self) -> None: # TODO test
         if self.reduced_form:
             return
@@ -22,6 +68,15 @@ class Check_Matrix():
         self.__row_reduce_zero_x()
 
         self.reduced_form = True
+    
+    def __get_shift_vector(self) -> int:
+        shift = 0
+
+        for z_pauli in self.zero_x:
+            pivot_index = f2.fast_log2(z_pauli.z_vector)
+            shift |= (1<<pivot_index) * z_pauli.sign_bit
+
+        return shift
 
     def __row_reduce_zero_x(self):
         for pauli in self.zero_x:

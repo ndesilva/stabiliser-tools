@@ -1,5 +1,5 @@
 import numpy as np
-import stabiliser_state.stabiliser_from_state_vector as sc
+import stabiliser_state.stabiliser_from_state_vector as ssv
 import F2_helper.F2_helper as f2
 import math
 
@@ -18,12 +18,12 @@ def is_clifford(matrix : np.ndarray, allow_global_factor = False) -> bool:
     return True
 
 def columns_consistent(matrix : np.ndarray, number_qubits : int, allow_global_factor : bool) -> bool:
-    first_col_state = sc.Stabiliser_From_State_Vector(matrix[:, 0], allow_global_factor)
+    first_col_state = ssv.Stabiliser_From_State_Vector(matrix[:, 0], allow_global_factor)
 
     if not first_col_state.is_stab_state:
         return False
     
-    first_col_stab_group = first_col_state.get_stab_state().get_stabiliser_group_generators().paulis
+    first_col_stab_group = first_col_state.get_stab_state().get_check_matrix().paulis
 
     pauli_patterns = [0 for _ in range(number_qubits)]
 
