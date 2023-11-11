@@ -47,7 +47,7 @@ class Check_Matrix():
 
         return ss.Stabiliser_State(self.number_qubits, quadratic_form, linear_real_part, imag_part, vector_basis, shift_vector, row_reduced = True)
 
-    def __put_into_reduced_form(self) -> None: # TODO test
+    def __put_into_reduced_form(self) -> None:
         if self.reduced_form:
             return
 
