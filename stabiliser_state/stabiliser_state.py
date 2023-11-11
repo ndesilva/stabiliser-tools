@@ -3,7 +3,6 @@ import math
 
 import numpy as np
 import stabiliser_state.stabiliser_from_state_vector as ssv
-import stabiliser_state.stabiliser_from_check_matrix as scm
 import F2_helper.F2_helper as f2
 from pauli.Pauli import Pauli
 from stabiliser_state.Check_Matrix import Check_Matrix as cm
@@ -12,7 +11,7 @@ class Stabiliser_State():
 
     @staticmethod
     def from_check_matrix(check_matrix : cm) -> Stabiliser_State: # TODO test
-        return scm.Stabiliser_From_Check_Matrix(check_matrix).get_stab_state()
+        return check_matrix.get_stabiliser_state()
     
     @staticmethod
     def from_statevector(state_vector : np.ndarray, assume_stab_state : bool = False) -> Stabiliser_State:
