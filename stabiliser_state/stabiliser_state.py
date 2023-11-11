@@ -52,7 +52,7 @@ class Stabiliser_State():
         
         return state_vector
     
-    def get_check_matrix(self) -> cm:  # TODO refactor  
+    def get_check_matrix(self) -> cm: 
         # needed for finding the basis of the null space
         self.__row_reduce_basis()
         
