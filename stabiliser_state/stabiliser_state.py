@@ -29,7 +29,7 @@ class Stabiliser_State():
         self.shift = shift
 
         self.global_factor = global_factor
-        self.row_reduced = False
+        self.row_reduced = row_reduced
 
         self.dimension = len(self.vector_basis)
     
