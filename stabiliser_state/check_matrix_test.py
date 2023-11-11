@@ -10,8 +10,8 @@ class Test_Check_Matrix(unittest.TestCase):
         
         paulis.append(Pauli(5, 3, 1, 0, 1))
         paulis.append(Pauli(5, 5, 2, 0, 0))
-        paulis.append(Pauli(5, 6, 4, 0, 1))
-        paulis.append(Pauli(5, 16, 8, 0, 0))
+        paulis.append(Pauli(5, 6, 4, 1, 1))
+        paulis.append(Pauli(5, 16, 8, 1, 0))
         paulis.append(Pauli(5, 22, 4, 0, 1))
 
         return Check_Matrix(paulis)
@@ -24,9 +24,9 @@ class Test_Check_Matrix(unittest.TestCase):
         
         paulis.append(Pauli(5, 3, 1, 0, 1))
         paulis.append(Pauli(5, 5, 2, 0, 0))
-        paulis.append(Pauli(5, 6, 4, 0, 1))
-        paulis.append(Pauli(5, 16, 8, 0, 0))
-        paulis.append(Pauli(5, 22, 4, 0, 1))
+        paulis.append(Pauli(5, 0, 7, 0, 0))
+        paulis.append(Pauli(5, 16, 8, 1, 0))
+        paulis.append(Pauli(5, 0, 8, 0, 0))
 
         return Check_Matrix(paulis)
 
@@ -40,13 +40,13 @@ class Test_Check_Matrix(unittest.TestCase):
         self.assertEqual(check_matrix.non_zero_x, [pauli2, pauli3])
         self.assertEqual(check_matrix.zero_x, [pauli1])
 
-    def test_put_into_reduced_form(self): # TODO implement
-        pass
+    def test_put_into_reduced_form(self):
+        check_matrix = self.get_default_five_qubit_check_matrix()
+        expected_reduced_check_matrix = self.get_default_row_reduced_five_qubit_check_matrix()
 
-        # check_matrix = self.get_default_five_qubit_check_matrix()
-        # row_reduced_check_matrix = self.get_default_row_reduced_five_qubit_check_matrix()
+        check_matrix._Check_Matrix__put_into_reduced_form()
 
-        # check_matrix._Check_Matrix__put_into_reduced_form()
-
-        # self.assertEqual(check_matrix, row_reduced_check_matrix)
+        self.assertEqual(check_matrix.paulis, expected_reduced_check_matrix.paulis)
+        self.assertEqual(check_matrix.non_zero_x, expected_reduced_check_matrix.non_zero_x)
+        self.assertEqual(check_matrix.zero_x, expected_reduced_check_matrix.zero_x)
 

@@ -90,17 +90,22 @@ class Check_Matrix():
                     other_pauli.multiply_by_pauli_on_right(pauli)
 
     def __row_reduce_non_zero_x(self): # TODO test
+        to_remove = []
+        
         for pauli in self.non_zero_x:
             pivot_index = f2.fast_log2(pauli.x_vector)
 
             if pivot_index == -1:
                 self.zero_x.append(pauli)
-                self.non_zero_x.remove(pauli)
+                to_remove.append(pauli)
             
             else:
                 for other_pauli in self.non_zero_x:
                     if other_pauli != pauli and f2.get_bit_at(other_pauli.x_vector, pivot_index):
                         other_pauli.multiply_by_pauli_on_right(pauli)
+        
+        for pauli in to_remove:
+            self.non_zero_x.remove(pauli)
 
     def __extract_zero_x_paulis(self) -> None:
         for pauli in self.paulis:
