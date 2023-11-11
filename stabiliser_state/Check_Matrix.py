@@ -43,6 +43,20 @@ class Check_Matrix():
         linear_real_part = 0
         quadratic_form = []
 
+        self.__set_linear_and_quadratic_forms(vector_basis, dimension, shift_vector, imag_part, linear_real_part, quadratic_form)
+
+        return ss.Stabiliser_State(self.number_qubits, quadratic_form, linear_real_part, imag_part, vector_basis, shift_vector, row_reduced = True)
+
+    def __put_into_reduced_form(self) -> None: # TODO test
+        if self.reduced_form:
+            return
+
+        self.__row_reduce_non_zero_x()
+        self.__row_reduce_zero_x()
+
+        self.reduced_form = True
+
+    def __set_linear_and_quadratic_forms(self, vector_basis : list[int], dimension : int, shift_vector : int, imag_part : int, linear_real_part : int, quadratic_form : list[int]): # TODO test
         for j in range(dimension):
             v_j = vector_basis[j]
             beta_j = self.non_zero_x[j].z_vector
@@ -57,19 +71,8 @@ class Check_Matrix():
 
                 if f2.mod2product(beta_j, v_i) ^ other_imag_bit*imag_bit:
                     quadratic_form.append( 1 << i | 1 << j)
-
-        return ss.Stabiliser_State(self.number_qubits, quadratic_form, linear_real_part, imag_part, vector_basis, vector_shift, row_reduced = True)
-
-    def __put_into_reduced_form(self) -> None: # TODO test
-        if self.reduced_form:
-            return
-
-        self.__row_reduce_non_zero_x()
-        self.__row_reduce_zero_x()
-
-        self.reduced_form = True
     
-    def __get_shift_vector(self) -> int:
+    def __get_shift_vector(self) -> int: # TODO test
         shift = 0
 
         for z_pauli in self.zero_x:
@@ -78,7 +81,7 @@ class Check_Matrix():
 
         return shift
 
-    def __row_reduce_zero_x(self):
+    def __row_reduce_zero_x(self): # TODO test
         for pauli in self.zero_x:
             pivot_index = f2.fast_log2(pauli.z_vector)
 
@@ -86,7 +89,7 @@ class Check_Matrix():
                 if other_pauli != pauli and f2.get_bit_at(other_pauli.z_vector, pivot_index):
                     other_pauli.multiply_by_pauli_on_right(pauli)
 
-    def __row_reduce_non_zero_x(self):
+    def __row_reduce_non_zero_x(self): # TODO test
         for pauli in self.non_zero_x:
             pivot_index = f2.fast_log2(pauli.x_vector)
 
@@ -99,7 +102,7 @@ class Check_Matrix():
                     if other_pauli != pauli and f2.get_bit_at(other_pauli.x_vector, pivot_index):
                         other_pauli.multiply_by_pauli_on_right(pauli)
 
-    def __extract_zero_x_paulis(self) -> None: # TODO test
+    def __extract_zero_x_paulis(self) -> None:
         for pauli in self.paulis:
             if f2.fast_log2(pauli.x_vector) == -1:
                 self.zero_x.append(pauli)
