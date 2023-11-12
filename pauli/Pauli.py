@@ -13,6 +13,9 @@ class Pauli:
         self.sign_bit = sign_bit
         self.i_bit = i_bit
 
+        self.update_phase()
+
+    def update_phase(self):
         self.phase = (1-2*self.sign_bit)*(1+(-1j-1)*self.i_bit)
 
     def generate_matrix(self) -> np.ndarray:
@@ -30,6 +33,8 @@ class Pauli:
 
         self.x_vector ^= other_pauli.x_vector
         self.z_vector ^= other_pauli.z_vector
+
+        self.update_phase()
     
     def get_sign_eigenvalue(self, state_vector : np.ndarray) -> int | None:
         n = f2.fast_log2(len(state_vector))
@@ -71,5 +76,6 @@ class Pauli:
         result &= (self.number_qubits == other.number_qubits)
         result &= (self.x_vector == other.x_vector)
         result &= (self.z_vector == other.z_vector)
+        result &= (self.phase == other.phase)
 
         return result

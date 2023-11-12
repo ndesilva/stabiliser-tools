@@ -43,7 +43,7 @@ class Check_Matrix():
         linear_real_part = 0
         quadratic_form = []
 
-        self.__set_linear_and_quadratic_forms(vector_basis, dimension, shift_vector, imag_part, linear_real_part, quadratic_form)
+        imag_part, linear_real_part = self.__set_linear_and_quadratic_forms(vector_basis, dimension, shift_vector, imag_part, linear_real_part, quadratic_form)
 
         return ss.Stabiliser_State(self.number_qubits, quadratic_form, linear_real_part, imag_part, vector_basis, shift_vector, row_reduced = True)
 
@@ -56,7 +56,7 @@ class Check_Matrix():
 
         self.reduced_form = True
 
-    def __set_linear_and_quadratic_forms(self, vector_basis : list[int], dimension : int, shift_vector : int, imag_part : int, linear_real_part : int, quadratic_form : list[int]): # TODO test
+    def __set_linear_and_quadratic_forms(self, vector_basis : list[int], dimension : int, shift_vector : int, imag_part : int, linear_real_part : int, quadratic_form : list[int]) -> tuple[int, int]: # TODO test
         for j in range(dimension):
             v_j = vector_basis[j]
             beta_j = self.non_zero_x[j].z_vector
@@ -67,17 +67,19 @@ class Check_Matrix():
 
             for i in range(j):
                 v_i = vector_basis[i]
-                other_imag_bit = self.non_zero_x[i].sign_bit
+                other_imag_bit = self.non_zero_x[i].i_bit
 
                 if f2.mod2product(beta_j, v_i) ^ other_imag_bit*imag_bit:
-                    quadratic_form.append( 1 << i | 1 << j)
+                    quadratic_form.append( 1 << i | 1 << j )
+
+        return imag_part, linear_real_part
     
     def __get_shift_vector(self) -> int: # TODO test
         shift = 0
 
         for z_pauli in self.zero_x:
             pivot_index = f2.fast_log2(z_pauli.z_vector)
-            shift |= (1<<pivot_index) * z_pauli.sign_bit
+            shift |= (1 << pivot_index) * z_pauli.sign_bit
 
         return shift
 
