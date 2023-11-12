@@ -31,7 +31,7 @@ class Check_Matrix():
         
         self.__extract_zero_x_paulis()
 
-    def get_stabiliser_state(self) -> ss.Stabiliser_State: # TODO test
+    def get_stabiliser_state(self) -> ss.Stabiliser_State:
         self.__put_into_reduced_form()
     
         vector_basis = [pauli.x_vector for pauli in self.non_zero_x]
