@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import F2_helper.F2_helper as f2
 
-class Pauli:
+class Pauli: # TODO add from_matrix method
     # Pauli is (-1)^sign bit * (-i) * (i_bit) * X^x_vector * Z^z_vector
     def __init__(self, number_qubits : int, x_vector : int, z_vector : int, sign_bit : int, i_bit : int):
         self.number_qubits = number_qubits
