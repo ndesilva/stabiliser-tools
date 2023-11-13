@@ -86,7 +86,7 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n
                         self.pauli_pattern_pairs[j][0].multiply_by_pauli_on_right(pauli)
 
         
-        self.pauli_pattern_pairs.sort(key = lambda x : x[1].string, reverse = True)
+        self.pauli_pattern_pairs.sort(key = lambda x : x[1].string)
         return [pair[0] for pair in self.pauli_pattern_pairs]
 
             
@@ -95,10 +95,13 @@ class Pauli_Pattern:
         self.string = 0
 
 def multiply_by_hadamard_product(matrix : np.ndarray, number_qubits : int) -> np.ndarray:
-    for j in range(number_qubits):
-        unscaled_multiply_by_hadmard_at(matrix, j, number_qubits)
+    
+    new_matrix = matrix.copy()
 
-    return matrix/math.sqrt((1 << number_qubits))
+    for j in range(number_qubits):
+        unscaled_multiply_by_hadmard_at(new_matrix, j, number_qubits)
+
+    return new_matrix/math.sqrt((1 << number_qubits))
 
 def unscaled_multiply_by_hadmard_at(matrix : np.ndarray, hadamard_index : int, number_qubits : int) -> None:
     for tail in range(1 << hadamard_index):

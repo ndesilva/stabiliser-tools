@@ -2,6 +2,8 @@ import unittest
 import numpy as np
 import math
 import clifford.clifford_from_matrix as cc
+import pauli.Pauli as p
+import pauli.pauli_check as pc
 
 class Test_Clifford_Check(unittest.TestCase):
     unscaled_hadmard = np.array([[1,1],[1,-1]])
@@ -138,3 +140,39 @@ class Test_Clifford_Check(unittest.TestCase):
         clifford = cc.Clifford_From_Matrix(matrix, only_testing = True)
 
         self.assertFalse(clifford.is_clifford)
+
+    def test_get_clifford_raises_error_on_invalid_matrix(self):
+        matrix = self.get_three_qubit_clifford()
+        matrix[:, 7] *= 1j
+
+        clifford = cc.Clifford_From_Matrix(matrix, allow_global_factor = True)
+
+        self.assertRaises(ValueError, clifford.get_clifford)
+
+    def test_get_clifford(self):
+        n = 3
+        matrix = self.get_three_qubit_clifford()
+
+        self.assertEqual(matrix.shape[0], 1 << n)
+
+        clifford = cc.Clifford_From_Matrix(matrix).get_clifford()
+
+        for i in range(n):
+            z_i = p.Pauli(n, 0, 1 << i, 0, 0).generate_matrix()
+            expected_u_i = matrix @ z_i @ matrix.conj().T
+            
+            self.assertTrue(pc.is_pauli(expected_u_i))
+
+            u_i = clifford.z_conjugates[i].generate_matrix()
+
+            self.assertTrue(np.array_equal(u_i, expected_u_i))
+      
+        for i in range(n):
+          x_i = p.Pauli(n, 1<<i , 0, 0, 0).generate_matrix()
+          expected_v_i = matrix @ x_i @ matrix.conj().T
+            
+          self.assertTrue(pc.is_pauli(expected_v_i))
+
+          v_i = clifford.x_conjugates[i].generate_matrix()
+
+          self.assertTrue(np.array_equal(v_i, expected_v_i))
