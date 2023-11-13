@@ -37,18 +37,13 @@ class Stabiliser_From_State_Vector: #TODO currently assumes length 2^n
             if self.__first_entry_not_valid(allow_global_factor):
                 return
             
-        linear_part_valid = self.__set_linear_parts(weight_one_bitstrings, non_zero_coeffs)
+        if not self.__set_linear_parts(weight_one_bitstrings, non_zero_coeffs):
+            return
+            
+        if not self.__set_quadratic_part(non_zero_coeffs):
+            return
 
         if not assume_stab_state:
-            if not linear_part_valid:
-                return
-            
-        quadratic_part_valid = self.__set_quadratic_part(non_zero_coeffs)
-
-        if not assume_stab_state:
-            if not quadratic_part_valid:
-                return
-            
             if not self.__coefficients_consistent(non_zero_coeffs):
                 return
         

@@ -85,7 +85,7 @@ class Test_Stabiliser_From_State_Vector(unittest.TestCase):
         self.assertRaises(ValueError, state.get_stab_state)
 
     def test_is_stab_accepts_on_invalid_state_if_flagged(self):
-        state_vector = np.array([1, (1/math.sqrt(2))*(1+1j)])
+        state_vector = np.array([1, 1, 1, 1, 1, 1, 1, (1/math.sqrt(2))*(1+1j)])/math.sqrt(8)
         
         state = ssv.Stabiliser_From_State_Vector(state_vector, assume_stab_state = True)
 

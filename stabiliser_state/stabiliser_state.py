@@ -5,12 +5,12 @@ import numpy as np
 import stabiliser_state.stabiliser_from_state_vector as ssv
 import F2_helper.F2_helper as f2
 from pauli.Pauli import Pauli
-from stabiliser_state.Check_Matrix import Check_Matrix as cm
+import stabiliser_state.Check_Matrix as cm
 
 class Stabiliser_State():
 
     @staticmethod
-    def from_check_matrix(check_matrix : cm) -> Stabiliser_State: # TODO test
+    def from_check_matrix(check_matrix : cm.Check_Matrix) -> Stabiliser_State: # TODO test
         return check_matrix.get_stabiliser_state()
     
     @staticmethod
@@ -51,7 +51,7 @@ class Stabiliser_State():
         
         return state_vector
     
-    def get_check_matrix(self) -> cm: 
+    def get_check_matrix(self) -> cm.Check_Matrix: 
         # needed for finding the basis of the null space
         self.__row_reduce_basis()
         
@@ -65,7 +65,7 @@ class Stabiliser_State():
         # now do X-type stabilisers
         self.__add_x_type_stabilisers(pauli_group, pivot_indicies)
         
-        return cm(pauli_group, reduced_form = True)
+        return cm.Check_Matrix(pauli_group, reduced_form = True)
     
     def __get_phase(self, afffine_space_index : int) -> complex:
         return f2.sign_evaluate_poly(self.quadratic_form, afffine_space_index)*f2.sign_mod2product(self.real_linear_part, afffine_space_index)*f2.imag_mod2product(self.imaginary_part, afffine_space_index)
