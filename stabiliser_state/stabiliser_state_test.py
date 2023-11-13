@@ -8,7 +8,7 @@ class Test_Stabiliser_State_Class(unittest.TestCase):
     def test_from_state_vector(self):
         state_vector = np.array([0,-1j, 1, 0, 1j, 0, 0, 1])
 
-        state = Stabiliser_State.from_statevector(state_vector)
+        state = Stabiliser_State.from_state_vector(state_vector)
 
         self.assertEqual(state.shift, 1)
         self.assertEqual(state.vector_basis, [3, 5])
@@ -20,7 +20,7 @@ class Test_Stabiliser_State_Class(unittest.TestCase):
     def test_from_state_vector_raises_error_when_not_stab_state(self):
         non_stab_state = (1/math.sqrt(2))*np.array([1, 1/math.sqrt(2)*(1 + 1j)]) # T state is not stabiliser!
 
-        self.assertRaises(ValueError, Stabiliser_State.from_statevector, non_stab_state)
+        self.assertRaises(ValueError, Stabiliser_State.from_state_vector, non_stab_state)
 
     def test_generate_state_vector_case_one(self):
         number_qubits = 1

@@ -13,7 +13,7 @@ class Check_Matrix():
         return stab_state.get_check_matrix()
     
     @staticmethod
-    def from_statevector(state_vector : np.ndarray, assume_stab_state : bool = False) -> Check_Matrix: # TODO test
+    def from_state_vector(state_vector : np.ndarray, assume_stab_state : bool = False) -> Check_Matrix: # TODO test
         state = ssv.Stabiliser_From_State_Vector(state_vector, allow_global_factor = True, assume_stab_state = assume_stab_state)
 
         if not state.is_stab_state:
@@ -48,7 +48,7 @@ class Check_Matrix():
         return ss.Stabiliser_State(self.number_qubits, quadratic_form, linear_real_part, imag_part, vector_basis, shift_vector, row_reduced = True)
     
     def get_state_vector(self) -> np.ndarray: # TODO test
-        return self.get_stabiliser_state().generate_state_vector()
+        return self.get_stabiliser_state().get_state_vector()
 
     def __put_into_reduced_form(self) -> None:
         if self.reduced_form:

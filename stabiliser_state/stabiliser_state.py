@@ -14,7 +14,7 @@ class Stabiliser_State():
         return check_matrix.get_stabiliser_state()
     
     @staticmethod
-    def from_statevector(state_vector : np.ndarray, assume_stab_state : bool = False) -> Stabiliser_State:
+    def from_state_vector(state_vector : np.ndarray, assume_stab_state : bool = False) -> Stabiliser_State:
         state = ssv.Stabiliser_From_State_Vector(state_vector, allow_global_factor = True, assume_stab_state = assume_stab_state)
 
         if not state.is_stab_state:
