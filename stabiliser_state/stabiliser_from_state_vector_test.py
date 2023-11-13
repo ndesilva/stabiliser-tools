@@ -4,7 +4,7 @@ import numpy as np
 import stabiliser_state.stabiliser_from_state_vector as ssv
 from stabiliser_state.Stabiliser_State import Stabiliser_State
 
-class Test_Stabiliser_State_Check(unittest.TestCase):
+class Test_Stabiliser_From_State_Vector(unittest.TestCase):
 
     three_stab_state = Stabiliser_State(3, [3], 1, 2, [6,1], 4)
     five_stab_state = Stabiliser_State(5, [3,5], 4, 2, [9, 22, 16], 1)
