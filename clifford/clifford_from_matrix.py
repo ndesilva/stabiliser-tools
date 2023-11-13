@@ -6,14 +6,14 @@ import pauli.Pauli as p
 import clifford.Clifford as c
 
 class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n
-    def __init__(self, matrix : np.ndarray, allow_global_factor : bool = False, assume_valid_matrix : bool = False, only_testing : bool = False): # TODO test
+    def __init__(self, matrix : np.ndarray, allow_global_factor : bool = False, assume_clifford : bool = False, only_testing : bool = False): # TODO test, test flags somehow?
         self.number_qubits = f2.fast_log2(matrix.shape[0])
         self.is_clifford = False
 
         if not self.__set_first_col_stabilisers(matrix, allow_global_factor):
             return
         
-        if not assume_valid_matrix:
+        if not assume_clifford:
             if not self.__remaining_columns_consistent(matrix):
                 return
             
@@ -25,7 +25,7 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n
         if not self.__set_first_col_stabilisers(matrix_times_hadamard, allow_global_factor):
             return
         
-        if not assume_valid_matrix:
+        if not assume_clifford:
             if not self.__remaining_columns_consistent(matrix_times_hadamard):
                 return
             
@@ -93,24 +93,6 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n
 class Pauli_Pattern:
     def __init__(self):
         self.string = 0
-
-# TODO is this needed?
-# def is_full_rank(vectors : list[int], number_vectors : int) -> bool:
-#     # copy the vectors list to not alter it
-#     vectors_copy = vectors.copy()
-
-#     # row reduce the vectors to row echelon form, stopping if we ever get an all zero vector
-#     for i in range(number_vectors):
-
-#         pivot_index = f2.fast_log2(vectors_copy[i])
-
-#         if pivot_index == -1:
-#             return False
-        
-#         for j in range(i+1, number_vectors): # only need row echelon form (not reduced) to check LI
-#             vectors_copy[j] ^= (i!=j) * f2.get_bit_at(vectors_copy[j], pivot_index) * vectors_copy[i]
-
-#     return True
 
 def multiply_by_hadamard_product(matrix : np.ndarray, number_qubits : int) -> np.ndarray:
     for j in range(number_qubits):

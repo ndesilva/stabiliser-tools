@@ -26,17 +26,6 @@ class Test_Clifford_Check(unittest.TestCase):
        [ 0. +0.j ,  0. +0.j ,  0.5+0.j , -0.5+0.j ,  0. +0.j ,  0. +0.j ,
          0.5+0.j , -0.5+0.j ]])
 
-    def test_is_full_rank_accepts_when_full_rank(self):
-        vectors = [18, 21, 30] # 10010, 10101, 11110
-
-        self.assertTrue(cc.is_full_rank(vectors, 3))
-
-    def test_is_full_rank_rejects_when_lin_dep(self):
-        vectors = [45, 26, 10, 61] 
-
-        self.assertTrue(vectors[0] ^ vectors[1] == vectors[2] ^ vectors[3])
-        self.assertFalse(cc.is_full_rank(vectors, 4))
-
     def test_unscaled_multiply_by_hadmard_at_index_0(self):
         test_matrix = np.random.rand(8,8)
         single_hadamard = np.kron(np.eye(4), self.unscaled_hadmard)
@@ -73,63 +62,79 @@ class Test_Clifford_Check(unittest.TestCase):
 
         self.assertTrue(np.allclose(matrix_product, expected_product))
 
-    def test_columns_consistent_accepts(self):
-        matrix = self.get_three_qubit_clifford()
+    # def test_columns_consistent_accepts(self): TODO look at better testing for this
+    #     matrix = self.get_three_qubit_clifford()
+    #     clifford = cc.
         
-        self.assertTrue(cc.columns_consistent(matrix, 3, False))
+    #     self.assertTrue(cc.columns_consistent(matrix, 3, False))
 
-    def test_columns_consistent_accepts_with_incorrect_relative_phase(self):
-        matrix = self.get_three_qubit_clifford()
-        matrix[:,7] *= (1+1j)/math.sqrt(2)
+    # def test_columns_consistent_accepts_with_incorrect_relative_phase(self):
+    #     matrix = self.get_three_qubit_clifford()
+    #     matrix[:,7] *= (1+1j)/math.sqrt(2)
         
-        self.assertTrue(cc.columns_consistent(matrix, 3, False))
-
-    def test_columns_consistent_rejects_when_inconsistent(self):
-        matrix = self.get_three_qubit_clifford()
-
-        matrix[:, 7] = matrix [:, 0]
-
-        self.assertFalse(cc.columns_consistent(matrix, 3, True))
-
-    def test_columns_consistent_rejects_when_remaining_column_not_stabilised(self):
-        matrix = self.get_three_qubit_clifford()
-        matrix[0,7] = 1
-
-        self.assertFalse(cc.columns_consistent(matrix, 3, True))
-
-    def test_columns_consistent_rejects_when_initial_column_not_stabilised(self):
-        matrix = self.get_three_qubit_clifford()
-        matrix[0,1] = 0
-
-        self.assertFalse(cc.columns_consistent(matrix, 3, True))
-
-    def test_columns_consistent_rejects_when_first_column_not_stabiliser_state(self):
-        matrix = self.get_three_qubit_clifford()
-        matrix[0,0] = 0
-
-        self.assertFalse(cc.columns_consistent(matrix, 3, True))
+    #     self.assertTrue(cc.columns_consistent(matrix, 3, False))
 
     def test_is_clifford_accepts(self):
         matrix = self.get_three_qubit_clifford()
         
-        self.assertTrue(cc.is_clifford(matrix))
+        clifford = cc.Clifford_From_Matrix(matrix, only_testing = True)
+
+        self.assertTrue(clifford.is_clifford)
+
+    def test_is_clifford_rejects_when_inconsistent(self):
+        matrix = self.get_three_qubit_clifford()
+        matrix[:, 7] = matrix [:, 0]
+
+        clifford = cc.Clifford_From_Matrix(matrix, only_testing = True)
+
+        self.assertFalse(clifford.is_clifford)
+
+    def test_is_clifford_rejects_when_remaining_column_not_stabilised(self):
+        matrix = self.get_three_qubit_clifford()
+        matrix[0,7] = 1
+
+        clifford = cc.Clifford_From_Matrix(matrix, only_testing = True)
+
+        self.assertFalse(clifford.is_clifford)
+
+    def test_is_clifford_rejects_when_initial_column_not_stabilised(self):
+        matrix = self.get_three_qubit_clifford()
+        matrix[0,1] = 0
+
+        clifford = cc.Clifford_From_Matrix(matrix, only_testing = True)
+
+        self.assertFalse(clifford.is_clifford)
+
+    def test_is_clifford_rejects_when_first_column_not_stabiliser_state(self):
+        matrix = self.get_three_qubit_clifford()
+        matrix[0,0] = 0
+
+        clifford = cc.Clifford_From_Matrix(matrix, only_testing = True)
+
+        self.assertFalse(clifford.is_clifford)
+
 
     def test_is_clifford_rejects_with_global_factor(self):
         matrix = self.get_three_qubit_clifford()
         matrix *= (1+1j)/math.sqrt(2)
         
-        self.assertFalse(cc.is_clifford(matrix))
+        clifford = cc.Clifford_From_Matrix(matrix, only_testing = True)
+
+        self.assertFalse(clifford.is_clifford)
 
     def test_is_clifford_accepts_with_global_factor_when_flagged(self):
         matrix = self.get_three_qubit_clifford()
         matrix *= (1+1j)/math.sqrt(2)
         
-        self.assertTrue(cc.is_clifford(matrix, allow_global_factor = True))
+        clifford = cc.Clifford_From_Matrix(matrix, only_testing = True, allow_global_factor = True)
+
+        self.assertTrue(clifford.is_clifford)
 
     def test_is_clifford_rejects_when_columns_have_wrong_relative_phase(self):
         matrix = self.get_three_qubit_clifford()
 
         matrix[:, 7] *= 1j
 
-        self.assertTrue(cc.columns_consistent(matrix, 3, False))
-        self.assertFalse(cc.is_clifford(matrix))
+        clifford = cc.Clifford_From_Matrix(matrix, only_testing = True)
+
+        self.assertFalse(clifford.is_clifford)
