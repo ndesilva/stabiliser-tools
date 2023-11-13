@@ -37,7 +37,7 @@ class Stabiliser_State():
 
         self.dimension = len(self.vector_basis)
     
-    def generate_state_vector(self) -> np.ndarray:
+    def get_state_vector(self) -> np.ndarray:
         size = 1 << self.number_qubits
         
         state_vector = np.zeros(size, dtype=complex)
