@@ -53,9 +53,7 @@ class Test_Check_Matrix(unittest.TestCase):
 
     def test_get_stabiliser_state(self):
         check_matrix = self.get_default_five_qubit_check_matrix()
-        stab_state = check_matrix.get_stabiliser_state()
-
-        state_vector = stab_state.generate_state_vector()
+        state_vector = check_matrix.get_state_vector()
 
         for pauli in check_matrix.paulis:
             self.assertTrue(np.array_equal(state_vector, pauli.generate_matrix()@state_vector))
