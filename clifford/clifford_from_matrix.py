@@ -3,8 +3,10 @@ import stabiliser_state.stabiliser_from_state_vector as ssv
 import F2_helper.F2_helper as f2
 import math
 
-# Assuming a 2^n by 2^n matrix, decide whether it is a stabiliser state
-def is_clifford(matrix : np.ndarray, allow_global_factor = False) -> bool: 
+# class Stabiliser_From_State_Vector:
+#     def __init__(self, matrix : np.ndarray, allow_global_factor : bool = False, )
+
+def is_clifford(matrix : np.ndarray, allow_global_factor : bool = False) -> bool: 
     n = f2.fast_log2(matrix.shape[0])
 
     if not columns_consistent(matrix, n, allow_global_factor):

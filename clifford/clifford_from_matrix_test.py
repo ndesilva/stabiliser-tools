@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 import math
-import clifford.clifford_check as cc
+import clifford.clifford_from_matrix as cc
 
 class Test_Clifford_Check(unittest.TestCase):
     unscaled_hadmard = np.array([[1,1],[1,-1]])
@@ -78,6 +78,12 @@ class Test_Clifford_Check(unittest.TestCase):
         
         self.assertTrue(cc.columns_consistent(matrix, 3, False))
 
+    def test_columns_consistent_accepts_with_incorrect_relative_phase(self):
+        matrix = self.get_three_qubit_clifford()
+        matrix[:,7] *= (1+1j)/math.sqrt(2)
+        
+        self.assertTrue(cc.columns_consistent(matrix, 3, False))
+
     def test_columns_consistent_rejects_when_inconsistent(self):
         matrix = self.get_three_qubit_clifford()
 
@@ -107,6 +113,18 @@ class Test_Clifford_Check(unittest.TestCase):
         matrix = self.get_three_qubit_clifford()
         
         self.assertTrue(cc.is_clifford(matrix))
+
+    def test_is_clifford_rejects_with_global_factor(self):
+        matrix = self.get_three_qubit_clifford()
+        matrix *= (1+1j)/math.sqrt(2)
+        
+        self.assertFalse(cc.is_clifford(matrix))
+
+    def test_is_clifford_accepts_with_global_factor_when_flagged(self):
+        matrix = self.get_three_qubit_clifford()
+        matrix *= (1+1j)/math.sqrt(2)
+        
+        self.assertTrue(cc.is_clifford(matrix, allow_global_factor = True))
 
     def test_is_clifford_rejects_when_columns_have_wrong_relative_phase(self):
         matrix = self.get_three_qubit_clifford()

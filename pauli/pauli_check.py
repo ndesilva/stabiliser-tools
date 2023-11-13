@@ -1,7 +1,7 @@
 import numpy as np
 import F2_helper.F2_helper as f2
 
-# Assuming matrix of size 2^n by 2^n, returns whether matrix is in the Pauli group.
+# TODO Assuming matrix of size 2^n by 2^n, returns whether matrix is in the Pauli group.
 def is_pauli(matrix : np.ndarray, allow_global_factor = False) -> bool:
     size = matrix.shape[0]
     n = f2.fast_log2(size)
