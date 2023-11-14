@@ -10,7 +10,7 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n
         self.number_qubits = f2.fast_log2(matrix.shape[0])
         self.is_clifford = False
 
-        if not self.__set_first_col_stabilisers(matrix, allow_global_factor):
+        if not self.__set_first_col_stabilisers(matrix, allow_global_factor, set_phase = True):
             return
         
         if not assume_clifford:
@@ -36,15 +36,18 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n
 
     def get_clifford(self) -> c.Clifford: # TODO test
         if self.is_clifford:
-            return c.Clifford(self.z_conjugates, self.x_conjugates)
+            return c.Clifford(self.z_conjugates, self.x_conjugates, global_phase = self.global_factor)
 
         raise ValueError('Matrix does not correspond to a Clifford')
 
-    def __set_first_col_stabilisers(self, matrix : np.ndarray, allow_global_factor : bool) -> bool: #  TODO test
+    def __set_first_col_stabilisers(self, matrix : np.ndarray, allow_global_factor : bool, set_phase : bool = False) -> bool: #  TODO test
         first_col_state = ssv.Stabiliser_From_State_Vector(matrix[:, 0], allow_global_factor)
 
         if not first_col_state.is_stab_state:
             return False
+        
+        if set_phase:
+            self.global_factor = first_col_state.global_factor
         
         first_col_stab_group = first_col_state.get_stab_state().get_check_matrix().paulis
 
@@ -84,8 +87,7 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n
                     if f2.get_bit_at(self.pauli_pattern_pairs[j][1].string, pivot_index):
                         self.pauli_pattern_pairs[j][1].string ^= pattern
                         self.pauli_pattern_pairs[j][0].multiply_by_pauli_on_right(pauli)
-
-        
+                        
         self.pauli_pattern_pairs.sort(key = lambda x : x[1].string)
         return [pair[0] for pair in self.pauli_pattern_pairs]
 
