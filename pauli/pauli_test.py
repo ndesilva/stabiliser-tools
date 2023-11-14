@@ -59,6 +59,12 @@ class Test_Pauli_Class(unittest.TestCase):
         self.assertTrue(np.array_equal(-1j*state_vector, pauli.generate_matrix()@state_vector))
         self.assertIsNone(pauli.get_sign_eigenvalue(state_vector))
 
+    def test_get_sign_eigenvalue_returns_even_when_not_eigenstate_when_flagged(self):
+        pauli = Pauli(2, 0, 1, 0, 0) # 1 Z
+        state_vector = np.array([1, 1, 1, 1])
+
+        self.assertEqual(pauli.get_sign_eigenvalue(state_vector, assume_equation_holds = True), 0)
+
     def test_multiply_on_the_right_no_overlap(self):
         pauli_one = Pauli(2, 3, 2, 0, 0) # XZ X
         pauli_two = Pauli(2, 1, 2, 1, 1) #(-1)(-i) Z X

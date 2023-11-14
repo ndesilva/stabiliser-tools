@@ -36,7 +36,7 @@ class Pauli: # TODO add from_matrix method
 
         self.update_phase()
     
-    def get_sign_eigenvalue(self, state_vector : np.ndarray, assume_equation_holds: bool = False) -> int | None: #TODO add test checking this flag
+    def get_sign_eigenvalue(self, state_vector : np.ndarray, assume_equation_holds: bool = False) -> int | None:
         n = f2.fast_log2(len(state_vector))
 
         if n != self.number_qubits:
