@@ -7,7 +7,7 @@ import F2_helper.F2_helper as f2
 import stabiliser_state.Stabiliser_State as ss
 
 class Stabiliser_From_State_Vector: #TODO currently assumes length 2^n
-    def __init__(self, state_vector : np.ndarray, allow_global_factor : bool = False, assume_stab_state : bool = False):
+    def __init__(self, state_vector : np.ndarray, allow_global_factor : bool = False, assume_stab_state : bool = False, check_support_first : bool = False):
         self.is_stab_state = False
         
         nonzero_indices = np.nonzero(state_vector)[0]
@@ -16,9 +16,8 @@ class Stabiliser_From_State_Vector: #TODO currently assumes length 2^n
         self.dimension = f2.fast_log2(self.support_size)
         self.n = f2.fast_log2(len(state_vector))
 
-        if not assume_stab_state:
-            if not self.__support_is_power_two():
-                return
+        if not self.__support_is_power_two():
+            return
 
         vector_space_value_pairs = self.__get_vector_space_indices_and_amplitudes(nonzero_indices, state_vector)
         
@@ -26,7 +25,7 @@ class Stabiliser_From_State_Vector: #TODO currently assumes length 2^n
 
         self.basis_vectors = [int(vector_space_value_pairs[index][0]) for index in weight_one_bitstrings]
 
-        if not assume_stab_state:
+        if not assume_stab_state and check_support_first:
             if not self.__vector_space_consistent(vector_space_value_pairs):
                 return
             
