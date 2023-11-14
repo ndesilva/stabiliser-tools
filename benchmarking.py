@@ -55,7 +55,7 @@ for function_index in range(num_functions):
 
         times = time_function_with_generator(functions_to_time[function_index], generation_types[generation_index])
 
-        data = Bechmarking_Data(function_string, generation_string, qubit_numbers, times)
+        data = Benchmarking_Data(function_string, generation_string, qubit_numbers, times)
 
         with open(filename, 'wb') as fl:
             pickle.dump(data, fl)
