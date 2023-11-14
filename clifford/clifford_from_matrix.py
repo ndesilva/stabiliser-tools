@@ -6,7 +6,7 @@ import pauli.Pauli as p
 import clifford.Clifford as c
 
 class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n
-    def __init__(self, matrix : np.ndarray, allow_global_factor : bool = False, assume_clifford : bool = False, only_testing : bool = False): # TODO test flags somehow?
+    def __init__(self, matrix : np.ndarray, allow_global_factor : bool = True, assume_clifford : bool = False, only_testing : bool = False): # TODO test flags somehow?
         self.number_qubits = f2.fast_log2(matrix.shape[0])
         self.is_clifford = False
 

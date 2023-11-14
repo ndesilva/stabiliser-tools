@@ -7,7 +7,7 @@ import F2_helper.F2_helper as f2
 import stabiliser_state.Stabiliser_State as ss
 
 class Stabiliser_From_State_Vector: #TODO currently assumes length 2^n
-    def __init__(self, state_vector : np.ndarray, allow_global_factor : bool = False, assume_stab_state : bool = False, check_support_first : bool = False):
+    def __init__(self, state_vector : np.ndarray, allow_global_factor : bool = True, assume_stab_state : bool = False, check_support_first : bool = False):
         self.is_stab_state = False
         
         nonzero_indices = np.nonzero(state_vector)[0]

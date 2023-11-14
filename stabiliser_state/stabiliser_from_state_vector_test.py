@@ -34,15 +34,15 @@ class Test_Stabiliser_From_State_Vector(unittest.TestCase):
 
         self.assertFalse(ssv.Stabiliser_From_State_Vector(state).is_stab_state)
 
-    def test_is_stab_state_rejects_with_global_factor(self):
+    def test_is_stab_state_rejects_with_global_factor_when_flagged(self):
         state = np.exp(2j)*self.three_stab_state.get_state_vector()
 
-        self.assertFalse(ssv.Stabiliser_From_State_Vector(state).is_stab_state)
+        self.assertFalse(ssv.Stabiliser_From_State_Vector(state, allow_global_factor = False).is_stab_state)
     
-    def test_is_stab_state_accpets_with_global_factor_when_flagged(self):
+    def test_is_stab_state_accpets_with_global_factor(self):
         state = (1/math.sqrt(2))*(1+1j)*self.five_stab_state.get_state_vector()
 
-        self.assertTrue(ssv.Stabiliser_From_State_Vector(state, allow_global_factor = True).is_stab_state)
+        self.assertTrue(ssv.Stabiliser_From_State_Vector(state).is_stab_state)
 
     def test_is_stab_state_rejects_with_invalid_linear_entry(self):
         state = self.five_stab_state.get_state_vector()

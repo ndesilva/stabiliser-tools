@@ -116,19 +116,19 @@ class Test_Clifford_Check(unittest.TestCase):
         self.assertFalse(clifford.is_clifford)
 
 
-    def test_is_clifford_rejects_with_global_factor(self):
+    def test_is_clifford_rejects_with_global_factor_when_flagged(self):
+        matrix = self.get_three_qubit_clifford()
+        matrix *= (1+1j)/math.sqrt(2)
+        
+        clifford = cc.Clifford_From_Matrix(matrix, only_testing = True, allow_global_factor = False)
+
+        self.assertFalse(clifford.is_clifford)
+
+    def test_is_clifford_accepts_with_global_factor(self):
         matrix = self.get_three_qubit_clifford()
         matrix *= (1+1j)/math.sqrt(2)
         
         clifford = cc.Clifford_From_Matrix(matrix, only_testing = True)
-
-        self.assertFalse(clifford.is_clifford)
-
-    def test_is_clifford_accepts_with_global_factor_when_flagged(self):
-        matrix = self.get_three_qubit_clifford()
-        matrix *= (1+1j)/math.sqrt(2)
-        
-        clifford = cc.Clifford_From_Matrix(matrix, only_testing = True, allow_global_factor = True)
 
         self.assertTrue(clifford.is_clifford)
 

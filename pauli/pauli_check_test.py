@@ -17,15 +17,15 @@ class Test_Pauli_Check(unittest.TestCase):
     
         self.assertTrue(is_pauli(pauli))
 
-    def test_is_pauli_rejects_with_global_factor(self):
+    def test_is_pauli_rejects_with_global_factor_when_flagged(self):
         matrix = 2*self.five_pauli.generate_matrix()
         
-        self.assertFalse(is_pauli(matrix))
+        self.assertFalse(is_pauli(matrix, allow_global_factor = False))
 
-    def test_is_pauli_accpets_with_global_factor_when_flagged(self):
+    def test_is_pauli_accepts_with_global_factor(self):
         matrix = (3-2j)*self.five_pauli.generate_matrix()
         
-        self.assertTrue(is_pauli(matrix, allow_global_factor = True))
+        self.assertTrue(is_pauli(matrix))
 
     def test_is_pauli_rejects_pauli_with_extra_entry(self):
         corrupt_pauli = self.three_pauli.generate_matrix()
