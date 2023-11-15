@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 import F2_helper.F2_helper as f2
+import numba
 
 class Pauli: # TODO add from_matrix method
     # Pauli is (-1)^sign bit * (-i) * (i_bit) * X^x_vector * Z^z_vector
@@ -42,17 +43,14 @@ class Pauli: # TODO add from_matrix method
         if n != self.number_qubits:
             raise ValueError('State vector and Paulis have different size')
         
-        index = 0
+        index = get_first_nonzero_index(state_vector, self.x_vector)
 
-        while not state_vector[index ^ self.x_vector]:
-            if state_vector[index]:
-                return None
+        if index == None:
+            return None
             
-            index += 1
-            
-        factor = self.phase * state_vector[index] * f2.sign_mod2product(self.z_vector, index) / state_vector[index ^ self.x_vector]
+        factor = state_vector[index] * f2.sign_mod2product(self.z_vector, index) / state_vector[index ^ self.x_vector]
 
-        match np.round(factor,5):
+        match round_to_5dp(factor * self.phase):
             case 1:
                 bit = 0
             case -1:
@@ -63,11 +61,10 @@ class Pauli: # TODO add from_matrix method
         if assume_equation_holds:
             return bit
 
-        for remaining_index in range(index + 1, 1 << n):
-            if self.phase * state_vector[remaining_index] * f2.sign_mod2product(self.z_vector, remaining_index) != factor * state_vector[remaining_index ^ self.x_vector]:
-                return None
+        if remaining_entries_consistent(n, index, self.x_vector, self.z_vector, state_vector, factor):
+            return bit
             
-        return bit
+        return None
     
     def __eq__(self, other : object) -> bool:
         if not isinstance(other, Pauli):
@@ -82,3 +79,27 @@ class Pauli: # TODO add from_matrix method
         result &= (self.phase == other.phase)
 
         return result
+    
+@numba.njit()
+def remaining_entries_consistent(number_qubits : int, start_index : int, x_vector : int,  z_vector :int, state_vector : np.ndarray, factor : complex) -> bool:
+    
+    for remaining_index in range(start_index + 1, 1 << number_qubits):
+        if state_vector[remaining_index] * f2.sign_mod2product(z_vector, remaining_index) != factor * state_vector[remaining_index ^ x_vector]:   
+            return False
+    return True
+
+@numba.njit()
+def get_first_nonzero_index(state_vector : np.ndarray, x_vector : int) -> int:
+    index = 0
+
+    while not state_vector[index ^ x_vector]:
+        if state_vector[index]:
+            return None
+        
+        index += 1
+    
+    return index
+
+@numba.njit()
+def round_to_5dp(value : complex) -> complex:
+    return round(value.real, 5) + 1j*round(value.imag, 5)

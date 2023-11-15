@@ -114,15 +114,22 @@ def pairity_2(integer):
     
     return p
 
-functions_to_time = [gs.random_unitary]
-reps = int(1e2)
+def np_round(value : complex) -> complex:
+    return np.round(value, 5)
+
+@numba.njit()
+def py_round(value : complex) -> complex:
+    return round(value.real, 5) + 1j*round(value.imag, 5)
+
+functions_to_time = [np_round, py_round]
+reps = int(1e6)
 
 for function in functions_to_time:
 
     timer = 0
 
     for i in range(reps):
-        r = 10
+        r = random.random() + 1j*random.random()
 
         st = time.perf_counter()       
         

@@ -5,9 +5,9 @@ from benchmarking.Benchmarking_Data import Benchmarking_Data
 
 base_data_path = 'benchmarking/data/'
 
-pre_string = 'converting C1 to C2'
+pre_string = 'testing C1'
 function_strings = ['brute force', 'our method']
-generation_strings = ['random clifford']
+generation_strings = ['random unitary', 'random clifford', 'random perturbed clifford']
 
 data_to_plot = []
 
@@ -26,7 +26,7 @@ for data in data_to_plot:
 
 ax.set_xlabel(f'n')
 ax.set_ylabel('execution time (s)')
-ax.set_title(f'Benchmarking getting a conjugate tuple from a matrix')
+ax.set_title(f'Benchmarking Clifford testing')
 ax.legend()
 
 plt.show()
