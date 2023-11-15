@@ -2,10 +2,10 @@ import math
 import itertools as it
 import numpy as np
 from numpy.linalg import norm
+import F2_helper.F2_helper as f2
 
 eps = 1e-5
 rnd_dec = 5
-
 
 def state_eq(state1, state2):
     diff = norm(state1 - state2)
@@ -37,7 +37,9 @@ def paulistring_to_matrix(paulistring):
     return Pm
 
 
-def is_stab_from_paulis(state: np.ndarray, n: int):
+def is_stab_from_paulis(state: np.ndarray,):
+    n = f2.fast_log2(state.shape[0])
+
     state = np.round(state, decimals=rnd_dec)
 
     # find all stabilisers of the state:
@@ -62,14 +64,3 @@ def is_stab_from_paulis(state: np.ndarray, n: int):
             return True
 
     return False
-
-
-if __name__ == '__main__':
-    # Is stab state
-    state_vector = np.array([1] * 8)
-    print(is_stab_from_paulis(state_vector, 3))
-
-    # Not stab state
-    state_vector = np.array(
-        [1, 1, 1, 1, 1, 1, 1, (1/math.sqrt(2))*(1+1j)])/math.sqrt(8)
-    print(is_stab_from_paulis(state_vector, 3))
