@@ -19,6 +19,11 @@ class Test_Stabiliser_From_State_Vector(unittest.TestCase):
 
         self.assertTrue(ssv.Stabiliser_From_State_Vector(state).is_stab_state)
 
+    def test_is_stab_state_rejects_on_all_zero_state(self):
+        state = np.zeros(4)
+
+        self.assertFalse(ssv.Stabiliser_From_State_Vector(state).is_stab_state)
+
     def test_is_stab_state_rejects_with_incorrect_support_size(self):
         state = self.three_stab_state.get_state_vector()
         

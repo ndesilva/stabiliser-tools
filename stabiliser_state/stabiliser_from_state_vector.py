@@ -12,6 +12,9 @@ class Stabiliser_From_State_Vector: #TODO currently assumes length 2^n
         
         nonzero_indices = np.nonzero(state_vector)[0]
         self.support_size = len(nonzero_indices)
+
+        if self.support_size == 0:
+            return
         
         self.dimension = f2.fast_log2(self.support_size)
         self.n = f2.fast_log2(len(state_vector))
