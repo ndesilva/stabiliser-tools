@@ -115,7 +115,6 @@ class Test_Clifford_Check(unittest.TestCase):
 
         self.assertFalse(clifford.is_clifford)
 
-
     def test_is_clifford_rejects_with_global_factor_when_flagged(self):
         matrix = self.get_three_qubit_clifford()
         matrix *= (1+1j)/math.sqrt(2)
