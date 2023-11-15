@@ -52,7 +52,7 @@ class Pauli: # TODO add from_matrix method
             
         factor = self.phase * state_vector[index] * f2.sign_mod2product(self.z_vector, index) / state_vector[index ^ self.x_vector]
 
-        match factor:
+        match np.round(factor,5):
             case 1:
                 bit = 0
             case -1:

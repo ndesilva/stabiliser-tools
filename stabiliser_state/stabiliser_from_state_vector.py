@@ -82,7 +82,7 @@ class Stabiliser_From_State_Vector: #TODO currently assumes length 2^n
 
         # get linear terms
         for index in weight_one_bitstrings:
-            match non_zero_coeffs[index]/self.first_entry:
+            match np.round(non_zero_coeffs[index]/self.first_entry, 5):
                 case 1:
                     pass
                 case -1:
@@ -109,7 +109,7 @@ class Stabiliser_From_State_Vector: #TODO currently assumes length 2^n
 
                 value = non_zero_coeffs[index]/(self.first_entry*linear_part)
 
-                match value:
+                match np.round(value,5):
                     case 1:
                         pass
                     case -1:
@@ -145,7 +145,7 @@ class Stabiliser_From_State_Vector: #TODO currently assumes length 2^n
         return True
 
 def is_valid_stabiliser_entry(entry : complex) -> bool:
-    match entry:
+    match np.round(entry, 5):
         case 1:
             return True
         case -1:

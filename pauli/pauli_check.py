@@ -30,7 +30,7 @@ def is_pauli(matrix : np.ndarray, allow_global_factor = True) -> bool:
 
         entry = matrix[col ^ q, col]/phase
 
-        match entry:
+        match np.round(entry,5):
             case 1:
                 pass
             case -1:
@@ -50,7 +50,7 @@ def is_pauli(matrix : np.ndarray, allow_global_factor = True) -> bool:
     return True
 
 def is_valid_pauli_entry(entry : float) -> bool:
-    match entry:
+    match np.round(entry,5):
         case 1:
             return True
         case -1:
@@ -63,7 +63,7 @@ def is_valid_pauli_entry(entry : float) -> bool:
             return False
 
 def is_pm_one(entry : float) -> bool:
-    match entry:
+    match np.round(entry,5):
         case 1:
             return True
         case -1:
