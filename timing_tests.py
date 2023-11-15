@@ -4,7 +4,9 @@ import random
 import functools
 import numpy as np
 from stabiliser_state.Stabiliser_State import Stabiliser_State
-import numba
+from F2_helper.F2_helper import *
+import benchmarking.generator_dependencies.randstab as rs
+import benchmarking.generators as gs
 
 pauli_entries = [1, -1, 1j, -1j]
 
@@ -58,8 +60,8 @@ def imaginary_part_linear(integer):
 def imaginary_part_power(integer):
     return (1j)**integer
 
-def log2(power2):
-    return int(np.log2(power2))
+def log2(integer):
+    return integer & - integer
 
 def get_bit_at_using_bin(int, i):
     return bin(int)[2+i]
@@ -100,21 +102,33 @@ def rref_binary(xmatr_aug):
 def row_reduce(state : Stabiliser_State):
     state.__row_reduce_basis()
 
-functions_to_time = [rref_binary]
-reps = int(1e4)
+def pairity_1(integer):
+    return bin(integer).count('1') & 1
+
+def pairity_2(integer):
+    p = 0
+
+    while integer:
+        p ^= 1
+        integer &= integer - 1
+    
+    return p
+
+functions_to_time = [gs.random_unitary]
+reps = int(1e2)
 
 for function in functions_to_time:
 
     timer = 0
 
     for i in range(reps):
-        r = np.random.randint(2, size=(20,20))
+        r = 10
 
-        st = time.time()       
+        st = time.perf_counter()       
         
         function(r)
         
-        et = time.time()
+        et = time.perf_counter()
         timer += et - st
 
     print(timer/reps)
