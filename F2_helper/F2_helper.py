@@ -11,13 +11,7 @@ def sign_evaluate_poly(non_zero_coeffs : list[int], integer : int) -> int:
 def mod2product(x : int, y : int) -> int:
     product = x & y
 
-    pairity = 0
-    
-    while product:
-        pairity ^= 1
-        product &= product -1
-
-    return pairity
+    return bin(product).count('1') & 1
 
 def sign_mod2product(x : int, y : int) -> int:
     return 1-2*mod2product(x,y)
