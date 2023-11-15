@@ -192,7 +192,7 @@ def stab_to_xmatr(state: np.ndarray):
     ind_signs
     """
 
-    n = f2.fast_log2(state.shape)
+    n = f2.fast_log2(state.shape[0])
 
     state = np.round(state, decimals=rnd_dec)
 

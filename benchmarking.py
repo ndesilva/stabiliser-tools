@@ -1,11 +1,15 @@
 import numpy as np
 import time
 import pickle
-from benchmarking.data.Benchmarking_Data import Benchmarking_Data
+from benchmarking.Benchmarking_Data import Benchmarking_Data
+import benchmarking.generators as gs
 
-reps = int(1e3)
+import clifford.Clifford as c
+import benchmarking.brute_force.clifford_check as bf_cc
 
-max_qubits = 10
+reps = int(1)
+
+max_qubits = 12
 qubit_numbers = list(range(1, max_qubits + 1))
 
 def time_function_with_generator(function_to_time, generator) -> np.ndarray:
@@ -28,15 +32,16 @@ def time_function_with_generator(function_to_time, generator) -> np.ndarray:
     
     return times
 
-test_lambda = lambda x : x^2
+def our_method_clifford(matrix : np.ndarray) -> c.Clifford:
+    return c.Clifford.from_matrix(matrix, assume_clifford = True)
 
-functions_to_time = [test_lambda] 
-function_strings = ['test_function']
+functions_to_time = [bf_cc.is_clifford, our_method_clifford] 
+function_strings = ['brute force', 'our method']
 
-test_generator = lambda x : 1
+generation_types = [gs.random_clifford]
+generation_strings = ['random clifford']
 
-generation_types = [test_generator]
-generation_strings = ['test_generator']
+pre_string = 'converting C1 to C2'
 
 num_functions = len(functions_to_time)
 num_generators = len(generation_types)
@@ -51,7 +56,9 @@ for function_index in range(num_functions):
         function_string = function_strings[function_index]
         generation_string = generation_strings[generation_index]
         
-        filename = f'{base_filestring}/{function_string}_with_{generation_string}.npy'
+        filename = f'{base_filestring}/{pre_string} {function_string} on {generation_string}.npy'
+
+        print(f'timing {function_string} with {generation_string}')
 
         times = time_function_with_generator(functions_to_time[function_index], generation_types[generation_index])
 

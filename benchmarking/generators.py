@@ -3,6 +3,7 @@ import random
 from pauli.Pauli import Pauli
 import benchmarking.generator_dependencies.randstab as rs
 import scipy.stats as sts
+import qiskit.quantum_info as qi
 
 def random_unitary(n : int) -> np.ndarray:
     return sts.unitary_group.rvs(1<<n)
@@ -22,7 +23,7 @@ def random_almost_pauli_matrix(n : int) -> np.ndarray:
     return matrix
 
 
-def random_state(n : int) -> np.ndarray:
+def random_vector(n : int) -> np.ndarray:
     unnormalised = np.random.rand(1<<n) + 1j*np.random.rand(1<<n)
     return unnormalised / np.sqrt(unnormalised @ unnormalised.conj())
 
@@ -45,7 +46,7 @@ def random_almost_stab_state(n : int) -> np.ndarray:
     return stab_state
 
 def random_clifford(n : int) -> np.ndarray:
-    pass
+    return qi.random_clifford(n).to_matrix()
 
 def random_almost_clifford(n : int) -> np.ndarray:
     matrix = random_clifford(n)

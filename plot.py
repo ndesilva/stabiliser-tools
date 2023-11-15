@@ -1,26 +1,32 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle
-from benchmarking.data.Benchmarking_Data import Benchmarking_Data
+from benchmarking.Benchmarking_Data import Benchmarking_Data
 
-data_filename = 'benchmarking/data/test_function_with_test_generator.npy'
+base_data_path = 'benchmarking/data/'
 
-with open(data_filename, 'rb') as fl:
-    data : Benchmarking_Data = pickle.load(fl)
+pre_string = 'converting C1 to C2'
+function_strings = ['brute force', 'our method']
+generation_strings = ['random clifford']
 
-print(data.function_description)
-print(data.generator_description)
-print(data.number_qubits)
-print(data.times)
+data_to_plot = []
 
-# _, ax = plt.subplots()
-# ax.plot(qubit_numbers, pauli_times, label = 'random Pauli')
-# ax.plot(qubit_numbers, random_matrix_times, label = 'random matrix')
-# ax.plot(qubit_numbers, almost_pauli_times, label = 'random almost-Pauli')
+for function_string in function_strings:
+    for generation_string in generation_strings:
+        file_name = f'{base_data_path}{pre_string} {function_string} on {generation_string}.npy'
 
-# ax.set_xlabel(f'n')
-# ax.set_ylabel('execution time (s)')
-# ax.set_title(f'Benchmarking is_pauli() as the number of qubits increases')
-# ax.legend()
+        with open(file_name, 'rb') as fl:
+            data : Benchmarking_Data = pickle.load(fl)
+            data_to_plot.append(data)
 
-# plt.show()
+_, ax = plt.subplots()
+
+for data in data_to_plot:
+    ax.plot(data.number_qubits, data.times, label = f'{data.function_description} with {data.generator_description}')
+
+ax.set_xlabel(f'n')
+ax.set_ylabel('execution time (s)')
+ax.set_title(f'Benchmarking getting a conjugate tuple from a matrix')
+ax.legend()
+
+plt.show()

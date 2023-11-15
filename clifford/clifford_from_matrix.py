@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 import stabiliser_state.stabiliser_from_state_vector as ssv
 import F2_helper.F2_helper as f2
