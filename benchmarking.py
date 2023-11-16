@@ -11,10 +11,10 @@ import clifford.clifford_from_matrix as cc
 
 import stabiliser_state.stabiliser_from_state_vector as ssc
 
-reps = int(1e2)
+reps = int(5)
 
-min_qubits = 8
-max_qubits = 8
+min_qubits = 1
+max_qubits = 12
 qubit_numbers = list(range(min_qubits, max_qubits + 1))
 
 profile = cProfile.Profile()
@@ -23,20 +23,20 @@ def time_function_with_generator(function_to_time, generator) -> np.ndarray:
     times = np.zeros(max_qubits)
     
     for n in qubit_numbers:
-        print(n)
+        print(f'n is {n}')
         timer = 0
 
         for j in range(reps):
-            input = generator(n)
-            
-            # st = time.perf_counter()
-            st = 0
-            profile.enable()
-            function_to_time(input)
-            profile.disable()
             print(j)
-            et = 1
-            # et = time.perf_counter()
+            input = generator(n)
+
+            st = time.perf_counter()
+            # profile.enable()
+            
+            function_to_time(input)
+            
+            # profile.disable()
+            et = time.perf_counter()
 
             timer += et-st
 
@@ -50,11 +50,11 @@ def our_method_clifford(matrix : np.ndarray) -> bool:
 def our_method_stabiliser_state(state : np.ndarray) -> bool:
     return ssc.Stabiliser_From_State_Vector(state).is_stab_state
 
-functions_to_time = [our_method_clifford] 
-function_strings = ['our method']
+functions_to_time = [bf_cc.is_clifford, our_method_clifford] 
+function_strings = ['brute force', 'our method']
 
-generation_types = [gs.random_clifford]
-generation_strings = ['random stabiliser state']
+generation_types = [gs.random_unitary, gs.random_clifford, gs.random_almost_clifford]
+generation_strings = ['random unitary', 'random clifford', 'random perturbed clifford']
 
 pre_string = 'testing C1'
 
@@ -79,7 +79,7 @@ for function_index in range(num_functions):
 
         data = Benchmarking_Data(function_string, generation_string, qubit_numbers, times)
 
-        # with open(filename, 'wb') as fl:
-        #     pickle.dump(data, fl)
+        with open(filename, 'wb') as fl:
+            pickle.dump(data, fl)
 
-profile.dump_stats('./logs/with_new_round_function.log')
+# profile.dump_stats('./logs/numba_with_compound_ifs.log')
