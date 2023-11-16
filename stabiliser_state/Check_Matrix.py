@@ -7,6 +7,30 @@ import pauli.Pauli as p
 import F2_helper.F2_helper as f2
 
 class Check_Matrix():
+    # TODO Ming's attempt at converting a binary check matrix into a 
+    # Check_Matrix object
+    @staticmethod
+    def from_binary_matrix(mat : np.ndarray, signs : np.ndarray):
+        """
+        NB: This function uses the convention that if there is a 1 in both
+        the X and Z positions for a qubit, then the Pauli acting on that qubit
+        is Y, which is iXZ.
+
+        """
+
+        n = mat.shape[0]
+        paulis = []
+
+        for i in range(n):
+            x_vector = f2.array_to_int(mat[i, :n])
+            z_vector = f2.array_to_int(mat[i, n:])
+            num_of_ys = np.count_nonzero(mat[i, :n] + mat[i, n:] == 2)
+            # Y = iXZ
+            sign_bit = (signs[i] + num_of_ys) % 2
+            i_bit = num_of_ys % 2
+            paulis.append(p.Pauli(n, x_vector, z_vector, sign_bit, i_bit))
+        
+        return Check_Matrix(paulis)
 
     @staticmethod
     def from_stabiliser_state(stab_state : ss.Stabiliser_State) -> Check_Matrix: # TODO test
