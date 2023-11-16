@@ -6,6 +6,7 @@ import F2_helper.F2_helper as f2
 import math
 import pauli.Pauli as p
 import clifford.Clifford as c
+import numba
 
 class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n
     def __init__(self, matrix : np.ndarray, allow_global_factor : bool = True, assume_clifford : bool = False, only_testing : bool = False): # TODO test flags somehow?
@@ -107,6 +108,7 @@ def multiply_by_hadamard_product(matrix : np.ndarray, number_qubits : int) -> np
 
     return new_matrix/math.sqrt((1 << number_qubits))
 
+@numba.njit()
 def unscaled_multiply_by_hadmard_at(matrix : np.ndarray, hadamard_index : int, number_qubits : int) -> None:
     for tail in range(1 << hadamard_index):
         for head in range(1 << (number_qubits - hadamard_index - 1)):

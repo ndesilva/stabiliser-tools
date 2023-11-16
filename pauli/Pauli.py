@@ -86,6 +86,7 @@ def remaining_entries_consistent(number_qubits : int, start_index : int, x_vecto
     for remaining_index in range(start_index + 1, 1 << number_qubits):
         if state_vector[remaining_index] * f2.sign_mod2product(z_vector, remaining_index) != factor * state_vector[remaining_index ^ x_vector]:   
             return False
+    
     return True
 
 @numba.njit()
