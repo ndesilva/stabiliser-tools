@@ -53,8 +53,8 @@ def our_method_stabiliser_state(state : np.ndarray) -> bool:
 functions_to_time = [bf_cc.is_clifford, our_method_clifford] 
 function_strings = ['brute force', 'our method']
 
-generation_types = [gs.random_unitary, gs.random_clifford, gs.random_almost_clifford]
-generation_strings = ['random unitary', 'random clifford', 'random perturbed clifford']
+generation_types = [gs.random_clifford]
+generation_strings = ['random clifford']
 
 pre_string = 'testing C1'
 
