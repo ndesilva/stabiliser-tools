@@ -64,18 +64,6 @@ class Test_Clifford_Check(unittest.TestCase):
 
         self.assertTrue(np.allclose(matrix_product, expected_product))
 
-    # def test_columns_consistent_accepts(self): TODO look at better testing for this
-    #     matrix = self.get_three_qubit_clifford()
-    #     clifford = cc.
-        
-    #     self.assertTrue(cc.columns_consistent(matrix, 3, False))
-
-    # def test_columns_consistent_accepts_with_incorrect_relative_phase(self):
-    #     matrix = self.get_three_qubit_clifford()
-    #     matrix[:,7] *= (1+1j)/math.sqrt(2)
-        
-    #     self.assertTrue(cc.columns_consistent(matrix, 3, False))
-
     def test_is_clifford_accepts(self):
         matrix = self.get_three_qubit_clifford()
         
@@ -148,7 +136,7 @@ class Test_Clifford_Check(unittest.TestCase):
 
         self.assertRaises(ValueError, clifford.get_clifford)
 
-    def test_get_clifford(self):
+    def test_get_clifford_without_assuming_clifford(self):
         n = 3
         matrix = self.get_three_qubit_clifford()
 
@@ -171,7 +159,42 @@ class Test_Clifford_Check(unittest.TestCase):
           expected_v_i = matrix @ x_i @ matrix.conj().T
             
           self.assertTrue(pc.is_pauli(expected_v_i))
+          
+          v_i = clifford.x_conjugates[i].generate_matrix()
+
+          self.assertTrue(np.array_equal(v_i, expected_v_i))
+
+    def test_get_clifford_with_assuming_clifford(self):
+        n = 3
+        matrix = self.get_three_qubit_clifford()
+
+        self.assertEqual(matrix.shape[0], 1 << n)
+
+        clifford = cc.Clifford_From_Matrix(matrix, assume_clifford = True).get_clifford()
+
+        for i in range(n):
+            z_i = p.Pauli(n, 0, 1 << i, 0, 0).generate_matrix()
+            expected_u_i = matrix @ z_i @ matrix.conj().T
+            
+            self.assertTrue(pc.is_pauli(expected_u_i))
+
+            u_i = clifford.z_conjugates[i].generate_matrix()
+
+            self.assertTrue(np.array_equal(u_i, expected_u_i))
+      
+        for i in range(n):
+          x_i = p.Pauli(n, 1<<i , 0, 0, 0).generate_matrix()
+          expected_v_i = matrix @ x_i @ matrix.conj().T
+            
+          self.assertTrue(pc.is_pauli(expected_v_i))
 
           v_i = clifford.x_conjugates[i].generate_matrix()
 
           self.assertTrue(np.array_equal(v_i, expected_v_i))
+
+    def test_get_first_column_of_fourier_transform(self):
+        matrix = self.get_three_qubit_clifford()
+        expected_first_column = cc.multiply_by_hadamard_product(matrix, 3)[:,0]
+        first_column = cc.get_first_column_of_fourier_transform(matrix, 3)
+
+        self.assertTrue(np.array_equal(expected_first_column, first_column))

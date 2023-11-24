@@ -37,6 +37,12 @@ class Pauli: # TODO add from_matrix method
 
         self.update_phase()
     
+    def anticommutes_with(self, other_pauli : Pauli) -> int:
+        return f2.mod2product(self.x_vector, other_pauli.z_vector) ^ f2.mod2product(self.z_vector, other_pauli.x_vector)
+    
+    def commutes_with(self, other_pauli : Pauli) -> int:
+        return 1 ^ self.anticommutes_with(other_pauli)
+
     def get_sign_eigenvalue(self, state_vector : np.ndarray, assume_equation_holds: bool = False) -> int | None:
         n = f2.fast_log2(len(state_vector))
 

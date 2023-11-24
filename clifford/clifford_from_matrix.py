@@ -11,7 +11,7 @@ import numba
 class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n
     def __init__(self, matrix : np.ndarray, allow_global_factor : bool = True, assume_clifford : bool = False, only_testing : bool = False): # TODO test flags somehow?
         self.number_qubits = f2.fast_log2(matrix.shape[0])
-        self.is_clifford = False
+        self.is_clifford = assume_clifford
 
         if not self.__set_first_col_stabilisers(matrix, allow_global_factor, assume_clifford = assume_clifford, set_phase = True):
             return
@@ -22,20 +22,33 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n
             
         if not only_testing:
             self.z_conjugates = self.__get_conjugates()
-    
-        matrix_times_hadamard = multiply_by_hadamard_product(matrix, self.number_qubits)
 
-        if not self.__set_first_col_stabilisers(matrix_times_hadamard, allow_global_factor, assume_clifford = assume_clifford):
-            return
-        
-        if not assume_clifford:
-            if not self.__remaining_columns_consistent(matrix_times_hadamard):
+        if assume_clifford: # TODO test
+            first_col_fourier_transform = get_first_column_of_fourier_transform(matrix, self.number_qubits)
+            
+            fourier_stabilisers = ssv.Stabiliser_From_State_Vector(first_col_fourier_transform, assume_stab_state = True).get_stab_state().get_check_matrix().paulis
+            self.pauli_pattern_pairs : list[tuple[p.Pauli, Pauli_Pattern]] = [(pauli, Pauli_Pattern()) for pauli in fourier_stabilisers]
+
+            for i in range(self.number_qubits):
+                for pair in self.pauli_pattern_pairs:
+                    pair[1].string |= (1 << i) * self.z_conjugates[i].anticommutes_with(pair[0])
+                
+            self.x_conjugates = self.__get_conjugates()
+
+        else:
+            matrix_times_hadamard = multiply_by_hadamard_product(matrix, self.number_qubits)
+
+            if not self.__set_first_col_stabilisers(matrix_times_hadamard, allow_global_factor, assume_clifford = assume_clifford):
                 return
             
-        if not only_testing:
-            self.x_conjugates = self.__get_conjugates()
-    
-        self.is_clifford = True
+            if not assume_clifford:
+                if not self.__remaining_columns_consistent(matrix_times_hadamard):
+                    return
+                
+            if not only_testing:
+                self.x_conjugates = self.__get_conjugates()
+        
+            self.is_clifford = True
 
     def get_clifford(self) -> c.Clifford: # TODO test
         if self.is_clifford:
@@ -44,7 +57,7 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n
         raise ValueError('Matrix does not correspond to a Clifford')
 
     def __set_first_col_stabilisers(self, matrix : np.ndarray, allow_global_factor : bool, assume_clifford : bool, set_phase : bool = False) -> bool: #  TODO test
-        first_col_state = ssv.Stabiliser_From_State_Vector(matrix[:, 0], allow_global_factor)
+        first_col_state = ssv.Stabiliser_From_State_Vector(matrix[:, 0], allow_global_factor, assume_stab_state = assume_clifford)
 
         if not first_col_state.is_stab_state:
             return False
@@ -58,7 +71,7 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n
 
         for pair in self.pauli_pattern_pairs:
             for j in range(self.number_qubits):
-                phase_bit = pair[0].get_sign_eigenvalue(matrix[: , 1<<j], assume_equation_holds = assume_clifford)
+                phase_bit = pair[0].get_sign_eigenvalue(matrix[: , 1 << j], assume_equation_holds = assume_clifford)
                 
                 if phase_bit == None:
                     return False
@@ -86,10 +99,9 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n
             pivot_index = f2.fast_log2(pattern)
 
             for j in range(self.number_qubits):
-                if i != j:
-                    if f2.get_bit_at(self.pauli_pattern_pairs[j][1].string, pivot_index):
-                        self.pauli_pattern_pairs[j][1].string ^= pattern
-                        self.pauli_pattern_pairs[j][0].multiply_by_pauli_on_right(pauli)
+                if i != j and f2.get_bit_at(self.pauli_pattern_pairs[j][1].string, pivot_index):
+                    self.pauli_pattern_pairs[j][1].string ^= pattern
+                    self.pauli_pattern_pairs[j][0].multiply_by_pauli_on_right(pauli)
 
         self.pauli_pattern_pairs.sort(key = lambda x : x[1].string)
         return [pair[0] for pair in self.pauli_pattern_pairs]
@@ -98,6 +110,9 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n
 class Pauli_Pattern:
     def __init__(self):
         self.string = 0
+
+def get_first_column_of_fourier_transform(matrix : np.ndarray, number_qubits : int) -> np.ndarray: # TODO test
+    return np.sum(matrix, 1) / math.sqrt(1 << number_qubits)
 
 def multiply_by_hadamard_product(matrix : np.ndarray, number_qubits : int) -> np.ndarray:
     

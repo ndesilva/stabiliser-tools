@@ -85,5 +85,29 @@ class Test_Pauli_Class(unittest.TestCase):
 
         self.assertEqual(pauli_one, expected_pauli)
 
+    def test_anticommutes_with_with_anticommuting_paulis(self):
+        pauli_one = Pauli(3, 6, 1, 1, 1) #(-1)(-i) X X Z
+        pauli_two = Pauli(3, 2, 5, 1, 1) #(-1)(-i) Z X Z
+
+        self.assertEqual(pauli_one.anticommutes_with(pauli_two), 1)
+
+    def test_anticommutes_with_with_commuting_paulis(self):
+        pauli_one = Pauli(3, 6, 3, 1, 1) #(-1)(-i) X XZ Z
+        pauli_two = Pauli(3, 2, 5, 1, 1) #(-1)(-i) Z X  Z
+
+        self.assertEqual(pauli_one.anticommutes_with(pauli_two), 0)
+
+    def test_commutes_with_with_anticommuting_paulis(self):
+        pauli_one = Pauli(3, 6, 1, 1, 1) #(-1)(-i) X X Z
+        pauli_two = Pauli(3, 2, 5, 1, 1) #(-1)(-i) Z X Z
+
+        self.assertEqual(pauli_one.commutes_with(pauli_two), 0)
+
+    def test_commutes_with_with_commuting_paulis(self):
+        pauli_one = Pauli(3, 6, 3, 1, 1) #(-1)(-i) X XZ Z
+        pauli_two = Pauli(3, 2, 5, 1, 1) #(-1)(-i) Z X  Z
+
+        self.assertEqual(pauli_one.commutes_with(pauli_two), 1)
+
 if __name__ == '__main__':
     unittest.main()
