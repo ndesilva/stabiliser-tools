@@ -7,6 +7,8 @@ import pauli.pauli_check as pc
 import clifford.Clifford as c
 import benchmarking.generators as gs
 
+NUM_REPETITIONS = 5
+
 class Test_Clifford_Check(unittest.TestCase):
 
     @staticmethod
@@ -102,10 +104,9 @@ class Test_Clifford_Check(unittest.TestCase):
         self.assertFalse(clifford.is_clifford)
 
     def test_is_clifford_on_random_cliffords(self):
-        num_repetitions = 5
         number_qubits = 6
 
-        for _ in range(num_repetitions):
+        for _ in range(NUM_REPETITIONS):
             matrix = gs.random_almost_clifford(number_qubits)
             
             clifford = cc.Clifford_From_Matrix(matrix, only_testing = True)
@@ -143,10 +144,9 @@ class Test_Clifford_Check(unittest.TestCase):
         self.assertTrue(extracted_clifford_is_correct(matrix, clifford, n))
 
     def test_get_clifford_on_random_cliffords(self):
-        num_repetitions = 5
         number_qubits = 6
 
-        for _ in range(num_repetitions):
+        for _ in range(NUM_REPETITIONS):
             random_clifford = gs.random_clifford(number_qubits)
             
             clifford = cc.Clifford_From_Matrix(random_clifford, assume_clifford = True).get_clifford()
