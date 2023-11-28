@@ -109,5 +109,15 @@ class Test_Pauli_Class(unittest.TestCase):
 
         self.assertEqual(pauli_one.commutes_with(pauli_two), 1)
 
+    def test_is_hermitian_returns_true(self):
+        pauli = Pauli(3, 6, 3, 1, 1) # X Y Z
+
+        self.assertTrue(pauli.is_hermitian())
+
+    def test_is_hermitian_returns_false(self):
+        pauli = Pauli(3, 5, 6, 1, 0) # i Y Z X
+
+        self.assertFalse(pauli.is_hermitian())
+
 if __name__ == '__main__':
     unittest.main()

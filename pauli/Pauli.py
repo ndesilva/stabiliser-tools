@@ -5,7 +5,7 @@ import F2_helper.F2_helper as f2
 import numba
 
 class Pauli: # TODO add from_matrix method
-    # Pauli is (-1)^sign bit * (-i) * (i_bit) * X^x_vector * Z^z_vector
+    # Pauli is (-1)^sign bit * (-i) *=^ (i_bit) * X^x_vector * Z^z_vector
     def __init__(self, number_qubits : int, x_vector : int, z_vector : int, sign_bit : int, i_bit : int):
         self.number_qubits = number_qubits
         self.x_vector = x_vector
@@ -37,7 +37,7 @@ class Pauli: # TODO add from_matrix method
 
         self.update_phase()
 
-    def is_hermitian(self) -> bool: #TODO test
+    def is_hermitian(self) -> bool:
         return self.i_bit == f2.mod2product(self.x_vector, self.z_vector)
     
     def anticommutes_with(self, other_pauli : Pauli) -> int:
