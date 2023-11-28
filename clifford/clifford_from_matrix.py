@@ -3,7 +3,6 @@ from __future__ import annotations
 import numpy as np
 import stabiliser_state.stabiliser_from_state_vector as ssv
 import F2_helper.F2_helper as f2
-import math
 import pauli.Pauli as p
 import clifford.Clifford as c
 import numba
@@ -178,9 +177,9 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n unitary
                     pass
                 case -1:
                     pauli.sign_bit = 1
-                case 1j:
-                    pauli.i_bit = 1
                 case -1j:
+                    pauli.i_bit = 1
+                case 1j:
                     pauli.sign_bit = 1
                     pauli.i_bit = 1
                 case _:

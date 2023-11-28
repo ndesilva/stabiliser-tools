@@ -4,6 +4,8 @@ import math
 import clifford.clifford_from_matrix as cc
 import pauli.Pauli as p
 import pauli.pauli_check as pc
+import clifford.Clifford as c
+import benchmarking.generators as gs
 
 class Test_Clifford_Check(unittest.TestCase):
 
@@ -115,25 +117,7 @@ class Test_Clifford_Check(unittest.TestCase):
 
         clifford = cc.Clifford_From_Matrix(matrix).get_clifford()
 
-        for i in range(n):
-            z_i = p.Pauli(n, 0, 1 << i, 0, 0).generate_matrix()
-            expected_u_i = matrix @ z_i @ matrix.conj().T
-            
-            self.assertTrue(pc.is_pauli(expected_u_i))
-
-            u_i = clifford.z_conjugates[i].generate_matrix()
-
-            self.assertTrue(np.array_equal(u_i, expected_u_i))
-      
-        for i in range(n):
-          x_i = p.Pauli(n, 1<<i , 0, 0, 0).generate_matrix()
-          expected_v_i = matrix @ x_i @ matrix.conj().T
-            
-          self.assertTrue(pc.is_pauli(expected_v_i))
-          
-          v_i = clifford.x_conjugates[i].generate_matrix()
-
-          self.assertTrue(np.array_equal(v_i, expected_v_i))
+        self.assertTrue(extracted_clifford_is_correct(matrix, clifford, n))
 
     def test_get_clifford_with_assuming_clifford(self):
         n = 3
@@ -143,22 +127,41 @@ class Test_Clifford_Check(unittest.TestCase):
 
         clifford = cc.Clifford_From_Matrix(matrix, assume_clifford = True).get_clifford()
 
-        for i in range(n):
-            z_i = p.Pauli(n, 0, 1 << i, 0, 0).generate_matrix()
-            expected_u_i = matrix @ z_i @ matrix.conj().T
+        self.assertTrue(extracted_clifford_is_correct(matrix, clifford, n))
+
+    def test_get_clifford_on_random_cliffords(self):
+        num_repetitions = 5
+        number_qubits = 6
+
+        for _ in range(num_repetitions):
+            random_clifford = gs.random_clifford(number_qubits)
             
-            self.assertTrue(pc.is_pauli(expected_u_i))
+            clifford = cc.Clifford_From_Matrix(random_clifford, assume_clifford = True).get_clifford()
+            clifford2 = cc.Clifford_From_Matrix(random_clifford).get_clifford()
 
-            u_i = clifford.z_conjugates[i].generate_matrix()
+            is_clifford = cc.Clifford_From_Matrix(random_clifford, only_testing = True).is_clifford
 
-            self.assertTrue(np.array_equal(u_i, expected_u_i))
+            self.assertTrue(extracted_clifford_is_correct(random_clifford, clifford, number_qubits))
+            self.assertTrue(extracted_clifford_is_correct(random_clifford, clifford2, number_qubits))
+            self.assertTrue(is_clifford)
+
+def extracted_clifford_is_correct(matrix : np.ndarray, clifford : c.Clifford, num_qubits : int) -> bool:
+    for i in range(num_qubits):
+        z_i = p.Pauli(num_qubits, 0, 1 << i, 0, 0).generate_matrix()
+        expected_u_i = matrix @ z_i @ matrix.conj().T
+
+        u_i = clifford.z_conjugates[i].generate_matrix()
+
+        if not np.allclose(u_i, expected_u_i):
+            return False
       
-        for i in range(n):
-          x_i = p.Pauli(n, 1<<i , 0, 0, 0).generate_matrix()
-          expected_v_i = matrix @ x_i @ matrix.conj().T
-            
-          self.assertTrue(pc.is_pauli(expected_v_i))
+    for i in range(num_qubits):
+        x_i = p.Pauli(num_qubits, 1<<i , 0, 0, 0).generate_matrix()
+        expected_v_i = matrix @ x_i @ matrix.conj().T
 
-          v_i = clifford.x_conjugates[i].generate_matrix()
+        v_i = clifford.x_conjugates[i].generate_matrix()
 
-          self.assertTrue(np.array_equal(v_i, expected_v_i))
+        if not np.allclose(v_i, expected_v_i):
+            return False
+
+    return True
