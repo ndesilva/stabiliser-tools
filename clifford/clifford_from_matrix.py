@@ -220,30 +220,6 @@ class Pauli_Pattern:
     def __init__(self):
         self.string = 0
 
-def get_first_column_of_fourier_transform(matrix : np.ndarray, number_qubits : int) -> np.ndarray: # TODO test
-    return np.sum(matrix, 1) / math.sqrt(1 << number_qubits)
-
-def multiply_by_hadamard_product(matrix : np.ndarray, number_qubits : int) -> np.ndarray:
-    
-    new_matrix = matrix.copy()
-
-    for j in range(number_qubits):
-        unscaled_multiply_by_hadmard_at(new_matrix, j, number_qubits)
-
-    return new_matrix/math.sqrt((1 << number_qubits))
-
-@numba.njit()
-def unscaled_multiply_by_hadmard_at(matrix : np.ndarray, hadamard_index : int, number_qubits : int) -> None:
-    for tail in range(1 << hadamard_index):
-        for head in range(1 << (number_qubits - hadamard_index - 1)):
-            shifted_head = head << (hadamard_index + 1)
-            
-            first_col_index = shifted_head | tail
-            second_col_index = shifted_head | (1 << hadamard_index) | tail
-
-            matrix[:, first_col_index] += matrix[:, second_col_index]
-            matrix[:, second_col_index] = matrix[:, first_col_index] - 2*matrix[:, second_col_index] # since first column is set first, this is now the difference
-
 @numba.njit() # TODO put in seperate file, shared with Pauli class
 def round_to_5dp(value : complex) -> complex:
     return round(value.real, 5) + 1j*round(value.imag, 5)
