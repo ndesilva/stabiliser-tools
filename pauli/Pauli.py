@@ -36,6 +36,9 @@ class Pauli: # TODO add from_matrix method
         self.z_vector ^= other_pauli.z_vector
 
         self.update_phase()
+
+    def is_hermitian(self) -> bool: #TODO test
+        return self.i_bit == f2.mod2product(self.x_vector, self.z_vector)
     
     def anticommutes_with(self, other_pauli : Pauli) -> int:
         return f2.mod2product(self.x_vector, other_pauli.z_vector) ^ f2.mod2product(self.z_vector, other_pauli.x_vector)

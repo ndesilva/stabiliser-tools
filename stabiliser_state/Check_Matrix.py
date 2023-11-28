@@ -45,10 +45,11 @@ class Check_Matrix():
 
         return Check_Matrix.from_stabiliser_state(state.get_stab_state())
 
-    def __init__(self, paulis : list[p.Pauli], reduced_form : bool = False):
+    def __init__(self, paulis : list[p.Pauli], reduced_form : bool = False, pivot_indices : list[int] = []):
         self.paulis = paulis
         self.reduced_form = reduced_form
         self.number_qubits = len(paulis)
+        self.pivot_indices = pivot_indices
 
         self.non_zero_x : list[p.Pauli] = []
         self.zero_x : list[p.Pauli] = []

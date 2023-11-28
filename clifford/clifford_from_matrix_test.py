@@ -119,10 +119,19 @@ class Test_Clifford_Check(unittest.TestCase):
 
         self.assertTrue(clifford.is_clifford)
 
-    def test_is_clifford_rejects_when_columns_have_wrong_relative_phase(self):
+    def test_is_clifford_rejects_when_reminaing_column_has_wrong_relative_phase(self):
         matrix = self.get_three_qubit_clifford()
 
         matrix[:, 7] *= 1j
+
+        clifford = cc.Clifford_From_Matrix(matrix, only_testing = True)
+
+        self.assertFalse(clifford.is_clifford)
+
+    def test_is_clifford_rejects_when_intial_column_has_nonstabiliser_relative_phase(self):
+        matrix = self.get_three_qubit_clifford()
+
+        matrix[:, 2] *= (1+ 1j)/math.sqrt(2)
 
         clifford = cc.Clifford_From_Matrix(matrix, only_testing = True)
 
