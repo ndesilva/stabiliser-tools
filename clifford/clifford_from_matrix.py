@@ -23,6 +23,16 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n unitary
         
         self.__set_L_matrix()
         self.__set_W_paulis()
+
+        sanity_check = np.array([[pair[0].anticommutes_with(y) for y in self.z_conjugates] for pair in self.w_pauli_tuples])
+
+        if not np.array_equal(sanity_check, np.eye(self.number_qubits)):
+            print('sanity check failed')
+            orig_cm = ssv.Stabiliser_From_State_Vector(matrix[:,0]).get_stab_state().get_check_matrix().paulis
+            row_reduced = np.array([[int(char) for char in f'{(pauli.x_vector << self.number_qubits | pauli.z_vector):012b}'] for pauli in orig_cm])
+            u_matrix = np.array([[int(char) for char in f'{(pauli.x_vector << self.number_qubits | pauli.z_vector):012b}'] for pauli in self.z_conjugates])
+            l_matrix = np.array([[int(char) for char in f'{row:06b}'] for row in self.L])
+            pass
         
         if not self.__set_W_pauli_patterns(matrix):
             return
@@ -104,7 +114,6 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n unitary
 
         return True
 
-
     def __x_conjugates_hermitian_and_commute(self) -> bool:
         for i in range(self.number_qubits):
             pauli = self.x_conjugates[i]
@@ -117,7 +126,6 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n unitary
                 return False
 
         return True
-
 
     def __get_z_conjugates(self) -> None: # TODO test
         
@@ -143,24 +151,27 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n unitary
         self.L = [0]*self.number_qubits
 
         for j in range(self.number_qubits):
-            self.L[self.pauli_pattern_pairs[j][2]] = 1 << j
+            self.L[self.pauli_pattern_pairs[j][2]] = 1 << (self.number_qubits - j - 1)
 
         for addition in reversed(self.additions):
             self.L[addition[1]] ^= self.L[addition[0]]
 
     def __set_W_paulis(self):
-        self.w_pauli_tuples = [(p.Pauli(self.number_qubits, 0, 0, 0, 0), Pauli_Pattern()) for i in range(self.number_qubits)]
+        self.w_pauli_tuples = [(p.Pauli(self.number_qubits, 0, 0, 0, 0), Pauli_Pattern()) for _ in range(self.number_qubits)]
         
         non_pivots = [index for index in range(self.number_qubits) if index not in self.check_matrix_pivots]
         
         for i in range(self.number_qubits):
-            pauli = self.w_pauli_tuples[i][0]
-            
-            for pivot in self.check_matrix_pivots:
-                pauli.z_vector |= (1 << pivot)* f2.get_bit_at(self.L[pivot], i)
+            index = 0
+            pauli = self.w_pauli_tuples[self.number_qubits - 1 - i][0]
 
             for non_pivot in non_pivots:
-                pauli.x_vector |= (1 << non_pivot) * f2.get_bit_at(self.L[non_pivot], i)
+                pauli.x_vector |= (1 << non_pivot) * f2.get_bit_at(self.L[index], i)
+                index += 1
+            
+            for pivot in self.check_matrix_pivots:
+                pauli.z_vector |= (1 << pivot)* f2.get_bit_at(self.L[index], i)
+                index += 1
 
     def __set_W_pauli_patterns(self, matrix) -> bool:
         first_entry = matrix[self.shift, 0]

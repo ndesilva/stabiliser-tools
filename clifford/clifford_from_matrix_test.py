@@ -101,6 +101,19 @@ class Test_Clifford_Check(unittest.TestCase):
 
         self.assertFalse(clifford.is_clifford)
 
+    def test_is_clifford_on_random_cliffords(self):
+        num_repetitions = 5
+        number_qubits = 6
+
+        for _ in range(num_repetitions):
+            matrix = gs.random_almost_clifford(number_qubits)
+            
+            clifford = cc.Clifford_From_Matrix(matrix, only_testing = True)
+            clifford2 = cc.Clifford_From_Matrix(matrix)
+
+            self.assertFalse(clifford.is_clifford)
+            self.assertFalse(clifford2.is_clifford)
+
     def test_get_clifford_raises_error_on_invalid_matrix(self):
         matrix = self.get_three_qubit_clifford()
         matrix[:, 7] *= 1j
