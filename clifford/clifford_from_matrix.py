@@ -14,12 +14,12 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n unitary
 
         if not self.__set_first_col_stabilisers(matrix, allow_global_factor, assume_clifford = assume_clifford):
             return
-        
+            
+        self.__get_z_conjugates()
+
         if not assume_clifford: # TODO swap order to remove need for dot product
             if not self.__remaining_columns_consistent(matrix):
                 return
-            
-        self.__get_z_conjugates()
         
         self.__set_L_matrix()
         self.__set_W_paulis()
@@ -30,9 +30,7 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n unitary
         self.__set_x_conjugates() # TODO can we avoid doing this inversion if we are just checking?
 
         if not assume_clifford:
-            if not self.__x_conjugates_hermitian_and_commute():
-                return
-            if not self.__remaining_rows_consistent(matrix):
+            if not (self.__x_conjugates_hermitian_and_commute() and self.__remaining_rows_consistent(matrix)):
                 return 
         
         self.is_clifford = True
@@ -63,25 +61,31 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n unitary
         return self.__set_pauli_patterns(matrix, assume_clifford)
     
     def __set_pauli_patterns(self, matrix : np.ndarray, assume_clifford : bool) -> bool:
-        for pair in self.pauli_pattern_pairs:
-            for j in range(self.number_qubits):
-                phase_bit = pair[0].get_sign_eigenvalue(matrix[: , 1 << j], assume_equation_holds = assume_clifford)
+        for j in range(self.number_qubits):
+            non_zero_index = get_first_nonzero_index(matrix[:, 1 << j])
+            non_zero_val = matrix[non_zero_index, 1 << j]
+
+            for pair in self.pauli_pattern_pairs:
+                phase = matrix[non_zero_index ^ pair[0].x_vector, 1 << j]/(non_zero_val * f2.sign_mod2product(non_zero_index, pair[0].z_vector) * pair[0].phase)
                 
-                if phase_bit == None:
-                    return False
-                
-                pair[1].string |= phase_bit * (1<<j)
+                match round_to_5dp(phase):
+                    case 1:
+                        pass
+                    case -1:
+                        pair[1].string |= (1<<j)
+                    case _:
+                        return False
         
         return True
 
     def __remaining_columns_consistent(self, matrix : np.ndarray) -> bool: # TODO test and numbaify
-        for pair in self.pauli_pattern_pairs:
-            for col_index in range(1, 1 << self.number_qubits): # TODO Double checking the weight 1 hamming strings
-                phase_bit = pair[0].get_sign_eigenvalue(matrix[:, col_index])
-                
-                if phase_bit != f2.mod2product(pair[1].string, col_index):
+        for col_index in range(1, 1 << self.number_qubits):
+            col = matrix[:, col_index]
+
+            for i in range(self.number_qubits):
+                if not self.z_conjugates[i].check_sign_eigenstate(col, self.number_qubits, f2.get_bit_at(col_index, i)):
                     return False
-        
+
         return True
     
     def __remaining_rows_consistent(self, matrix : np.ndarray) -> bool:        
@@ -89,7 +93,7 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n unitary
         old_support = self.shift
         
         for col_index in range(1, 1 << self.number_qubits): #TODO double checking weight 2 strings   
-            new_col_index = col_index^(col_index >> 1) # iterate through gray code so that we only flip one bit at a time, see https://www.geeksforgeeks.org/generate-n-bit-gray-codes/
+            new_col_index = col_index ^ (col_index >> 1) # iterate through gray code so that we only flip one bit at a time, see https://www.geeksforgeeks.org/generate-n-bit-gray-codes/
             
             bit_flipped = f2.fast_log2(new_col_index ^ old_col_index)
             pauli_flip = self.x_conjugates[bit_flipped]
@@ -223,3 +227,12 @@ class Pauli_Pattern:
 @numba.njit() # TODO put in seperate file, shared with Pauli class
 def round_to_5dp(value : complex) -> complex:
     return round(value.real, 5) + 1j*round(value.imag, 5)
+
+@numba.njit()
+def get_first_nonzero_index(state_vector : np.ndarray) -> int:
+    index = 0
+
+    while not state_vector[index]:  
+        index += 1
+    
+    return index

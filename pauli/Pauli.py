@@ -45,6 +45,15 @@ class Pauli: # TODO add from_matrix method
     
     def commutes_with(self, other_pauli : Pauli) -> int:
         return 1 ^ self.anticommutes_with(other_pauli)
+    
+    def check_sign_eigenstate(self, state_vector : np.ndarray, num_qubits : int, sign_bit : int) -> bool: # TODO
+        phase = (1-2*sign_bit) * self.phase
+        
+        for index in range(1 << num_qubits):
+            if state_vector[index ^ self.x_vector] != phase * f2.sign_mod2product(index, self.z_vector) * state_vector[index]:
+                return False
+
+        return True
 
     def get_sign_eigenvalue(self, state_vector : np.ndarray, assume_equation_holds: bool = False) -> int | None:
         n = f2.fast_log2(len(state_vector))

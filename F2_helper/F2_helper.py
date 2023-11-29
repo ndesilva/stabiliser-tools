@@ -11,7 +11,7 @@ def sign_evaluate_poly(non_zero_coeffs : list[int], integer : int) -> int:
     return 1-2*evaluate_poly(non_zero_coeffs, integer)
 
 @numba.njit()
-def mod2ham(x: int) -> int:
+def pairity(x: int) -> int:
     parity = 0
 
     while x:

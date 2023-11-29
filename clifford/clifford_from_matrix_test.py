@@ -7,7 +7,7 @@ import pauli.pauli_check as pc
 import clifford.Clifford as c
 import benchmarking.generators as gs
 
-NUM_REPETITIONS = 5
+NUM_REPETITIONS = 20
 
 class Test_Clifford_Check(unittest.TestCase):
 
@@ -103,7 +103,7 @@ class Test_Clifford_Check(unittest.TestCase):
 
         self.assertFalse(clifford.is_clifford)
 
-    def test_is_clifford_on_random_cliffords(self):
+    def test_is_clifford_on_random_almost_cliffords(self):
         number_qubits = 6
 
         for _ in range(NUM_REPETITIONS):
