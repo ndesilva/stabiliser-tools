@@ -30,7 +30,7 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n unitary
         self.__set_x_conjugates() # TODO can we avoid doing this inversion if we are just checking?
 
         if not assume_clifford:
-            if not (self.__x_conjugates_hermitian_and_commute() and self.__remaining_rows_consistent(matrix)):
+            if not (self.__x_conjugates_commute() and self.__remaining_rows_consistent(matrix)):
                 return 
         
         self.is_clifford = True
@@ -108,16 +108,13 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n unitary
 
         return True
 
-    def __x_conjugates_hermitian_and_commute(self) -> bool:
+    def __x_conjugates_commute(self) -> bool:
         for i in range(self.number_qubits):
             pauli = self.x_conjugates[i]
 
             for j in range(i+1, self.number_qubits):
                 if pauli.anticommutes_with(self.x_conjugates[j]):
                     return False
-                
-            if not pauli.is_hermitian():
-                return False
 
         return True
 
