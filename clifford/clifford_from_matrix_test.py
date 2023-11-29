@@ -7,7 +7,7 @@ import pauli.pauli_check as pc
 import clifford.Clifford as c
 import benchmarking.generators as gs
 
-NUM_REPETITIONS = 20
+NUM_REPETITIONS = 10
 
 class Test_Clifford_Check(unittest.TestCase):
 

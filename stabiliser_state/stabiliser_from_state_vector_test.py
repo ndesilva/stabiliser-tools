@@ -3,6 +3,9 @@ import unittest
 import numpy as np
 import stabiliser_state.stabiliser_from_state_vector as ssv
 from stabiliser_state.Stabiliser_State import Stabiliser_State
+import benchmarking.generators as gs
+
+NUM_REPETITIONS = 10
 
 class Test_Stabiliser_From_State_Vector(unittest.TestCase):
 
@@ -95,3 +98,30 @@ class Test_Stabiliser_From_State_Vector(unittest.TestCase):
         state = ssv.Stabiliser_From_State_Vector(state_vector, assume_stab_state = True)
 
         self.assertTrue(state.is_stab_state)
+
+    def test_get_stab_state_on_random_stab_states(self):
+        num_qubits = 6
+        
+        for _ in range(NUM_REPETITIONS):
+            vector = gs.random_stab_state(num_qubits)
+
+            state = ssv.Stabiliser_From_State_Vector(vector)
+            state2 = ssv.Stabiliser_From_State_Vector(vector, assume_stab_state = True)
+            state3 = ssv.Stabiliser_From_State_Vector(vector, assume_stab_state = True, check_support_first = True)
+
+            self.assertTrue(np.allclose(state.get_stab_state().get_state_vector(), vector))
+            self.assertTrue(np.allclose(state2.get_stab_state().get_state_vector(), vector))
+            self.assertTrue(np.allclose(state3.get_stab_state().get_state_vector(), vector))
+
+
+    def test_is_stab_state_on_random_almost_stab_states(self):
+        num_qubits = 6
+        
+        for _ in range(NUM_REPETITIONS):
+            vector = gs.random_almost_stab_state(num_qubits)
+
+            state = ssv.Stabiliser_From_State_Vector(vector)
+            state2 = ssv.Stabiliser_From_State_Vector(vector, check_support_first = True)
+
+            self.assertFalse(state.is_stab_state)
+            self.assertFalse(state2.is_stab_state)
