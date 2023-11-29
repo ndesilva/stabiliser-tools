@@ -32,34 +32,15 @@ class Clifford:
         first_col_check_matrix = cm.Check_Matrix(self.z_conjugates)
         matrix[:, 0] = first_col_check_matrix.get_state_vector() * self.global_phase
 
-        x_vectors = [pauli.x_vector for pauli in self.x_conjugates]
-        z_vectors = [pauli.z_vector for pauli in self.x_conjugates]
-        
-        non_zero_indices = np.nonzero(matrix[:, 0])[0] # TODO make o(n) rather than O(N)
+        old_col_index = 0
 
-        quad_form = []
-
-        for i in range(self.number_qubits):
-            beta_i = self.x_conjugates[i].z_vector
+        for i in range(1, size):
+            new_col_index = i ^ (i >> 1) # iterate through gray code so that we only flip one bit at a time, see https://www.geeksforgeeks.org/generate-n-bit-gray-codes/
             
-            for j in range(i):
-                if f2.mod2product(beta_i, self.x_conjugates[j].x_vector):
-                    quad_form.append( 1<<i | 1<<j )
+            bit_flipped = f2.fast_log2(new_col_index ^ old_col_index)
 
-        for col_index in range(1, size):
-            phase = f2.sign_evaluate_poly(quad_form, col_index)
-            
-            loop_counter = col_index
+            matrix[:, new_col_index] = self.x_conjugates[bit_flipped].multiply_vector(matrix[:, old_col_index])
 
-            while loop_counter: # TODO make more efficient by using F2 and F4? Also replace with gray code iteration
-                left_most_index = f2.fast_log2(loop_counter)
-                phase *= self.x_conjugates[left_most_index].phase
-                loop_counter ^= (1 << left_most_index) # remove left most one
-
-            x_vector = f2.get_vector_expansion(self.number_qubits, x_vectors, col_index)
-            z_vector = f2.get_vector_expansion(self.number_qubits, z_vectors, col_index)
-
-            for index in non_zero_indices:
-                matrix[index ^ x_vector, col_index] = phase * f2.sign_mod2product(index, z_vector) * matrix[index, 0]
+            old_col_index = new_col_index
 
         return matrix
