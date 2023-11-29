@@ -92,8 +92,8 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n unitary
         old_col_index = 0
         old_support = self.shift
         
-        for col_index in range(1, 1 << self.number_qubits): #TODO double checking weight 2 strings   
-            new_col_index = col_index ^ (col_index >> 1) # iterate through gray code so that we only flip one bit at a time, see https://www.geeksforgeeks.org/generate-n-bit-gray-codes/
+        for i in range(1, 1 << self.number_qubits): #TODO double checking weight 2 strings   
+            new_col_index = i ^ (i >> 1) # iterate through gray code so that we only flip one bit at a time, see https://www.geeksforgeeks.org/generate-n-bit-gray-codes/
             
             bit_flipped = f2.fast_log2(new_col_index ^ old_col_index)
             pauli_flip = self.x_conjugates[bit_flipped]
