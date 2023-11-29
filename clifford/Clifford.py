@@ -51,7 +51,7 @@ class Clifford:
             
             loop_counter = col_index
 
-            while loop_counter: # TODO make more efficient by using F2 and F4?
+            while loop_counter: # TODO make more efficient by using F2 and F4? Also replace with gray code iteration
                 left_most_index = f2.fast_log2(loop_counter)
                 phase *= self.x_conjugates[left_most_index].phase
                 loop_counter ^= (1 << left_most_index) # remove left most one

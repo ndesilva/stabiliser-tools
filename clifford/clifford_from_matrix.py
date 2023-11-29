@@ -15,7 +15,7 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n unitary
         if not self.__set_first_col_stabilisers(matrix, allow_global_factor, assume_clifford = assume_clifford):
             return
         
-        if not assume_clifford:
+        if not assume_clifford: # TODO swap order to remove need for dot product
             if not self.__remaining_columns_consistent(matrix):
                 return
             
@@ -23,16 +23,6 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n unitary
         
         self.__set_L_matrix()
         self.__set_W_paulis()
-
-        sanity_check = np.array([[pair[0].anticommutes_with(y) for y in self.z_conjugates] for pair in self.w_pauli_tuples])
-
-        if not np.array_equal(sanity_check, np.eye(self.number_qubits)):
-            print('sanity check failed')
-            orig_cm = ssv.Stabiliser_From_State_Vector(matrix[:,0]).get_stab_state().get_check_matrix().paulis
-            row_reduced = np.array([[int(char) for char in f'{(pauli.x_vector << self.number_qubits | pauli.z_vector):012b}'] for pauli in orig_cm])
-            u_matrix = np.array([[int(char) for char in f'{(pauli.x_vector << self.number_qubits | pauli.z_vector):012b}'] for pauli in self.z_conjugates])
-            l_matrix = np.array([[int(char) for char in f'{row:06b}'] for row in self.L])
-            pass
         
         if not self.__set_W_pauli_patterns(matrix):
             return
