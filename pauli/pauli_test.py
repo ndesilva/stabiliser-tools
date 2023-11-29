@@ -120,5 +120,23 @@ class Test_Pauli_Class(unittest.TestCase):
 
         self.assertFalse(pauli.is_hermitian())
 
+    def test_multiply_vector_case_1(self):
+        num_qubits = 3
+        pauli = Pauli(num_qubits, 4, 3, 1, 0)
+        vector = np.array([i for i in range (1<<num_qubits)])
+
+        expected_product = pauli.generate_matrix() @ vector
+
+        self.assertTrue(np.allclose(expected_product, pauli.multiply_vector(vector)))
+    
+    def test_multiply_vector_case_2(self):
+        num_qubits = 5
+        pauli = Pauli(num_qubits, 16, 31, 1, 1)
+        vector = np.array([i + 2*i* 1j for i in range (1<<num_qubits)])
+
+        expected_product = pauli.generate_matrix() @ vector
+
+        self.assertTrue(np.allclose(expected_product, pauli.multiply_vector(vector)))
+
 if __name__ == '__main__':
     unittest.main()

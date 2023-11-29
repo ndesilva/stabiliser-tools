@@ -37,6 +37,14 @@ class Pauli: # TODO add from_matrix method
 
         self.update_phase()
 
+    def multiply_vector(self, vector : np.ndarray) -> np.ndarray: # TODO test
+        result = np.zeros(1 << self.number_qubits, dtype = complex)
+
+        for index in range(1 << self.number_qubits):
+            result[index ^ self.x_vector] = self.phase * f2.sign_mod2product(index, self.z_vector) *vector[index]
+        
+        return result
+
     def is_hermitian(self) -> bool:
         return self.i_bit == f2.mod2product(self.x_vector, self.z_vector)
     
