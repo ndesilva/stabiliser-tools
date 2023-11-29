@@ -54,35 +54,6 @@ class Pauli: # TODO add from_matrix method
                 return False
 
         return True
-
-    def get_sign_eigenvalue(self, state_vector : np.ndarray, assume_equation_holds: bool = False) -> int | None:
-        n = f2.fast_log2(len(state_vector))
-
-        if n != self.number_qubits:
-            raise ValueError('State vector and Paulis have different size')
-        
-        index = get_first_nonzero_index(state_vector, self.x_vector)
-
-        if index == None:
-            return None
-            
-        factor = state_vector[index] * f2.sign_mod2product(self.z_vector, index) / state_vector[index ^ self.x_vector]
-
-        match round_to_5dp(factor * self.phase):
-            case 1:
-                bit = 0
-            case -1:
-                bit = 1
-            case _:
-                return None
-            
-        if assume_equation_holds:
-            return bit
-
-        if remaining_entries_consistent(n, index, self.x_vector, self.z_vector, state_vector, factor):
-            return bit
-            
-        return None
     
     def __eq__(self, other : object) -> bool:
         if not isinstance(other, Pauli):
@@ -97,27 +68,6 @@ class Pauli: # TODO add from_matrix method
         result &= (self.phase == other.phase)
 
         return result
-    
-@numba.njit()
-def remaining_entries_consistent(number_qubits : int, start_index : int, x_vector : int,  z_vector :int, state_vector : np.ndarray, factor : complex) -> bool:
-    
-    for remaining_index in range(start_index + 1, 1 << number_qubits):
-        if state_vector[remaining_index] * f2.sign_mod2product(z_vector, remaining_index) != factor * state_vector[remaining_index ^ x_vector]:   
-            return False
-    
-    return True
-
-@numba.njit()
-def get_first_nonzero_index(state_vector : np.ndarray, x_vector : int) -> int:
-    index = 0
-
-    while not state_vector[index ^ x_vector]:
-        if state_vector[index]:
-            return None
-        
-        index += 1
-    
-    return index
 
 @numba.njit()
 def round_to_5dp(value : complex) -> complex:

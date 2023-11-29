@@ -17,7 +17,7 @@ class Clifford_From_Matrix: # TODO currently assumes 2^n to 2^n unitary
             
         self.__get_z_conjugates()
 
-        if not assume_clifford: # TODO swap order to remove need for dot product
+        if not assume_clifford:
             if not self.__remaining_columns_consistent(matrix):
                 return
         
