@@ -4,10 +4,12 @@ import math
 import clifford.clifford_from_matrix as cc
 import pauli.Pauli as p
 import pauli.pauli_check as pc
+import clifford.Clifford as c
+import benchmarking.generators as gs
+
+NUM_REPETITIONS = 10
 
 class Test_Clifford_Check(unittest.TestCase):
-    unscaled_hadmard = np.array([[1,1],[1,-1]])
-    hadamard = (1/math.sqrt(2)) * np.array([[1,1],[1,-1]])
 
     @staticmethod
     def get_three_qubit_clifford() -> np.ndarray:
@@ -27,54 +29,6 @@ class Test_Clifford_Check(unittest.TestCase):
          0. +0.j ,  0. +0.j ],
        [ 0. +0.j ,  0. +0.j ,  0.5+0.j , -0.5+0.j ,  0. +0.j ,  0. +0.j ,
          0.5+0.j , -0.5+0.j ]])
-
-    def test_unscaled_multiply_by_hadmard_at_index_0(self):
-        test_matrix = np.random.rand(8,8)
-        single_hadamard = np.kron(np.eye(4), self.unscaled_hadmard)
-
-        expected_product = test_matrix @ single_hadamard
-        cc.unscaled_multiply_by_hadmard_at(test_matrix, 0, 3)
-
-        self.assertTrue(np.allclose(test_matrix, expected_product))
-
-    def test_unscaled_multiply_by_hadmard_at_largest_index(self):
-        test_matrix = np.random.rand(8,8)
-        single_hadamard = np.kron(self.unscaled_hadmard, np.eye(4))
-
-        expected_product = test_matrix @ single_hadamard
-        cc.unscaled_multiply_by_hadmard_at(test_matrix, 2, 3)
-
-        self.assertTrue(np.allclose(test_matrix, expected_product))
-
-    def test_unscaled_multiply_by_hadmard_at_middle_index(self):
-        test_matrix = np.random.rand(8,8)
-        single_hadamard = np.kron(np.eye(2), np.kron(self.unscaled_hadmard, np.eye(2)) )
-
-        expected_product = test_matrix @ single_hadamard
-        cc.unscaled_multiply_by_hadmard_at(test_matrix, 1, 3)
-
-        self.assertTrue(np.allclose(test_matrix, expected_product))
-
-    def test_multiply_by_hadmard_product(self):
-        test_matrix = np.random.rand(8,8)
-        hadamard_product = np.kron(self.hadamard, np.kron(self.hadamard, self.hadamard) )
-
-        expected_product = test_matrix @ hadamard_product
-        matrix_product = cc.multiply_by_hadamard_product(test_matrix, 3)
-
-        self.assertTrue(np.allclose(matrix_product, expected_product))
-
-    # def test_columns_consistent_accepts(self): TODO look at better testing for this
-    #     matrix = self.get_three_qubit_clifford()
-    #     clifford = cc.
-        
-    #     self.assertTrue(cc.columns_consistent(matrix, 3, False))
-
-    # def test_columns_consistent_accepts_with_incorrect_relative_phase(self):
-    #     matrix = self.get_three_qubit_clifford()
-    #     matrix[:,7] *= (1+1j)/math.sqrt(2)
-        
-    #     self.assertTrue(cc.columns_consistent(matrix, 3, False))
 
     def test_is_clifford_accepts(self):
         matrix = self.get_three_qubit_clifford()
@@ -131,7 +85,7 @@ class Test_Clifford_Check(unittest.TestCase):
 
         self.assertTrue(clifford.is_clifford)
 
-    def test_is_clifford_rejects_when_columns_have_wrong_relative_phase(self):
+    def test_is_clifford_rejects_when_reminaing_column_has_wrong_relative_phase(self):
         matrix = self.get_three_qubit_clifford()
 
         matrix[:, 7] *= 1j
@@ -139,6 +93,27 @@ class Test_Clifford_Check(unittest.TestCase):
         clifford = cc.Clifford_From_Matrix(matrix, only_testing = True)
 
         self.assertFalse(clifford.is_clifford)
+
+    def test_is_clifford_rejects_when_intial_column_has_nonstabiliser_relative_phase(self):
+        matrix = self.get_three_qubit_clifford()
+
+        matrix[:, 2] *= (1+ 1j)/math.sqrt(2)
+
+        clifford = cc.Clifford_From_Matrix(matrix, only_testing = True)
+
+        self.assertFalse(clifford.is_clifford)
+
+    def test_is_clifford_on_random_almost_cliffords(self):
+        number_qubits = 6
+
+        for _ in range(NUM_REPETITIONS):
+            matrix = gs.random_almost_clifford(number_qubits)
+            
+            clifford = cc.Clifford_From_Matrix(matrix, only_testing = True)
+            clifford2 = cc.Clifford_From_Matrix(matrix)
+
+            self.assertFalse(clifford.is_clifford)
+            self.assertFalse(clifford2.is_clifford)
 
     def test_get_clifford_raises_error_on_invalid_matrix(self):
         matrix = self.get_three_qubit_clifford()
@@ -148,7 +123,7 @@ class Test_Clifford_Check(unittest.TestCase):
 
         self.assertRaises(ValueError, clifford.get_clifford)
 
-    def test_get_clifford(self):
+    def test_get_clifford_without_assuming_clifford(self):
         n = 3
         matrix = self.get_three_qubit_clifford()
 
@@ -156,22 +131,50 @@ class Test_Clifford_Check(unittest.TestCase):
 
         clifford = cc.Clifford_From_Matrix(matrix).get_clifford()
 
-        for i in range(n):
-            z_i = p.Pauli(n, 0, 1 << i, 0, 0).generate_matrix()
-            expected_u_i = matrix @ z_i @ matrix.conj().T
+        self.assertTrue(extracted_clifford_is_correct(matrix, clifford, n))
+
+    def test_get_clifford_with_assuming_clifford(self):
+        n = 3
+        matrix = self.get_three_qubit_clifford()
+
+        self.assertEqual(matrix.shape[0], 1 << n)
+
+        clifford = cc.Clifford_From_Matrix(matrix, assume_clifford = True).get_clifford()
+
+        self.assertTrue(extracted_clifford_is_correct(matrix, clifford, n))
+
+    def test_get_clifford_on_random_cliffords(self):
+        number_qubits = 6
+
+        for _ in range(NUM_REPETITIONS):
+            random_clifford = gs.random_clifford(number_qubits)
             
-            self.assertTrue(pc.is_pauli(expected_u_i))
+            clifford = cc.Clifford_From_Matrix(random_clifford, assume_clifford = True).get_clifford()
+            clifford2 = cc.Clifford_From_Matrix(random_clifford).get_clifford()
 
-            u_i = clifford.z_conjugates[i].generate_matrix()
+            is_clifford = cc.Clifford_From_Matrix(random_clifford, only_testing = True).is_clifford
 
-            self.assertTrue(np.array_equal(u_i, expected_u_i))
+            self.assertTrue(extracted_clifford_is_correct(random_clifford, clifford, number_qubits))
+            self.assertTrue(extracted_clifford_is_correct(random_clifford, clifford2, number_qubits))
+            self.assertTrue(is_clifford)
+
+def extracted_clifford_is_correct(matrix : np.ndarray, clifford : c.Clifford, num_qubits : int) -> bool:
+    for i in range(num_qubits):
+        z_i = p.Pauli(num_qubits, 0, 1 << i, 0, 0).generate_matrix()
+        expected_u_i = matrix @ z_i @ matrix.conj().T
+
+        u_i = clifford.z_conjugates[i].generate_matrix()
+
+        if not np.allclose(u_i, expected_u_i):
+            return False
       
-        for i in range(n):
-          x_i = p.Pauli(n, 1<<i , 0, 0, 0).generate_matrix()
-          expected_v_i = matrix @ x_i @ matrix.conj().T
-            
-          self.assertTrue(pc.is_pauli(expected_v_i))
+    for i in range(num_qubits):
+        x_i = p.Pauli(num_qubits, 1<<i , 0, 0, 0).generate_matrix()
+        expected_v_i = matrix @ x_i @ matrix.conj().T
 
-          v_i = clifford.x_conjugates[i].generate_matrix()
+        v_i = clifford.x_conjugates[i].generate_matrix()
 
-          self.assertTrue(np.array_equal(v_i, expected_v_i))
+        if not np.allclose(v_i, expected_v_i):
+            return False
+
+    return True

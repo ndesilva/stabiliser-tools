@@ -5,7 +5,7 @@ import F2_helper.F2_helper as f2
 import numba
 
 class Pauli: # TODO add from_matrix method
-    # Pauli is (-1)^sign bit * (-i) * (i_bit) * X^x_vector * Z^z_vector
+    # Pauli is (-1)^sign bit * (-i) *=^ (i_bit) * X^x_vector * Z^z_vector
     def __init__(self, number_qubits : int, x_vector : int, z_vector : int, sign_bit : int, i_bit : int):
         self.number_qubits = number_qubits
         self.x_vector = x_vector
@@ -36,35 +36,32 @@ class Pauli: # TODO add from_matrix method
         self.z_vector ^= other_pauli.z_vector
 
         self.update_phase()
-    
-    def get_sign_eigenvalue(self, state_vector : np.ndarray, assume_equation_holds: bool = False) -> int | None:
-        n = f2.fast_log2(len(state_vector))
 
-        if n != self.number_qubits:
-            raise ValueError('State vector and Paulis have different size')
+    def multiply_vector(self, vector : np.ndarray) -> np.ndarray: # TODO test
+        result = np.zeros(1 << self.number_qubits, dtype = complex)
+
+        for index in range(1 << self.number_qubits):
+            result[index ^ self.x_vector] = self.phase * f2.sign_mod2product(index, self.z_vector) *vector[index]
         
-        index = get_first_nonzero_index(state_vector, self.x_vector)
+        return result
 
-        if index == None:
-            return None
-            
-        factor = state_vector[index] * f2.sign_mod2product(self.z_vector, index) / state_vector[index ^ self.x_vector]
+    def is_hermitian(self) -> bool:
+        return self.i_bit == f2.mod2product(self.x_vector, self.z_vector)
+    
+    def anticommutes_with(self, other_pauli : Pauli) -> int:
+        return f2.mod2product(self.x_vector, other_pauli.z_vector) ^ f2.mod2product(self.z_vector, other_pauli.x_vector)
+    
+    def commutes_with(self, other_pauli : Pauli) -> int:
+        return 1 ^ self.anticommutes_with(other_pauli)
+    
+    def check_sign_eigenstate(self, state_vector : np.ndarray, num_qubits : int, sign_bit : int) -> bool: # TODO
+        phase = (1-2*sign_bit) * self.phase
+        
+        for index in range(1 << num_qubits):
+            if state_vector[index ^ self.x_vector] != phase * f2.sign_mod2product(index, self.z_vector) * state_vector[index]:
+                return False
 
-        match round_to_5dp(factor * self.phase):
-            case 1:
-                bit = 0
-            case -1:
-                bit = 1
-            case _:
-                return None
-            
-        if assume_equation_holds:
-            return bit
-
-        if remaining_entries_consistent(n, index, self.x_vector, self.z_vector, state_vector, factor):
-            return bit
-            
-        return None
+        return True
     
     def __eq__(self, other : object) -> bool:
         if not isinstance(other, Pauli):
@@ -79,27 +76,6 @@ class Pauli: # TODO add from_matrix method
         result &= (self.phase == other.phase)
 
         return result
-    
-@numba.njit()
-def remaining_entries_consistent(number_qubits : int, start_index : int, x_vector : int,  z_vector :int, state_vector : np.ndarray, factor : complex) -> bool:
-    
-    for remaining_index in range(start_index + 1, 1 << number_qubits):
-        if state_vector[remaining_index] * f2.sign_mod2product(z_vector, remaining_index) != factor * state_vector[remaining_index ^ x_vector]:   
-            return False
-    
-    return True
-
-@numba.njit()
-def get_first_nonzero_index(state_vector : np.ndarray, x_vector : int) -> int:
-    index = 0
-
-    while not state_vector[index ^ x_vector]:
-        if state_vector[index]:
-            return None
-        
-        index += 1
-    
-    return index
 
 @numba.njit()
 def round_to_5dp(value : complex) -> complex:

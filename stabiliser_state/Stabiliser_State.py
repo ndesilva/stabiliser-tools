@@ -65,7 +65,7 @@ class Stabiliser_State():
         # now do X-type stabilisers
         self.__add_x_type_stabilisers(pauli_group, pivot_indicies)
         
-        return cm.Check_Matrix(pauli_group, reduced_form = True)
+        return cm.Check_Matrix(pauli_group, reduced_form = True, pivot_indices = pivot_indicies)
     
     def __get_phase(self, afffine_space_index : int) -> complex:
         return f2.sign_evaluate_poly(self.quadratic_form, afffine_space_index)*f2.sign_mod2product(self.real_linear_part, afffine_space_index)*f2.imag_mod2product(self.imaginary_part, afffine_space_index)
@@ -139,14 +139,14 @@ class Stabiliser_State():
 
                 pauli_group.append(Pauli(self.number_qubits, 0, alpha, sign_bit, 0))
 
-    def __add_x_type_stabilisers(self, pauli_group, pivot_indicies):
+    def __add_x_type_stabilisers(self, pauli_group, pivot_indices):
         for i in range(self.dimension):
             imag_bit = f2.get_bit_at(self.imaginary_part, i)
             beta_vector = 0
 
             # Cursed for loop, as discussed with Ming
             for j in range(self.dimension): # faster way to do this? set membership query is O(1) as opposed to O(n)
-                beta_vector ^= (1<<pivot_indicies[j]) * ( ( (1 <<i | 1 <<j) in self.quadratic_form ) ^ imag_bit* f2.get_bit_at(self.imaginary_part,j) )
+                beta_vector ^= (1 << pivot_indices[j]) * ( ( (1 <<i | 1 <<j) in self.quadratic_form ) ^ imag_bit* f2.get_bit_at(self.imaginary_part,j) )
 
             sign_bit = f2.get_bit_at(self.real_linear_part, i) ^ imag_bit ^ f2.mod2product(beta_vector, self.shift)
             

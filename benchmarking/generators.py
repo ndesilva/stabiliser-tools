@@ -36,7 +36,7 @@ def random_almost_stab_state(n : int) -> np.ndarray:
     i = random.randrange( 1 << n )
 
     if stab_state[i]:
-        if random.randrange(1):
+        if random.randrange(2):
             stab_state[i] *= 1j
         else:
             stab_state[i] = 0
@@ -50,7 +50,11 @@ def random_clifford(n : int) -> np.ndarray:
 
 def random_almost_clifford(n : int) -> np.ndarray:
     matrix = random_clifford(n)
-    modify_random_matrix_entry(n, matrix)
+    
+    if random.randrange(2):
+        modify_random_matrix_entry(n, matrix)
+    else:
+        modify_random_column(n, matrix)
 
     return matrix
 
@@ -59,9 +63,13 @@ def modify_random_matrix_entry(n : int, matrix : np.ndarray) -> None:
     j = random.randrange(1 << n)
 
     if matrix[i,j]:
-        if random.randrange(1):
+        if random.randrange(2):
             matrix[i,j] *= 1j
         else:
             matrix[i,j] = 0
     else:
         matrix[i,j] = 1
+
+def modify_random_column(n : int, matrix : np.ndarray) -> None:
+    j = random.randrange(1 << n)
+    matrix[:, j] *= 1j

@@ -24,7 +24,7 @@ class Check_Matrix():
         for i in range(n):
             x_vector = f2.array_to_int(mat[i, :n])
             z_vector = f2.array_to_int(mat[i, n:])
-            num_of_ys = np.count_nonzero(mat[i, :n] + mat[i, n:] == 2)
+            num_of_ys = np.dot(mat[i, :n], mat[i, n:])
             # Y = iXZ
             sign_bit = (signs[i] + num_of_ys) % 2
             i_bit = num_of_ys % 2
@@ -45,10 +45,11 @@ class Check_Matrix():
 
         return Check_Matrix.from_stabiliser_state(state.get_stab_state())
 
-    def __init__(self, paulis : list[p.Pauli], reduced_form : bool = False):
+    def __init__(self, paulis : list[p.Pauli], reduced_form : bool = False, pivot_indices : list[int] = []):
         self.paulis = paulis
         self.reduced_form = reduced_form
         self.number_qubits = len(paulis)
+        self.pivot_indices = pivot_indices
 
         self.non_zero_x : list[p.Pauli] = []
         self.zero_x : list[p.Pauli] = []
