@@ -139,14 +139,14 @@ class Stabiliser_State():
 
                 pauli_group.append(Pauli(self.number_qubits, 0, alpha, sign_bit, 0))
 
-    def __add_x_type_stabilisers(self, pauli_group, pivot_indicies):
+    def __add_x_type_stabilisers(self, pauli_group, pivot_indices):
         for i in range(self.dimension):
             imag_bit = f2.get_bit_at(self.imaginary_part, i)
             beta_vector = 0
 
             # Cursed for loop, as discussed with Ming
             for j in range(self.dimension): # faster way to do this? set membership query is O(1) as opposed to O(n)
-                beta_vector ^= (1 << pivot_indicies[j]) * ( ( (1 <<i | 1 <<j) in self.quadratic_form ) ^ imag_bit* f2.get_bit_at(self.imaginary_part,j) )
+                beta_vector ^= (1 << pivot_indices[j]) * ( ( (1 <<i | 1 <<j) in self.quadratic_form ) ^ imag_bit* f2.get_bit_at(self.imaginary_part,j) )
 
             sign_bit = f2.get_bit_at(self.real_linear_part, i) ^ imag_bit ^ f2.mod2product(beta_vector, self.shift)
             

@@ -24,7 +24,7 @@ class Check_Matrix():
         for i in range(n):
             x_vector = f2.array_to_int(mat[i, :n])
             z_vector = f2.array_to_int(mat[i, n:])
-            num_of_ys = np.count_nonzero(mat[i, :n] + mat[i, n:] == 2)
+            num_of_ys = np.dot(mat[i, :n], mat[i, n:])
             # Y = iXZ
             sign_bit = (signs[i] + num_of_ys) % 2
             i_bit = num_of_ys % 2
