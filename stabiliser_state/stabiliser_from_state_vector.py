@@ -35,9 +35,8 @@ class Stabiliser_From_State_Vector: #TODO currently assumes length 2^n
         non_zero_coeffs = [pair[1] for pair in vector_space_value_pairs]
         self.first_entry = non_zero_coeffs[0]
 
-        if not assume_stab_state:
-            if self.__first_entry_not_valid(allow_global_factor):
-                return
+        if self.__first_entry_not_valid(allow_global_factor):
+            return
             
         if not self.__set_linear_parts(weight_one_bitstrings, non_zero_coeffs):
             return
@@ -123,18 +122,17 @@ class Stabiliser_From_State_Vector: #TODO currently assumes length 2^n
     def __vector_space_consistent(self, vector_space_value_pairs : list[tuple[int, complex]]) -> bool:
         # Using lemma, check that the indicies form an F2 vector space. If the support is the whole space, this is not needed
         if self.dimension != self.n:
-                for j in range(1<<self.dimension): # we check the basis vectors again here, fast way to not do that?
-                    value = f2.get_vector_expansion(self.dimension, self.basis_vectors, j)
+            for j in range(1<<self.dimension): # we check the basis vectors again here, fast way to not do that?
+                value = f2.get_vector_expansion(self.dimension, self.basis_vectors, j)
 
-                    if vector_space_value_pairs[j][0] != value:
-                        #print('Support not affine space')
-                        self.is_stab_state = False
-                        return False
+                if vector_space_value_pairs[j][0] != value:
+                    #print('Support not affine space')
+                    self.is_stab_state = False
+                    return False
                     
         return True
     
-    def __coefficients_consistent(self, non_zero_coeffs : list[complex]) -> bool:
-        
+    def __coefficients_consistent(self, non_zero_coeffs : list[complex]) -> bool:       
         for index in range(1<<self.dimension): # TODO We are repeating columns of Hamming weight 1,2 - fast way to not do this?
             value = self.first_entry*f2.imag_mod2product(index, self.imag_part)*f2.sign_mod2product(index, self.linear_real_part)*f2.sign_evaluate_poly(self.quadratic_real_part, index)
 
