@@ -58,10 +58,10 @@ class Stabiliser_From_State_Vector: #TODO currently assumes length 2^n
         
         raise ValueError('State is not a stabiliser state')
     
-    def __support_is_power_two(self,) -> bool:
+    def __support_is_power_two(self) -> bool:
         return 1 << self.dimension == self.support_size
     
-    def __first_entry_not_valid(self, allow_global_factor) -> bool:
+    def __first_entry_not_valid(self, allow_global_factor : bool) -> bool:
         return not (allow_global_factor or is_valid_stabiliser_entry(self.first_entry*(math.sqrt(self.support_size))))
 
     def __get_vector_space_indices_and_amplitudes(self, nonzero_indices : list[int], state_vector : np.ndarray) -> list[tuple[int, complex]]:
