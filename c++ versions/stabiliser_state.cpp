@@ -5,8 +5,10 @@
 using namespace fst;
 
 template <int dimension>
-Stabiliser_State<dimension>::Stabiliser_State(int number_qubits, int dim) 
-    : number_qubits(number_qubits), dim(dim) {}
+Stabiliser_State<dimension>::Stabiliser_State(int number_qubits) 
+    : number_qubits(number_qubits){
+        dim = dimension;
+    }
 
 template <int dimension>
 std::vector<std::complex<float>> Stabiliser_State<dimension>::get_state_vector() const {
@@ -22,6 +24,17 @@ std::vector<std::complex<float>> Stabiliser_State<dimension>::get_state_vector()
     }
 
     return state_vector;  
+}
+
+template <int dimension>
+int Stabiliser_State<dimension>::evaluate_basis_expansion(int vector_index) const {
+    int result = 0;
+
+    for(int j = 0; j < dim; j++){
+        result ^= vector_basis[j]*( (1<<j & vector_index) == 1 << j )
+    }
+
+    return result;
 }
 
 template <int dimension>
@@ -42,15 +55,4 @@ int Stabiliser_State<dimension>::evaluate_quadratic_form(int vector_index) const
     }
 
     return 1 - 2*mod2_result;
-}
-
-template <int dimension>
-int Stabiliser_State<dimension>::evaluate_basis_expansion(int vector_index) const {
-    int result = 0;
-
-    for(int j = 0; j < dim; j++){
-        result ^= vector_basis[j]*( (1<<j & vector_index) == 1 << j )
-    }
-
-    return result;
 }

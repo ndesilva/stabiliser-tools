@@ -17,7 +17,7 @@ namespace fst {
 template <int dimension>
 struct Stabiliser_State {
     int number_qubits;
-    std::array<int, dimension> vector_basis;
+    int vector_basis[dimension];
     int dim;
     int shift;
     
@@ -28,15 +28,26 @@ struct Stabiliser_State {
 
     bool row_reduced;
 
-    Stabiliser_State(int number_qubits, int dim);
+    explicit Stabiliser_State(int number_qubits);
     
     /// Return the state vector of length 2^n of the stabiliser state
     std::vector<std::complex<float>> get_state_vector() const;
 
 private:
-    std::complex<int> get_phase(int vector_index) const;
-    int evaluate_quadratic_form(int vector_index) const;
+    /// Given vector_index, the column vector of an element of the vector
+    /// space (represented as an integer) with respect to the vector basis,
+    /// find its representation in the computational basis. 
     int evaluate_basis_expansion(int vector_index) const;
+
+    /// Given vector_index, the column vector of an element of the vector
+    /// space (represented as an integer) with respect to the vector basis,
+    /// find the value of the phase assigned to the corresponding state
+    std::complex<int> get_phase(int vector_index) const;
+
+    /// Given vector_index, the column vector of an element of the vector
+    /// space (represented as an integer) with respect to the vector basis,
+    /// find the value of (-1)^Q(vector_index) assigned to the corresponding state
+    int evaluate_quadratic_form(int vector_index) const;
 };
 
 }
