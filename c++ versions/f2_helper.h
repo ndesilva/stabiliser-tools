@@ -19,6 +19,4 @@ std::complex<int> imag_f2_dot_product(int x, int y);
 
 }
 
-#include "f2_helper.cpp"
-
 #endif
