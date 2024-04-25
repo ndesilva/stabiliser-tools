@@ -24,7 +24,7 @@ struct Stabiliser_State {
     int real_linear_part;
     int imaginary_part;
     std::vector<int> quadratic_form;
-    std::complex<float> gloabl_factor;
+    std::complex<float> global_factor;
 
     bool row_reduced;
 
@@ -34,8 +34,9 @@ struct Stabiliser_State {
     std::vector<std::complex<float>> get_state_vector() const;
 
 private:
-    std::complex<float> get_phase(int vector_index) const;
+    std::complex<int> get_phase(int vector_index) const;
     int evaluate_quadratic_form(int vector_index) const;
+    int evaluate_basis_expansion(int vector_index) const;
 };
 
 }
