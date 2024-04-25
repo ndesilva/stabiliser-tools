@@ -2,10 +2,17 @@ cmake_minimum_required(VERSION 3.10)
 
 set(VCPKG_TARGET_TRIPLET x64-mingw-static)
 
-project(HelloWorld)
+project(FastStabiliser)
 
-find_package(fmt CONFIG REQUIRED)
+find_package(Catch2 3 REQUIRED)
 
-add_executable(HelloWorld helloworld.cpp)
+add_subdirectory("c++ versions")
 
-target_link_libraries(HelloWorld PRIVATE fmt::fmt)
+add_executable(tests)
+target_link_libraries(tests test_sources)
+target_link_libraries(tests Catch2::Catch2WithMain)
+
+include(CTest)
+include(Catch)
+
+catch_discover_tests(tests)
