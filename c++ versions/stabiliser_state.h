@@ -33,7 +33,6 @@ struct Stabiliser_State {
     /// Return the state vector of length 2^n of the stabiliser state
     std::vector<std::complex<float>> get_state_vector() const;
 
-private:
     /// Given vector_index, the column vector of an element of the vector
     /// space (represented as an integer) with respect to the vector basis,
     /// find its representation in the computational basis. 
