@@ -18,7 +18,7 @@ int fst::sign_f2_dot_product(int x, int y){
     return 1 - 2*f2_dot_product(x,y);
 }
 
-std::complex<int> fst::imag_f2_dot_product(int x, int y){
+std::complex<float> fst::imag_f2_dot_product(int x, int y){
     int dot_product = f2_dot_product(x,y);
-    return std::complex<int> (1-dot_product, dot_product);
+    return std::complex<float> (1-dot_product, dot_product);
 }

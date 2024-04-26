@@ -70,7 +70,7 @@ TEST_CASE("get phase", "[stabiliser state]") {
         int point_1 = 3; // 011
         int point_2 = 5; // 101
 
-        REQUIRE(state.get_phase(point_1) == std::complex<int> (0,1));
+        REQUIRE(state.get_phase(point_1) == std::complex<float> (0,1));
         REQUIRE(state.get_phase(point_2) == -1);
     }
 
@@ -85,6 +85,23 @@ TEST_CASE("get phase", "[stabiliser state]") {
         int point_2 = 1;  // 0001
 
         REQUIRE(state.get_phase(point_1) == 1);
-        REQUIRE(state.get_phase(point_2) == std::complex<int> (0,-1));
+        REQUIRE(state.get_phase(point_2) == std::complex<float> (0,-1));
+    }
+}
+
+TEST_CASE("generate state vector", "[stabiliser state]"){
+    SECTION("dimension 1") {
+        Stabiliser_State<1> state(1);
+
+        state.quadratic_form = {};
+        state.real_linear_part = 1;
+        state.imaginary_part = 0;
+
+        state.vector_basis[0] = 0;
+        state.shift = 1;
+
+        std::vector<std::complex<float>> expected_vector{0, -1};
+
+        REQUIRE(state.get_state_vector() == expected_vector);
     }
 }

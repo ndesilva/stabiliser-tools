@@ -41,7 +41,7 @@ struct Stabiliser_State {
     /// Given vector_index, the column vector of an element of the vector
     /// space (represented as an integer) with respect to the vector basis,
     /// find the value of the phase assigned to the corresponding state
-    std::complex<int> get_phase(int vector_index) const;
+    std::complex<float> get_phase(int vector_index) const;
 
     /// Given vector_index, the column vector of an element of the vector
     /// space (represented as an integer) with respect to the vector basis,
