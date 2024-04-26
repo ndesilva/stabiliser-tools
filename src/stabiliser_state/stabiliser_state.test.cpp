@@ -90,8 +90,8 @@ TEST_CASE("get phase", "[stabiliser state]") {
 }
 
 TEST_CASE("generate state vector", "[stabiliser state]"){
-    SECTION("dimension 1") {
-        Stabiliser_State<1> state(1);
+    SECTION("dimension 0, 1 qubit") {
+        Stabiliser_State<0> state(1);
 
         state.quadratic_form = {};
         state.real_linear_part = 1;
@@ -100,7 +100,40 @@ TEST_CASE("generate state vector", "[stabiliser state]"){
         state.vector_basis[0] = 0;
         state.shift = 1;
 
-        std::vector<std::complex<float>> expected_vector{0, -1};
+        std::vector<std::complex<float>> expected_vector{0, 1};
+
+        REQUIRE(state.get_state_vector() == expected_vector);
+    }
+    
+    SECTION("dimension 1, 1 qubit") {
+        Stabiliser_State<1> state(1);
+
+        state.quadratic_form = {};
+        state.real_linear_part = 1;
+        state.imaginary_part = 0;
+
+        state.vector_basis[0] = 1;
+        state.shift = 1;
+
+        std::vector<std::complex<float>> expected_vector{-1/sqrt(2), 1/sqrt(2)};
+
+        REQUIRE(state.get_state_vector() == expected_vector);
+    }
+
+    SECTION("dimension 2, 3 qubits") {
+        Stabiliser_State<2> state(3);
+
+        state.quadratic_form = {3}; // x_0 x_1
+        state.real_linear_part = 1; // x_0
+        state.imaginary_part = 2;   // x_1
+        state.global_factor = {0, 1};
+
+        state.vector_basis[0] = 6; // 110
+        state.vector_basis[1] = 1; // 001
+
+        state.shift = 4; // 010
+
+        std::vector<std::complex<float>> expected_vector{0, 0, {0,-.5}, -.5, {0, .5}, -.5, 0, 0};
 
         REQUIRE(state.get_state_vector() == expected_vector);
     }
