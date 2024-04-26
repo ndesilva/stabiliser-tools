@@ -42,11 +42,6 @@ struct Stabiliser_State {
     /// space (represented as an integer) with respect to the vector basis,
     /// find the value of the phase assigned to the corresponding state
     std::complex<float> get_phase(int vector_index) const;
-
-    /// Given vector_index, the column vector of an element of the vector
-    /// space (represented as an integer) with respect to the vector basis,
-    /// find the value of (-1)^Q(vector_index) assigned to the corresponding state
-    int evaluate_quadratic_form(int vector_index) const;
 };
 
 }

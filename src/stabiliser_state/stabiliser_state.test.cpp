@@ -29,31 +29,6 @@ TEST_CASE("evaluate basis expansion", "[stabiliser state]") {
     }
 }
 
-TEST_CASE("evaluate quadratic form", "[stabiliser state]") {
-    SECTION("dimension 3") {
-        Stabiliser_State state(3);
-
-        state.quadratic_form = {3, 6}; // x_0 x_1 + x_1 x_2
-
-        int point_1 = 3; // 011
-        int point_2 = 7; // 111
-
-        REQUIRE(state.evaluate_quadratic_form(point_1) == -1);
-        REQUIRE(state.evaluate_quadratic_form(point_2) == 1);
-    }
-
-     SECTION("dimension 4") {
-        Stabiliser_State state(4);
-
-        state.quadratic_form = {3, 6, 9}; // x_0 x_1 + x_1 x_2 + x_0 x_3
-        int point_1 = 15; // 1111
-        int point_2 = 11; // 1011  
-
-        REQUIRE(state.evaluate_quadratic_form(point_1) == -1);
-        REQUIRE(state.evaluate_quadratic_form(point_2) == 1);
-    }
-}
-
 TEST_CASE("get phase", "[stabiliser state]") {
     SECTION("dimension 3") {
         Stabiliser_State state(3);

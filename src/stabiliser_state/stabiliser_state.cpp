@@ -42,17 +42,7 @@ int Stabiliser_State::evaluate_basis_expansion(int vector_index) const {
 std::complex<float> Stabiliser_State::get_phase(int vector_index) const {
     float real_linear = sign_f2_dot_product(vector_index, real_linear_part);
     std::complex<float> imag_linear = imag_f2_dot_product(vector_index, imaginary_part); 
-    float real_quadratic = evaluate_quadratic_form(vector_index);
+    float real_quadratic = evaluate_quadratic_form(vector_index, quadratic_form);
 
     return real_linear*imag_linear*real_quadratic;
-}
-
-int Stabiliser_State::evaluate_quadratic_form(int vector_index) const {    
-    int mod2_result = 0;
-    
-    for(const auto &term : quadratic_form) {
-        mod2_result ^= ((term & vector_index) == term);
-    }
-
-    return 1 - 2*mod2_result;
 }
