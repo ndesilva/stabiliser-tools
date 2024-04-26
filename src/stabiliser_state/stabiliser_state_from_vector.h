@@ -22,8 +22,8 @@ namespace fst{
 
         explicit Stabiliser_From_Vector_Convertor(std::vector<std::complex<float>> &state_vector, bool assume_stabiliser_state = 0);
 
-        Stabiliser_State get_stabiliser_state();
-    }
+        Stabiliser_State get_stabiliser_state() const;
+    };
 }
 
 #endif
