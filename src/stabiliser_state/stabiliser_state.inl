@@ -1,5 +1,5 @@
 #include "stabiliser_state.h"
-#include "f2_helper.h"
+#include "f2_helper/f2_helper.h"
 #include <math.h>
 
 using namespace fst;

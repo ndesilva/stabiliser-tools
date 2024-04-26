@@ -51,4 +51,6 @@ struct Stabiliser_State {
 
 }
 
+#include "stabiliser_state.inl"
+
 #endif
