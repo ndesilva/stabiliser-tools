@@ -41,9 +41,9 @@ int Stabiliser_State<dimension>::evaluate_basis_expansion(int vector_index) cons
 
 template <int dimension>
 std::complex<float> Stabiliser_State<dimension>::get_phase(int vector_index) const {
-    int real_linear = sign_f2_dot_product(vector_index, real_linear_part);
+    float real_linear = sign_f2_dot_product(vector_index, real_linear_part);
     std::complex<float> imag_linear = imag_f2_dot_product(vector_index, imaginary_part); 
-    int real_quadratic = evaluate_quadratic_form(vector_index);
+    float real_quadratic = evaluate_quadratic_form(vector_index);
 
     return real_linear*imag_linear*real_quadratic;
 }

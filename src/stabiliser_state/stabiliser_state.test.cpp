@@ -71,7 +71,7 @@ TEST_CASE("get phase", "[stabiliser state]") {
         int point_2 = 5; // 101
 
         REQUIRE(state.get_phase(point_1) == std::complex<float> (0,1));
-        REQUIRE(state.get_phase(point_2) == -1);
+        REQUIRE(state.get_phase(point_2) == float(-1));
     }
 
     SECTION("dimension 4") {
@@ -84,7 +84,7 @@ TEST_CASE("get phase", "[stabiliser state]") {
         int point_1 = 3;  // 0011
         int point_2 = 1;  // 0001
 
-        REQUIRE(state.get_phase(point_1) == 1);
+        REQUIRE(state.get_phase(point_1) == float(1));
         REQUIRE(state.get_phase(point_2) == std::complex<float> (0,-1));
     }
 }
