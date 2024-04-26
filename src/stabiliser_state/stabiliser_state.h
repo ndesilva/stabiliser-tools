@@ -26,7 +26,7 @@ struct Stabiliser_State {
     std::vector<int> quadratic_form;
     std::complex<float> global_factor = 1;
 
-    bool row_reduced;
+    bool row_reduced = 0;
 
     explicit Stabiliser_State(int number_qubits);
     
