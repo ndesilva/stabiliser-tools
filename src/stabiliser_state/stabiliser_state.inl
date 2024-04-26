@@ -6,14 +6,15 @@
 
 using namespace fst;
 
-template <int dimension>
-Stabiliser_State<dimension>::Stabiliser_State(int number_qubits) 
+Stabiliser_State::Stabiliser_State(int number_qubits, int dim) 
+    : number_qubits(number_qubits), dim(dim) {}
+
+Stabiliser_State::Stabiliser_State(int number_qubits) 
     : number_qubits(number_qubits) {
-        dim = dimension;
+        dim = number_qubits;
     }
 
-template <int dimension>
-std::vector<std::complex<float>> Stabiliser_State<dimension>::get_state_vector() const {
+std::vector<std::complex<float>> Stabiliser_State::get_state_vector() const {
     int support_size = 1 << dim;
     std::complex<float> factor = global_factor / float(sqrt(support_size));
     
@@ -28,8 +29,7 @@ std::vector<std::complex<float>> Stabiliser_State<dimension>::get_state_vector()
     return state_vector;  
 }
 
-template <int dimension>
-int Stabiliser_State<dimension>::evaluate_basis_expansion(int vector_index) const {
+int Stabiliser_State::evaluate_basis_expansion(int vector_index) const {
     int result = 0;
 
     for(int j = 0; j < dim; j++){
@@ -39,8 +39,7 @@ int Stabiliser_State<dimension>::evaluate_basis_expansion(int vector_index) cons
     return result;
 }
 
-template <int dimension>
-std::complex<float> Stabiliser_State<dimension>::get_phase(int vector_index) const {
+std::complex<float> Stabiliser_State::get_phase(int vector_index) const {
     float real_linear = sign_f2_dot_product(vector_index, real_linear_part);
     std::complex<float> imag_linear = imag_f2_dot_product(vector_index, imaginary_part); 
     float real_quadratic = evaluate_quadratic_form(vector_index);
@@ -48,8 +47,7 @@ std::complex<float> Stabiliser_State<dimension>::get_phase(int vector_index) con
     return real_linear*imag_linear*real_quadratic;
 }
 
-template <int dimension>
-int Stabiliser_State<dimension>::evaluate_quadratic_form(int vector_index) const {    
+int Stabiliser_State::evaluate_quadratic_form(int vector_index) const {    
     int mod2_result = 0;
     
     for(const auto &term : quadratic_form) {

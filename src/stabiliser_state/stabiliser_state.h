@@ -13,11 +13,9 @@ namespace fst {
 /// More precisely, it is stored as a list of basis vectors for a vector space,
 /// a constant vector that is added to every element of the vector space to reach,
 /// the affine space, and a quadratic and linear form defined on the vector space.
-/// the template is the dimension of the vector space
-template <int dimension>
 struct Stabiliser_State {
     int number_qubits;
-    int vector_basis[dimension];
+    std::vector<int> vector_basis;
     int dim;
     int shift;
     
@@ -28,7 +26,9 @@ struct Stabiliser_State {
 
     bool row_reduced = 0;
 
+    Stabiliser_State(int number_qubits, int dim);
     explicit Stabiliser_State(int number_qubits);
+
     
     /// Return the state vector of length 2^n of the stabiliser state
     std::vector<std::complex<float>> get_state_vector() const;
