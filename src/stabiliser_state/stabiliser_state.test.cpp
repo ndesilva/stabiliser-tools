@@ -58,3 +58,33 @@ TEST_CASE("evaluate quadratic form", "[stabiliser state]") {
         REQUIRE(state.evaluate_quadratic_form(point_2) == 1);
     }
 }
+
+TEST_CASE("get phase", "[stabiliser state]") {
+    SECTION("dimension 3") {
+        Stabiliser_State<3> state(3);
+
+        state.quadratic_form = {3}; // x_0 x_1
+        state.real_linear_part = 1; // x_0
+        state.imaginary_part = 2;   // x_1
+
+        int point_1 = 3; // 011
+        int point_2 = 5; // 101
+
+        REQUIRE(state.get_phase(point_1) == std::complex<int> (0,1));
+        REQUIRE(state.get_phase(point_2) == -1);
+    }
+
+    SECTION("dimension 4") {
+        Stabiliser_State<4> state(3);
+
+        state.quadratic_form = {3, 12}; // x_0 x_1 + x_2 x_3
+        state.real_linear_part = 1;     // x_0
+        state.imaginary_part = 7;       // x_0 + x_1 + x_2
+
+        int point_1 = 3;  // 0011
+        int point_2 = 1;  // 0001
+
+        REQUIRE(state.get_phase(point_1) == 1);
+        REQUIRE(state.get_phase(point_2) == std::complex<int> (0,-1));
+    }
+}
