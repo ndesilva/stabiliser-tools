@@ -1,10 +1,11 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "stabiliser_state.h"
+#include <vector>
 
 using namespace fst;
 
-TEST_CASE("evaluate basis expansion", "[stabiliser state]"){
+TEST_CASE("evaluate basis expansion", "[stabiliser state]") {
     SECTION("dimension 3") {
         Stabiliser_State<3> state(3);
 
@@ -30,5 +31,30 @@ TEST_CASE("evaluate basis expansion", "[stabiliser state]"){
         int expected_vector = 7; // 00111
 
         REQUIRE(state.evaluate_basis_expansion(vector_index) == expected_vector);
+    }
+}
+
+TEST_CASE("evaluate quadratic form", "[stabiliser state]") {
+    SECTION("dimension 3") {
+        Stabiliser_State<3> state(3);
+
+        state.quadratic_form = {3, 6}; // x_0 x_1 + x_1 x_2
+
+        int point_1 = 3; // 011
+        int point_2 = 7; // 111
+
+        REQUIRE(state.evaluate_quadratic_form(point_1) == -1);
+        REQUIRE(state.evaluate_quadratic_form(point_2) == 1);
+    }
+
+     SECTION("dimension 4") {
+        Stabiliser_State<4> state(4);
+
+        state.quadratic_form = {3, 6, 9}; // x_0 x_1 + x_1 x_2 + x_0 x_3
+        int point_1 = 15; // 1111
+        int point_2 = 11; // 1011  
+
+        REQUIRE(state.evaluate_quadratic_form(point_1) == -1);
+        REQUIRE(state.evaluate_quadratic_form(point_2) == 1);
     }
 }

@@ -1,6 +1,8 @@
 #include "stabiliser_state.h"
 #include "f2_helper/f2_helper.h"
+
 #include <math.h>
+#include <iostream>
 
 using namespace fst;
 
@@ -47,11 +49,11 @@ std::complex<int> Stabiliser_State<dimension>::get_phase(int vector_index) const
 }
 
 template <int dimension>
-int Stabiliser_State<dimension>::evaluate_quadratic_form(int vector_index) const {
+int Stabiliser_State<dimension>::evaluate_quadratic_form(int vector_index) const {    
     int mod2_result = 0;
     
     for(const auto &term : quadratic_form) {
-        mod2_result ^= (term & vector_index == term);
+        mod2_result ^= ((term & vector_index) == term);
     }
 
     return 1 - 2*mod2_result;
