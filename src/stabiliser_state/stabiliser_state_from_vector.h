@@ -9,6 +9,7 @@ namespace fst{
     struct Stabiliser_From_Vector_Convertor {
         bool is_stabiliser_state = false;
 
+    private:
         int number_qubits;
         int support_size;
         int dimension;
@@ -20,6 +21,7 @@ namespace fst{
         std::vector<int> quadratic_form;
         std::complex<float> gloabal_factor;
 
+    public:
         explicit Stabiliser_From_Vector_Convertor(std::vector<std::complex<float>> &state_vector, bool assume_stabiliser_state = 0);
 
         Stabiliser_State get_stabiliser_state() const;
