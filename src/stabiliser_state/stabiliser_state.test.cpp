@@ -9,7 +9,7 @@ TEST_CASE("evaluate basis expansion", "[stabiliser state]") {
     SECTION("dimension 3") {
         Stabiliser_State state(3, 3);
 
-        state.vector_basis = {1,2,4}; // 001, 010, 100
+        state.basis_vectors = {1,2,4}; // 001, 010, 100
 
         int vector_index = 5;    // 101
         int expected_vector = 5; // 101
@@ -20,7 +20,7 @@ TEST_CASE("evaluate basis expansion", "[stabiliser state]") {
     SECTION("dimension 4") {
         Stabiliser_State state(5, 4);
 
-        state.vector_basis = {17, 12, 1, 26}; //10001, 01100, 00001, 11010
+        state.basis_vectors = {17, 12, 1, 26}; //10001, 01100, 00001, 11010
 
         int vector_index = 11;   // 1011
         int expected_vector = 7; // 00111
@@ -92,7 +92,7 @@ TEST_CASE("generate state vector", "[stabiliser state]"){
         state.real_linear_part = 1;
         state.imaginary_part = 0;
 
-        state.vector_basis = {0};
+        state.basis_vectors = {0};
         state.shift = 1;
 
         std::vector<std::complex<float>> expected_vector{0, 1};
@@ -107,7 +107,7 @@ TEST_CASE("generate state vector", "[stabiliser state]"){
         state.real_linear_part = 1;
         state.imaginary_part = 0;
 
-        state.vector_basis = {1};
+        state.basis_vectors = {1};
         state.shift = 1;
 
         std::vector<std::complex<float>> expected_vector{-1/sqrt(2), 1/sqrt(2)};
@@ -123,7 +123,7 @@ TEST_CASE("generate state vector", "[stabiliser state]"){
         state.imaginary_part = 2;   // x_1
         state.global_factor = {0, 1};
 
-        state.vector_basis = {6, 1}; // 110, 001
+        state.basis_vectors = {6, 1}; // 110, 001
 
         state.shift = 4; // 010
 

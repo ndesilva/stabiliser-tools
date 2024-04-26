@@ -15,7 +15,7 @@ namespace fst {
 /// the affine space, and a quadratic and linear form defined on the vector space.
 struct Stabiliser_State {
     int number_qubits;
-    std::vector<int> vector_basis;
+    std::vector<int> basis_vectors;
     int dim;
     int shift;
     

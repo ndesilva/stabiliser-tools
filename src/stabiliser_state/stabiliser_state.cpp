@@ -33,7 +33,7 @@ int Stabiliser_State::evaluate_basis_expansion(int vector_index) const {
     int result = 0;
 
     for(int j = 0; j < dim; j++){
-        result ^= vector_basis[j]*( (1<<j & vector_index) == 1 << j );
+        result ^= basis_vectors[j]*( (1<<j & vector_index) == 1 << j );
     }
 
     return result;
