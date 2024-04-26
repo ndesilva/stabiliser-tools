@@ -91,18 +91,16 @@ Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<s
     }
 
     is_stabiliser_state = check_remaining_entries(state_vector);
-}
+};
 
 bool Stabiliser_From_Vector_Convertor::check_remaining_entries(std::vector<std::complex<float>> &state_vector) const {
     for(int vector_index = 1; vector_index < support_size; vector_index++) {
         int total_index = vector_space_indices[vector_index] ^ shift;
-        complex<float> actual_phase = state_vector[total_index];
+        std::complex<float> actual_phase = state_vector[total_index];
 
         float real_linear_eval = sign_f2_dot_product(vector_index, real_linear_part);
         std::complex<float> imag_linear_eval = imag_f2_dot_product(vector_index, imaginary_part);
-        
-        // TODO change this
-        std::complex<float> quadratic_eval = 1;
+        std::complex<float> quadratic_eval = evaluate_quadratic_form(vector_index, quadratic_form);
         std::complex<float> phase_eval = real_linear_eval * imag_linear_eval * quadratic_eval;
 
         if (std::norm(phase_eval * first_entry - actual_phase) >= 0.125) {
