@@ -33,6 +33,7 @@ int fst::evaluate_quadratic_form(int vector_index, const std::vector<int> &quadr
     return 1 - 2*mod2_result;
 }
 
+// TODO : test and benchmark fastest way 
 int fst::integral_log_2(int number){
     return ceil(log2(number));
 }
