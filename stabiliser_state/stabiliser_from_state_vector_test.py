@@ -19,9 +19,6 @@ class Test_Stabiliser_From_State_Vector(unittest.TestCase):
 
     def test_is_stab_state_accepts_three_qubit_state(self):
         state = self.three_stab_state.get_state_vector()
-        
-        for i in range(8):
-            print(f'{i}: {state[i]}')
 
         self.assertTrue(ssv.Stabiliser_From_State_Vector(state).is_stab_state)
 
