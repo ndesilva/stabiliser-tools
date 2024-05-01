@@ -24,6 +24,9 @@ std::complex<float> imag_f2_dot_product(int x, int y);
 /// coefficients, i.e. 101 corresponds to x_0 x_1), find the value of (-1)^Q(vector_index).
 int evaluate_quadratic_form(int vector_index, const std::vector<int> &quadratic_form);
 
+/// Return the number of binary digits of number, i.e. the ceiling of log_2(number)
+int integral_log_2(int number);
+
 }
 
 #endif
