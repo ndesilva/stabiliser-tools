@@ -22,7 +22,9 @@ namespace fst{
         int real_linear_part = 0;
         int imaginary_part = 0;
         std::vector<int> quadratic_form;
+        
         std::complex<float> gloabal_factor;
+        std::complex<float> first_entry;
 
     public:
         /// Convert a state vector of complex amplitudes into a stabiliser state object.
@@ -37,7 +39,7 @@ namespace fst{
         Stabiliser_State get_stabiliser_state() const;
 
     private:
-        bool check_remaining_entries(std::vector<std::complex> &state_vector) const;
+        bool check_remaining_entries(std::vector<std::complex<float>> &state_vector) const;
     };
 }
 

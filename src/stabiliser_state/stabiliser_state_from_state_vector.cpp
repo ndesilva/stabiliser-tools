@@ -8,8 +8,7 @@ using namespace fst;
 // TODO fix behaviour on zero vector
 Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<std::complex<float>> &state_vector, bool assume_stabiliser_state = false) {
     int state_vector_size = state_vector.size();
-
-    number_qubits = ceil(log2(state_vector_size));
+    number_qubits = integral_log_2(state_vector_size);
 
     if (1 << number_qubits != state_vector_size){
         return;
@@ -30,14 +29,14 @@ Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<s
     };
 
     support_size = vector_space_indices.size();
-    dimension = ceil(log2(state_vector_size));
+    dimension = integral_log_2(support_size);
 
     if (1 << dimension != support_size){
         return;
     }
 
     float normalisation_factor = sqrt(support_size);
-    std::complex<float> first_entry = state_vector[shift];
+    first_entry = state_vector[shift];
     gloabal_factor = normalisation_factor * first_entry;
 
     std::sort(vector_space_indices.begin(), vector_space_indices.end());
@@ -63,6 +62,7 @@ Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<s
         else if (std::norm(phase - float(1)) >= 0.125){
             return;
         }
+    }
 
     for (int j=0; j < dimension; j++) {
         for (int i = j + 1; i < dimension; i++) {
@@ -72,7 +72,7 @@ Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<s
             std::complex<float> imag_linear_eval = imag_f2_dot_product(vector_index, imaginary_part);
             std::complex<float> linear_eval = real_linear_eval * imag_linear_eval;
             
-            int total_index = vector_space_indices[vector_index]; ^ shift;
+            int total_index = vector_space_indices[vector_index] ^ shift;
 
             std::complex<float> quadratic_form_eval = state_vector[total_index]/(first_entry * linear_eval);
 
@@ -94,18 +94,28 @@ Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<s
 };
 
 bool Stabiliser_From_Vector_Convertor::check_remaining_entries(std::vector<std::complex<float>> &state_vector) const {
-    for(int vector_index = 1; vector_index < support_size; vector_index++) {
-        int total_index = vector_space_indices[vector_index] ^ shift;
+    int old_vector_index = 0;
+    int total_index = shift;
+    
+    for(int i = 1; i < support_size; i++) {
+        // iterate through the gray code
+        int new_vector_index = i ^ (i >> 1);
+        int flipped_bit = integral_log_2(new_vector_index ^ old_vector_index);
+        
+        total_index ^= basis_vectors[flipped_bit];
+
         std::complex<float> actual_phase = state_vector[total_index];
 
-        float real_linear_eval = sign_f2_dot_product(vector_index, real_linear_part);
-        std::complex<float> imag_linear_eval = imag_f2_dot_product(vector_index, imaginary_part);
-        std::complex<float> quadratic_eval = evaluate_quadratic_form(vector_index, quadratic_form);
+        float real_linear_eval = sign_f2_dot_product(new_vector_index, real_linear_part);
+        std::complex<float> imag_linear_eval = imag_f2_dot_product(new_vector_index, imaginary_part);
+        std::complex<float> quadratic_eval = evaluate_quadratic_form(new_vector_index, quadratic_form);
         std::complex<float> phase_eval = real_linear_eval * imag_linear_eval * quadratic_eval;
 
         if (std::norm(phase_eval * first_entry - actual_phase) >= 0.125) {
             return false;
         }
+
+        old_vector_index = new_vector_index;
     }
 
     return true;
