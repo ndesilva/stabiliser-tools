@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 set(VCPKG_TARGET_TRIPLET x64-mingw-static)
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow")
 
 if(POLICY CMP0079 )
   cmake_policy(SET CMP0079 NEW)

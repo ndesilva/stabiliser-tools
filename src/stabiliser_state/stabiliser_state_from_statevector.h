@@ -33,13 +33,13 @@ namespace fst{
         /// once the constructor has run, the flag is_stabiliser_state is set to true iff. the input
         /// vector was a stabiliser state. To retreive the stabiliser state object, call the get_stabiliser_state()
         /// method
-        explicit Stabiliser_From_Vector_Convertor(std::vector<std::complex<float>> &state_vector, bool assume_stabiliser_state = false);
+        explicit Stabiliser_From_Vector_Convertor(std::vector<std::complex<float>> &statevector, bool assume_stabiliser_state = false);
 
         /// Extract the stabiliser_state object. Throws an error if is_stabiliser state is false  
         Stabiliser_State get_stabiliser_state() const;
 
     private:
-        bool check_remaining_entries(std::vector<std::complex<float>> &state_vector) const;
+        bool check_remaining_entries(std::vector<std::complex<float>> &statevector) const;
     };
 }
 

@@ -19,6 +19,9 @@ class Test_Stabiliser_From_State_Vector(unittest.TestCase):
 
     def test_is_stab_state_accepts_three_qubit_state(self):
         state = self.three_stab_state.get_state_vector()
+        
+        for i in range(8):
+            print(f'{i}: {state[i]}')
 
         self.assertTrue(ssv.Stabiliser_From_State_Vector(state).is_stab_state)
 
@@ -36,7 +39,7 @@ class Test_Stabiliser_From_State_Vector(unittest.TestCase):
 
     def test_is_stab_state_rejects_when_support_not_affine_space(self):
         state = self.five_stab_state.get_state_vector()
-        
+
         state[1] = 0 # remove element of affine space
         state[0] = 1 # add non-affine space element to support
 
