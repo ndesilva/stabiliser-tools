@@ -1,5 +1,7 @@
 #include "f2_helper.h"
 
+#include <bit>
+
 using namespace fst;
 
 int fst::f2_dot_product(int x, int y) {
@@ -33,7 +35,8 @@ int fst::evaluate_quadratic_form(int vector_index, const std::vector<int> &quadr
     return 1 - 2*mod2_result;
 }
 
-// TODO : test and benchmark fastest way 
+// TODO : test and benchmark? fastest way 
 int fst::integral_log_2(int number){
-    return ceil(log2(number));
+    auto casted = static_cast<unsigned int>(number);
+    return std::bit_width(casted) -1;
 }
