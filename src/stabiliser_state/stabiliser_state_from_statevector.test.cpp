@@ -37,12 +37,10 @@ TEST_CASE("testing correct stabiliser states", "[statevector -> stabiliser state
     SECTION("5 qubits, dimension 3") {
         std::vector<std::complex<float>> statevector = get_five_qubit_stabiliser_statevector();
 
-        for (int i = 0; i<32; i++){
-            std::cout << i << ": " << statevector[i] << std::endl;
-        };
-
         Stabiliser_From_Vector_Convertor convertor (statevector);
 
         REQUIRE(convertor.is_stabiliser_state);
     }
 }
+
+TEST
