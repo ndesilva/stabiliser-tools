@@ -8,7 +8,7 @@ using namespace fst;
 
 // TODO fix behaviour on zero vector
 Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<std::complex<float>> &statevector, bool assume_stabiliser_state) {
-    // std::cout << "\n calling converter\n";
+    std::cout << "\n calling converter\n";
     
     int state_vector_size = statevector.size();
     number_qubits = integral_log_2(state_vector_size);
@@ -17,16 +17,13 @@ Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<s
         return;
     };
 
-    // std::cout << "passed power of 2 size check\n";
+    std::cout << "passed power of 2 size check\n";
 
     shift = 0;
 
     while (statevector[shift] == float(0)) {
         shift++;
     }
-
-    // std::cout << "shift is ";
-    // std::cout << shift << std::endl;
 
     std::vector<int> vector_space_indices{0};
 
@@ -43,7 +40,7 @@ Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<s
         return;
     }
 
-    // std::cout << "passed power of 2 support size check\n";
+    std::cout << "passed power of 2 support size check\n";
 
     float normalisation_factor = sqrt(support_size);
     first_entry = statevector[shift];
@@ -74,7 +71,7 @@ Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<s
         }
     }
 
-    // std::cout << "passed linear extraction\n";
+    std::cout << "passed linear extraction\n";
 
     for (int j=0; j < dimension; j++) {
         for (int i = j + 1; i < dimension; i++) {
@@ -91,32 +88,26 @@ Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<s
             if (std::norm(quadratic_form_eval - float(-1)) < 0.125) {
                 quadratic_form.push_back(vector_index);
             }
-            else if (std::norm(quadratic_form_eval - float(-1)) >= 0.125) {
+            else if (std::norm(quadratic_form_eval - float(1)) >= 0.125) {
                 return;
             }
         }
     }
 
-    // std::cout << "passed quadratic extraction\n";
+    std::cout << "passed quadratic extraction\n";
 
     if (assume_stabiliser_state){
         is_stabiliser_state = true;
         return;
     }
 
-    // std::cout << "shift is ";
-    // std::cout << shift << std::endl;
-
     is_stabiliser_state = check_remaining_entries(statevector);
 
-    // std::cout << "remaining entries check gave " << is_stabiliser_state << std::endl;
+    std::cout << "remaining entries check gave " << is_stabiliser_state << std::endl;
 };
 
 bool Stabiliser_From_Vector_Convertor::check_remaining_entries(std::vector<std::complex<float>> &statevector) const {
     // std::cout << "checking remaining entires\n";
-
-    // std::cout << "shift is now ";
-    // std::cout << shift << std::endl;
     
     int old_vector_index = 0;
     int total_index = shift;
