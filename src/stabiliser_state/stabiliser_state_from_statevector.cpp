@@ -6,17 +6,13 @@
 
 using namespace fst;
 
-Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<std::complex<float>> &statevector, bool assume_stabiliser_state) {
-    std::cout << "\n calling converter\n";
-    
+Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<std::complex<float>> &statevector, bool assume_stabiliser_state) {    
     int state_vector_size = statevector.size();
     number_qubits = integral_log_2(state_vector_size);
 
     if (1 << number_qubits != state_vector_size){
         return;
     };
-
-    std::cout << "passed power of 2 size check\n";
 
     shift = 0;
 
@@ -43,14 +39,9 @@ Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<s
         return;
     }
 
-    std::cout << "passed power of 2 support size check\n";
-
     float normalisation_factor = sqrt(support_size);
     first_entry = statevector[shift];
     global_phase = normalisation_factor * first_entry;
-
-    std::cout << "global phase ";
-    std::cout << global_phase << std::endl;
 
     if( abs(std::norm(global_phase) -1) >= 0.125 ) {
         return;
@@ -81,8 +72,6 @@ Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<s
         }
     }
 
-    std::cout << "passed linear extraction\n";
-
     for (int j=0; j < dimension; j++) {
         for (int i = j + 1; i < dimension; i++) {
             int vector_index = (1<<i) | (1<<j);
@@ -104,21 +93,15 @@ Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<s
         }
     }
 
-    std::cout << "passed quadratic extraction\n";
-
     if (assume_stabiliser_state){
         is_stabiliser_state = true;
         return;
     }
 
     is_stabiliser_state = check_remaining_entries(statevector);
-
-    std::cout << "remaining entries check gave " << is_stabiliser_state << std::endl;
 };
 
-bool Stabiliser_From_Vector_Convertor::check_remaining_entries(std::vector<std::complex<float>> &statevector) const {
-    // std::cout << "checking remaining entires\n";
-    
+bool Stabiliser_From_Vector_Convertor::check_remaining_entries(std::vector<std::complex<float>> &statevector) const {    
     int old_vector_index = 0;
     int total_index = shift;
     
@@ -126,35 +109,15 @@ bool Stabiliser_From_Vector_Convertor::check_remaining_entries(std::vector<std::
         // iterate through the gray code
         int new_vector_index = i ^ (i >> 1);
 
-        // std::cout << "checking vector with index ";
-        // std::cout << new_vector_index << std::endl;
-
         int flipped_bit = integral_log_2(new_vector_index ^ old_vector_index);
-        
-        // std::cout << "shift is now ";
-        // std::cout << shift << std::endl;
-
         total_index ^= basis_vectors[flipped_bit];
 
-        // std::cout << "expanded vector is ";
-        // std::cout << total_index << std::endl;
 
         std::complex<float> actual_phase = statevector[total_index];
-
-        // std::cout << "done actual phase\n";
         float real_linear_eval = sign_f2_dot_product(new_vector_index, real_linear_part);
-        
-        // std::cout << "done real eval\n";
-
         std::complex<float> imag_linear_eval = imag_f2_dot_product(new_vector_index, imaginary_part);
-        // std::cout << "done imag eval\n";
-        
         std::complex<float> quadratic_eval = evaluate_quadratic_form(new_vector_index, quadratic_form);
-        // std::cout << "done quadratic eval\n";
-        
         std::complex<float> phase_eval = real_linear_eval * imag_linear_eval * quadratic_eval;
-
-        // std::cout << "found phase\n";
 
         if (std::norm(phase_eval * first_entry - actual_phase) >= 0.125) {
             return false;
