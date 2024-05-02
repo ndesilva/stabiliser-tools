@@ -163,8 +163,8 @@ TEST_CASE("get stabiliser state", "[statevector -> stabiilser state]"){
         Stabiliser_From_Vector_Convertor convertor (statevector, true);
         Stabiliser_State state = convertor.get_stabiliser_state();
 
-        std::vector<int> expected_basis {6,9,16};
-        std::vector<int> expected_quadratic_form {6};
+        std::vector<size_t> expected_basis {6,9,16};
+        std::vector<size_t> expected_quadratic_form {6};
 
         REQUIRE(state.number_qubits == 5);
         REQUIRE(state.basis_vectors == expected_basis);

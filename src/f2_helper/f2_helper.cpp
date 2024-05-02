@@ -4,28 +4,22 @@
 
 using namespace fst;
 
-int fst::f2_dot_product(int x, int y) {
-    int product = x & y;
-    int weight = 0;
-
-    while(product) {
-        product &= product - 1;
-        weight ^= 1;
-    } 
-
-    return weight;
+int fst::f2_dot_product(const size_t x, const size_t y) {
+    const auto product =  x & y;
+    const int hamming_weight = std::popcount(product);
+    return hamming_weight % 2;
 }
 
-int fst::sign_f2_dot_product(int x, int y){
+int fst::sign_f2_dot_product(const size_t x, const size_t y) {
     return 1 - 2*f2_dot_product(x,y);
 }
 
-std::complex<float> fst::imag_f2_dot_product(int x, int y) {
+std::complex<float> fst::imag_f2_dot_product(const size_t x, const size_t y) {
     int dot_product = f2_dot_product(x,y);
     return std::complex<float> (1-dot_product, dot_product);
 }
 
-int fst::evaluate_quadratic_form(int vector_index, const std::vector<int> &quadratic_form) {
+int fst::evaluate_quadratic_form(const size_t vector_index, const std::vector<size_t> &quadratic_form) {
     int mod2_result = 0;
     
     for(const auto &term : quadratic_form) {
@@ -36,7 +30,6 @@ int fst::evaluate_quadratic_form(int vector_index, const std::vector<int> &quadr
 }
 
 // TODO : test and benchmark? fastest way 
-int fst::integral_log_2(int number){
-    auto casted = static_cast<unsigned int>(number);
-    return std::bit_width(casted) -1;
+int fst::integral_log_2(const size_t number){
+    return std::bit_width(number) - 1;
 }

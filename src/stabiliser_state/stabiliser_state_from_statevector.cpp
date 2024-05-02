@@ -7,7 +7,7 @@
 
 using namespace fst;
 
-Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<std::complex<float>> &statevector, bool assume_stabiliser_state) {    
+Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(const std::vector<std::complex<float>> &statevector, const bool assume_stabiliser_state) {    
     int state_vector_size = statevector.size();
     number_qubits = integral_log_2(state_vector_size);
 
@@ -102,7 +102,7 @@ Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<s
     is_stabiliser_state = check_remaining_entries(statevector);
 };
 
-bool Stabiliser_From_Vector_Convertor::check_remaining_entries(std::vector<std::complex<float>> &statevector) const {    
+bool Stabiliser_From_Vector_Convertor::check_remaining_entries(const std::vector<std::complex<float>> &statevector) const {    
     int old_vector_index = 0;
     int total_index = shift;
     

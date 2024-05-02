@@ -15,19 +15,19 @@ namespace fst {
 /// the affine space, and a quadratic and linear form defined on the vector space.
 struct Stabiliser_State {
     int number_qubits;
-    std::vector<int> basis_vectors;
+    std::vector<size_t> basis_vectors;
     int dim;
-    int shift;
+    size_t shift;
     
-    int real_linear_part;
-    int imaginary_part;
-    std::vector<int> quadratic_form;
+    size_t real_linear_part;
+    size_t imaginary_part;
+    std::vector<size_t> quadratic_form;
     std::complex<float> global_phase = 1;
 
     bool row_reduced = false;
 
-    Stabiliser_State(int number_qubits, int dim);
-    explicit Stabiliser_State(int number_qubits);
+    Stabiliser_State(const int number_qubits, const int dim);
+    explicit Stabiliser_State(const int number_qubits);
     
     /// Return the state vector of length 2^n of the stabiliser state
     std::vector<std::complex<float>> get_state_vector() const;
@@ -35,12 +35,12 @@ struct Stabiliser_State {
     /// Given vector_index, the column vector of an element of the vector
     /// space (represented as an integer) with respect to the vector basis,
     /// find its representation in the computational basis. 
-    int evaluate_basis_expansion(int vector_index) const;
+    size_t evaluate_basis_expansion(const size_t vector_index) const;
 
     /// Given vector_index, the column vector of an element of the vector
     /// space (represented as an integer) with respect to the vector basis,
     /// find the value of the phase assigned to the corresponding state
-    std::complex<float> get_phase(int vector_index) const;
+    std::complex<float> get_phase(const size_t vector_index) const;
 };
 
 }

@@ -6,10 +6,10 @@
 
 using namespace fst;
 
-Stabiliser_State::Stabiliser_State(int number_qubits, int dim) 
+Stabiliser_State::Stabiliser_State(const int number_qubits, const int dim) 
     : number_qubits(number_qubits), dim(dim) {}
 
-Stabiliser_State::Stabiliser_State(int number_qubits) 
+Stabiliser_State::Stabiliser_State(const int number_qubits) 
     : number_qubits(number_qubits) {
         dim = number_qubits;
     }
@@ -29,7 +29,7 @@ std::vector<std::complex<float>> Stabiliser_State::get_state_vector() const {
     return state_vector;  
 }
 
-int Stabiliser_State::evaluate_basis_expansion(int vector_index) const {
+size_t Stabiliser_State::evaluate_basis_expansion(const size_t vector_index) const {
     int result = 0;
 
     for(int j = 0; j < dim; j++){
@@ -39,7 +39,7 @@ int Stabiliser_State::evaluate_basis_expansion(int vector_index) const {
     return result;
 }
 
-std::complex<float> Stabiliser_State::get_phase(int vector_index) const {
+std::complex<float> Stabiliser_State::get_phase(const size_t vector_index) const {
     float real_linear = sign_f2_dot_product(vector_index, real_linear_part);
     std::complex<float> imag_linear = imag_f2_dot_product(vector_index, imaginary_part); 
     float real_quadratic = evaluate_quadratic_form(vector_index, quadratic_form);
