@@ -6,7 +6,6 @@
 
 using namespace fst;
 
-// TODO fix behaviour on zero vector
 Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<std::complex<float>> &statevector, bool assume_stabiliser_state) {
     std::cout << "\n calling converter\n";
     
