@@ -9,7 +9,8 @@ namespace fst{
     /// Class used in constructing a stabiliser_state object from an explicit
     /// state vector of complex amplitudes and/or testing if a state vector 
     /// correspdonds to a stabiliser state. To convert/test, call the object constructor.
-    struct Stabiliser_From_Vector_Convertor {
+    class Stabiliser_From_Vector_Convertor {
+    public:
         bool is_stabiliser_state = false;
 
     private:
