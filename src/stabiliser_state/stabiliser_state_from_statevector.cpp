@@ -1,7 +1,8 @@
 #include "stabiliser_state_from_statevector.h"
 
-#include <algorithm>
 #include "f2_helper/f2_helper.h"
+
+#include <algorithm>
 #include <iostream>
 
 using namespace fst;
@@ -127,4 +128,22 @@ bool Stabiliser_From_Vector_Convertor::check_remaining_entries(std::vector<std::
     }
 
     return true;
+}
+
+Stabiliser_State Stabiliser_From_Vector_Convertor::get_stabiliser_state() const {
+    if (!is_stabiliser_state) {
+        throw std::invalid_argument("State vector is not a stabiliser state");
+    }
+
+    Stabiliser_State state (number_qubits, dimension);
+    state.shift = shift;
+    state.basis_vectors = basis_vectors;
+    state.real_linear_part = real_linear_part;
+    state.imaginary_part = imaginary_part;
+    state.quadratic_form = quadratic_form;
+    state.global_phase = global_phase;
+
+    state.row_reduced = true;
+
+    return state;
 }

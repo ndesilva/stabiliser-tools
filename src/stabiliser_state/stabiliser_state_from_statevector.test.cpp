@@ -155,3 +155,34 @@ TEST_CASE("testing incorrect stabiliser state flagged as stabiliser state", "[st
 
     REQUIRE(convertor.is_stabiliser_state);
 }
+
+TEST_CASE("get stabiliser state", "[statevector -> stabiilser state]"){
+    SECTION("stabiliser input, dimension 5") {
+        std::vector<std::complex<float>> statevector = get_five_qubit_stabiliser_statevector();
+
+        Stabiliser_From_Vector_Convertor convertor (statevector, true);
+        Stabiliser_State state = convertor.get_stabiliser_state();
+
+        std::vector<int> expected_basis {6,9,16};
+        std::vector<int> expected_quadratic_form {6};
+
+        REQUIRE(state.number_qubits == 5);
+        REQUIRE(state.basis_vectors == expected_basis);
+        REQUIRE(state.shift == 1);
+        REQUIRE(state.real_linear_part == 5);
+        REQUIRE(state.imaginary_part == 1);
+        REQUIRE(state.quadratic_form == expected_quadratic_form);
+        REQUIRE(std::norm(state.global_phase - float(1)) <= 0.001);
+        REQUIRE(state.row_reduced == true);
+    }
+
+    SECTION("non-stabiliser input") {
+        std::vector<std::complex<float>> statevector = get_five_qubit_stabiliser_statevector();
+
+        statevector[1] = {1,1}; // invalid entry
+
+        Stabiliser_From_Vector_Convertor convertor (statevector, true);
+
+        REQUIRE_THROWS_AS(convertor.get_stabiliser_state(), std::invalid_argument);
+    }
+}
