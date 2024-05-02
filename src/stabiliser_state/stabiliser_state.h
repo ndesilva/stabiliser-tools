@@ -28,7 +28,6 @@ struct Stabiliser_State {
 
     Stabiliser_State(int number_qubits, int dim);
     explicit Stabiliser_State(int number_qubits);
-
     
     /// Return the state vector of length 2^n of the stabiliser state
     std::vector<std::complex<float>> get_state_vector() const;
