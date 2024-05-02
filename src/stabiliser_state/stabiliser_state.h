@@ -22,7 +22,7 @@ struct Stabiliser_State {
     int real_linear_part;
     int imaginary_part;
     std::vector<int> quadratic_form;
-    std::complex<float> global_factor = 1;
+    std::complex<float> global_phase = 1;
 
     bool row_reduced = 0;
 

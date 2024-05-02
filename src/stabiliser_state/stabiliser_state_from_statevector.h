@@ -23,7 +23,7 @@ namespace fst{
         int imaginary_part = 0;
         std::vector<int> quadratic_form;
         
-        std::complex<float> gloabal_factor;
+        std::complex<float> global_phase;
         std::complex<float> first_entry;
 
     public:

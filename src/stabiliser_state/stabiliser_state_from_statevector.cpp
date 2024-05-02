@@ -21,8 +21,12 @@ Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<s
 
     shift = 0;
 
-    while (statevector[shift] == float(0)) {
+    while (statevector[shift] == float(0) && shift < state_vector_size) {
         shift++;
+    }
+
+    if (shift == state_vector_size) {
+        return;
     }
 
     std::vector<int> vector_space_indices{0};
@@ -44,7 +48,14 @@ Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(std::vector<s
 
     float normalisation_factor = sqrt(support_size);
     first_entry = statevector[shift];
-    gloabal_factor = normalisation_factor * first_entry;
+    global_phase = normalisation_factor * first_entry;
+
+    std::cout << "global phase ";
+    std::cout << global_phase << std::endl;
+
+    if( abs(std::norm(global_phase) -1) >= 0.125 ) {
+        return;
+    }
 
     std::sort(vector_space_indices.begin(), vector_space_indices.end());
 

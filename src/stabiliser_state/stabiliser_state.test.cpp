@@ -96,7 +96,7 @@ TEST_CASE("generate state vector", "[stabiliser state]"){
         state.quadratic_form = {3}; // x_0 x_1
         state.real_linear_part = 1; // x_0
         state.imaginary_part = 2;   // x_1
-        state.global_factor = {0, 1};
+        state.global_phase = {0, 1};
 
         state.basis_vectors = {6, 1}; // 110, 001
 

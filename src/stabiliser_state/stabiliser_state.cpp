@@ -16,7 +16,7 @@ Stabiliser_State::Stabiliser_State(int number_qubits)
 
 std::vector<std::complex<float>> Stabiliser_State::get_state_vector() const {
     int support_size = 1 << dim;
-    std::complex<float> factor = global_factor / float(sqrt(support_size));
+    std::complex<float> factor = global_phase / float(sqrt(support_size));
     
     std::vector<std::complex<float>> state_vector (1 << number_qubits, 0);
 
