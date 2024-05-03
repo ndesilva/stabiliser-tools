@@ -49,7 +49,7 @@ fst::Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor( const s
 	first_entry = statevector[ shift ];
 	global_phase = normalisation_factor * first_entry;
 
-	if ( abs( std::norm( global_phase ) - 1 ) >= 0.125 )
+	if ( std::abs( std::norm( global_phase ) - 1 ) >= 0.125 )
 	{
 		return;
 	}

@@ -26,7 +26,7 @@ namespace fst
 	template<std::unsigned_integral T>
 	int f2_dot_product( const T x, const T y )
 	{
-		const auto product = x & y;
+		const T product = x & y;
 		const int hamming_weight = std::popcount( product );
 		return hamming_weight % 2;
 	}
