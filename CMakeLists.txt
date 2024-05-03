@@ -1,11 +1,17 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required( VERSION 3.28 )
+project( FastStabiliser CXX )
 
-set(VCPKG_TARGET_TRIPLET x64-mingw-static)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -std=c++20")
+set( CMAKE_COMPILE_WARNING_AS_ERROR ON )
+set( CMAKE_CXX_STANDARD 20 )
 
-project(FastStabiliser)
+if ( MSVC )
+	add_compile_options( /W4 /Zc:__cplusplus /Zc:enumTypes /Zc:inline /Zc:templateScope /Oi )
+else()
+	add_compile_options( -Wall -Wextra -Wshadow )
+	set( VCPKG_TARGET_TRIPLET x64-mingw-static )
+endif()
 
-find_package(Catch2 3 REQUIRED)
+find_package( Catch2 3 REQUIRED )
 
-include_directories("./src")
-add_subdirectory("src")
+include_directories( "./src" )
+add_subdirectory( "src" )
