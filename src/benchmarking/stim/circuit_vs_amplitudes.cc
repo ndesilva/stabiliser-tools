@@ -43,7 +43,7 @@ bool stim::stabilizer_state_vector_to_circuit(
         weight += std::norm(c);
     }
     if (abs(weight - 1) > 0.125) {
-        throw std::invalid_argument("State vector is not a stabiliser state");
+        return false;
     }
 
     VectorSimulator sim(num_qubits);
@@ -95,7 +95,10 @@ bool stim::stabilizer_state_vector_to_circuit(
         }
         sim.apply_H(base_qubit);
 
-        sim.smooth_stabilizer_state(sim.state[0]);
+        if (!sim.smooth_stabilizer_state(sim.state[0])){
+            return false;
+        }
+        
         if (compute_occupation(sim.state) * 2 != occupation) {
             return false;
         }

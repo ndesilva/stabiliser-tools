@@ -47,7 +47,7 @@ struct VectorSimulator {
     ///
     /// Each entry is a ratio relative to the given base value.
     /// If any entry has a ratio not near the desired set, an exception is raised.
-    void smooth_stabilizer_state(std::complex<float> base_value);
+    bool smooth_stabilizer_state(std::complex<float> base_value);
 };
 
 }  // namespace stim

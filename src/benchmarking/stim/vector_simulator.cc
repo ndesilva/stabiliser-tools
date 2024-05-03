@@ -15,6 +15,7 @@
 #include "vector_simulator.h"
 
 #include <cassert>
+#include <iostream>
 
 using namespace stim;
 
@@ -94,7 +95,7 @@ void VectorSimulator::apply_CX(size_t qubit1, size_t qubit2) {
     apply({{1, 0, 0, 0}, {0, 0, 0, 1}, {0, 0, 1, 0}, {0, 1, 0, 0}}, {qubit1, qubit2});
 }
 
-void VectorSimulator::smooth_stabilizer_state(std::complex<float> base_value) {
+bool VectorSimulator::smooth_stabilizer_state(std::complex<float> base_value) {
     std::vector<std::complex<float>> ratio_values{
         {0, 0},
         {1, 0},
@@ -112,7 +113,9 @@ void VectorSimulator::smooth_stabilizer_state(std::complex<float> base_value) {
             }
         }
         if (!solved) {
-            throw std::invalid_argument("The state vector wasn't a stabilizer state.");
+            return false;
         }
     }
+
+    return true;
 }
