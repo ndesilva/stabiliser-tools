@@ -7,28 +7,31 @@
 
 using namespace fst;
 
-std::array<std::complex<float>, 8> get_three_qubit_stabiliser_statevector()
+namespace
 {
-	return {0, 0, -0.5, { 0, 0.5 }, 0.5, { 0, 0.5 }, 0, 0};
-}
+	std::array<std::complex<float>, 8> get_three_qubit_stabiliser_statevector()
+	{
+		return { 0, 0, -0.5, { 0, 0.5 }, 0.5, { 0, 0.5 }, 0, 0 };
+	}
 
-std::array<std::complex<float>, 32> get_five_qubit_stabiliser_statevector()
-{
-	std::array<std::complex<float>, 32> statevector;
-	statevector.fill( 0 );
+	std::array<std::complex<float>, 32> get_five_qubit_stabiliser_statevector()
+	{
+		std::array<std::complex<float>, 32> statevector;
+		statevector.fill( 0 );
 
-	const float root_8 = std::sqrt( 8.0f );
+		const float root_8 = std::sqrt( 8.0f );
 
-	statevector[ 1 ] = 1.0f / root_8;
-	statevector[ 7 ] = { 0, -1 / root_8 };
-	statevector[ 8 ] = 1 / root_8;
-	statevector[ 14 ] = { 0, -1 / root_8 };
-	statevector[ 17 ] = -1 / root_8;
-	statevector[ 23 ] = { 0, 1 / root_8 };
-	statevector[ 24 ] = 1 / root_8;
-	statevector[ 30 ] = { 0, -1 / root_8 };
+		statevector[ 1 ] = 1.0f / root_8;
+		statevector[ 7 ] = { 0, -1 / root_8 };
+		statevector[ 8 ] = 1 / root_8;
+		statevector[ 14 ] = { 0, -1 / root_8 };
+		statevector[ 17 ] = -1 / root_8;
+		statevector[ 23 ] = { 0, 1 / root_8 };
+		statevector[ 24 ] = 1 / root_8;
+		statevector[ 30 ] = { 0, -1 / root_8 };
 
-	return statevector;
+		return statevector;
+	}
 }
 
 TEST_CASE( "testing correct stabiliser states", "[statevector -> stabiliser state]" )

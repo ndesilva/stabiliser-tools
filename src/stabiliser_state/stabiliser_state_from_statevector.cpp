@@ -2,6 +2,7 @@
 
 #include "f2_helper/f2_helper.h"
 
+#include <cassert>
 #include <algorithm>
 #include <iostream>
 
@@ -27,7 +28,9 @@ fst::Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor( const s
 		return;
 	}
 
-	std::vector<std::size_t> vector_space_indices{ 0 };
+	std::vector<std::size_t> vector_space_indices;
+	vector_space_indices.reserve( state_vector_size + 1);
+	vector_space_indices.push_back( 0 );
 
 	for ( std::size_t index = shift + 1; index < state_vector_size; index++ )
 	{
@@ -56,6 +59,8 @@ fst::Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor( const s
 
 	std::ranges::sort( vector_space_indices );
 
+	basis_vectors.reserve( dimension );
+
 	for ( std::size_t j = 0; j < dimension; j++ )
 	{
 		const std::size_t weight_one_string = 1z << j;
@@ -83,6 +88,8 @@ fst::Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor( const s
 			return;
 		}
 	}
+
+	quadratic_form.reserve( dimension * dimension );
 
 	for ( std::size_t j = 0; j < dimension; j++ )
 	{
