@@ -40,27 +40,27 @@ TEST_CASE( "testing correct stabiliser states", "[statevector -> stabiliser stat
 	{
 		const std::vector<std::complex<float>> statevector = { 0,1 };
 
-		const Stabiliser_From_Vector_Convertor convertor( statevector );
+		const auto state = make_stabalizer_and_validate( statevector );
 
-		REQUIRE( convertor.is_stabiliser_state );
+		REQUIRE( state );
 	}
 
 	SECTION( "3 qubits, dimension 2" )
 	{
 		const std::array statevector = get_three_qubit_stabiliser_statevector();
 
-		const Stabiliser_From_Vector_Convertor convertor( statevector );
+		const auto state = make_stabalizer_and_validate( statevector );
 
-		REQUIRE( convertor.is_stabiliser_state );
+		REQUIRE( state );
 	}
 
 	SECTION( "5 qubits, dimension 3" )
 	{
 		const std::array statevector = get_five_qubit_stabiliser_statevector();
 
-		const Stabiliser_From_Vector_Convertor convertor( statevector );
+		const auto state = make_stabalizer_and_validate( statevector );
 
-		REQUIRE( convertor.is_stabiliser_state );
+		REQUIRE( state );
 	}
 
 	SECTION( "5 qubits, dimension 3, global factor" )
@@ -74,9 +74,9 @@ TEST_CASE( "testing correct stabiliser states", "[statevector -> stabiliser stat
 			elt *= global_phase;
 		}
 
-		const Stabiliser_From_Vector_Convertor convertor( statevector );
+		const auto state = make_stabalizer_and_validate( statevector );
 
-		REQUIRE( convertor.is_stabiliser_state );
+		REQUIRE( state );
 	}
 }
 
@@ -84,20 +84,21 @@ TEST_CASE( "testing incorrect stabiliser states", "[statevector -> stabiilser st
 {
 	SECTION( "all zero state (dimension 2)" )
 	{
-		std::vector<std::complex<float>> statevector( 4, 0 );
+		const std::array<std::complex<float>, 4> statevector{ 0,0,0,0 };
 
-		const Stabiliser_From_Vector_Convertor convertor( statevector );
+		const auto state = make_stabalizer_and_validate( statevector );
 
-		REQUIRE_FALSE( convertor.is_stabiliser_state );
+		REQUIRE_FALSE( state );
 	}
 
 	SECTION( "non power of 2 sized vector (dimension 25)" )
 	{
-		std::vector<std::complex<float>> statevector( 25, 0.2f );
+		std::array<std::complex<float>, 25> statevector;
+		statevector.fill( 0.2f );
 
-		const Stabiliser_From_Vector_Convertor convertor( statevector );
+		const auto state = make_stabalizer_and_validate( statevector );
 
-		REQUIRE_FALSE( convertor.is_stabiliser_state );
+		REQUIRE_FALSE( state );
 	}
 
 	SECTION( "non-normalised" )
@@ -109,9 +110,9 @@ TEST_CASE( "testing incorrect stabiliser states", "[statevector -> stabiilser st
 			elt *= 2;
 		}
 
-		Stabiliser_From_Vector_Convertor convertor( statevector );
+		const auto state = make_stabalizer_and_validate( statevector );
 
-		REQUIRE_FALSE( convertor.is_stabiliser_state );
+		REQUIRE_FALSE( state );
 	}
 
 	SECTION( "incorrect support size" )
@@ -120,9 +121,9 @@ TEST_CASE( "testing incorrect stabiliser states", "[statevector -> stabiilser st
 
 		statevector[ 0 ] = 1; // add an element to the support
 
-		const Stabiliser_From_Vector_Convertor convertor( statevector );
+		const auto state = make_stabalizer_and_validate( statevector );
 
-		REQUIRE_FALSE( convertor.is_stabiliser_state );
+		REQUIRE_FALSE( state );
 	}
 
 	SECTION( "support not affine space" )
@@ -132,9 +133,9 @@ TEST_CASE( "testing incorrect stabiliser states", "[statevector -> stabiilser st
 		statevector[ 1 ] = 0; // remove element from the support
 		statevector[ 0 ] = 1; // keep support size the same, but now not affine
 
-		const Stabiliser_From_Vector_Convertor convertor( statevector );
+		const auto state = make_stabalizer_and_validate( statevector );
 
-		REQUIRE_FALSE( convertor.is_stabiliser_state );
+		REQUIRE_FALSE( state );
 	}
 
 	SECTION( "invalid basis vector entry" )
@@ -143,9 +144,9 @@ TEST_CASE( "testing incorrect stabiliser states", "[statevector -> stabiilser st
 
 		statevector[ 7 ] = 2; //invalid entry for the first basis vector
 
-		const Stabiliser_From_Vector_Convertor convertor( statevector );
+		const auto state = make_stabalizer_and_validate( statevector );
 
-		REQUIRE_FALSE( convertor.is_stabiliser_state );
+		REQUIRE_FALSE( state );
 	}
 
 	SECTION( "invalid weight two vector entry" )
@@ -154,9 +155,9 @@ TEST_CASE( "testing incorrect stabiliser states", "[statevector -> stabiilser st
 
 		statevector[ 14 ] = { 0,-2 }; // invalid entry for e_1 + e_2
 
-		const Stabiliser_From_Vector_Convertor convertor( statevector );
+		const auto state = make_stabalizer_and_validate( statevector );
 
-		REQUIRE_FALSE( convertor.is_stabiliser_state );
+		REQUIRE_FALSE( state );
 	}
 
 	SECTION( "inconsistent remaining entry" )
@@ -165,9 +166,9 @@ TEST_CASE( "testing incorrect stabiliser states", "[statevector -> stabiilser st
 
 		statevector[ 30 ] = { 0,-1 }; // inconsistent entry for e_1 + e_2 + e_3 (should be i)
 
-		const Stabiliser_From_Vector_Convertor convertor( statevector );
+		const auto state = make_stabalizer_and_validate( statevector );
 
-		REQUIRE_FALSE( convertor.is_stabiliser_state );
+		REQUIRE_FALSE( state );
 	}
 }
 
@@ -177,9 +178,9 @@ TEST_CASE( "testing incorrect stabiliser state flagged as stabiliser state", "[s
 
 	statevector[ 30 ] = { 0,-1 }; // inconsistent entry for e_1 + e_2 + e_3 (should be i)
 
-	const Stabiliser_From_Vector_Convertor convertor( statevector, true );
+	const auto state = make_stabalizer_assume_valid( statevector );
 
-	REQUIRE( convertor.is_stabiliser_state );
+	REQUIRE( state );
 }
 
 TEST_CASE( "get stabiliser state", "[statevector -> stabiilser state]" )
@@ -188,8 +189,7 @@ TEST_CASE( "get stabiliser state", "[statevector -> stabiilser state]" )
 	{
 		const std::array statevector = get_five_qubit_stabiliser_statevector();
 
-		const Stabiliser_From_Vector_Convertor convertor( statevector, true );
-		const Stabiliser_State state = convertor.get_stabiliser_state();
+		const Stabiliser_State state = make_stabalizer_assume_valid( statevector ).value();
 
 		const std::vector<size_t> expected_basis{ 6,9,16 };
 		const std::vector<size_t> expected_quadratic_form{ 6 };
@@ -210,8 +210,8 @@ TEST_CASE( "get stabiliser state", "[statevector -> stabiilser state]" )
 
 		statevector[ 1 ] = { 1,1 }; // invalid entry
 
-		const Stabiliser_From_Vector_Convertor convertor( statevector, true );
+		const auto state = make_stabalizer_assume_valid( statevector );
 
-		REQUIRE_THROWS_AS( convertor.get_stabiliser_state(), std::invalid_argument );
+		REQUIRE_FALSE( state );
 	}
 }
