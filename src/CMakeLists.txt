@@ -6,6 +6,8 @@ set(TEST_LIBRARIES
     stabiliser_state_tests
 )
 
+add_subdirectory(benchmarking)
+
 add_executable(tests)
 
 target_link_libraries(tests PRIVATE ${TEST_LIBRARIES})

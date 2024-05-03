@@ -32,7 +32,7 @@ inline static size_t compute_occupation(const std::vector<std::complex<float>> &
 }
 
 bool stim::stabilizer_state_vector_to_circuit(
-    const std::vector<std::complex<float>> &state_vector, bool little_endian) {
+    const std::vector<std::complex<float>> &state_vector) {
     if (!is_power_of_2(state_vector.size())) {
         return false;
     }
@@ -49,18 +49,11 @@ bool stim::stabilizer_state_vector_to_circuit(
     VectorSimulator sim(num_qubits);
     sim.state = state_vector;
 
-    auto apply = [&](GateType gate_type, uint32_t target) {
-        sim.apply(gate_type, target);
-    };
-    auto apply2 = [&](GateType gate_type, uint32_t target, uint32_t target2) {
-        sim.apply(gate_type, target, target2);
-    };
-
     // Move biggest amplitude to start of state vector..
     size_t pivot = biggest_index(state_vector);
     for (size_t q = 0; q < num_qubits; q++) {
         if ((pivot >> q) & 1) {
-            apply(GateType::X, q);
+            sim.apply_X(q);
         }
     }
     sim.smooth_stabilizer_state(sim.state[0]);
@@ -87,20 +80,20 @@ bool stim::stabilizer_state_vector_to_circuit(
                 if (base_qubit == SIZE_MAX) {
                     base_qubit = q;
                 } else {
-                    apply2(GateType::CX, base_qubit, q);
+                    sim.apply_CX(base_qubit, q);
                 }
             }
         }
 
         auto s = sim.state[1 << base_qubit];
         if (s == std::complex<float>{-1, 0}) {
-            apply(GateType::Z, base_qubit);
+            sim.apply_Z(base_qubit);
         } else if (s == std::complex<float>{0, 1}) {
-            apply(GateType::S_DAG, base_qubit);
+            sim.apply_S_DAG(base_qubit);
         } else if (s == std::complex<float>{0, -1}) {
-            apply(GateType::S, base_qubit);
+            sim.apply_S(base_qubit);
         }
-        apply(GateType::H, base_qubit);
+        sim.apply_H(base_qubit);
 
         sim.smooth_stabilizer_state(sim.state[0]);
         if (compute_occupation(sim.state) * 2 != occupation) {

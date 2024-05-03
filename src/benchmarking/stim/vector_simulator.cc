@@ -18,6 +18,9 @@
 
 using namespace stim;
 
+static constexpr std::complex<float> s = 0.7071067811865475244f;
+static constexpr std::complex<float> i = std::complex<float>(0, 1);
+
 VectorSimulator::VectorSimulator(size_t num_qubits) {
     state.resize(size_t{1} << num_qubits, 0.0f);
     state[0] = 1;
@@ -67,12 +70,28 @@ void VectorSimulator::apply(
     }
 }
 
-void VectorSimulator::apply(GateType gate, size_t qubit) {
-    apply(GATE_DATA[gate].unitary(), {qubit});
+void VectorSimulator::apply_X(size_t qubit) {
+    apply({{0, 1}, {1, 0}}, {qubit});
 }
 
-void VectorSimulator::apply(GateType gate, size_t qubit1, size_t qubit2) {
-    apply(GATE_DATA[gate].unitary(), {qubit1, qubit2});
+void VectorSimulator::apply_Z(size_t qubit) {
+    apply({{1, 0}, {0, -1}}, {qubit});
+}
+
+void VectorSimulator::apply_S(size_t qubit) {
+    apply({{1, 0}, {0, i}}, {qubit});
+}
+
+void VectorSimulator::apply_S_DAG(size_t qubit) {
+    apply({{1, 0}, {0, -i}}, {qubit});
+}
+
+void VectorSimulator::apply_H(size_t qubit) {
+    apply({{s, s}, {s, -s}}, {qubit});
+}
+
+void VectorSimulator::apply_CX(size_t qubit1, size_t qubit2) {
+    apply({{1, 0, 0, 0}, {0, 0, 0, 1}, {0, 0, 1, 0}, {0, 1, 0, 0}}, {qubit1, qubit2});
 }
 
 void VectorSimulator::smooth_stabilizer_state(std::complex<float> base_value) {

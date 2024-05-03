@@ -18,10 +18,7 @@
 #define _STIM_SIMULATORS_VECTOR_SIMULATOR_H
 
 #include <complex>
-#include <iostream>
-#include <random>
-#include <unordered_map>
-#include "gates.h"
+#include <vector>
 
 namespace stim {
 
@@ -37,10 +34,14 @@ struct VectorSimulator {
     /// Applies a unitary operation to the given qubits, updating the state vector.
     void apply(const std::vector<std::vector<std::complex<float>>> &matrix, const std::vector<size_t> &qubits);
 
-    /// Helper method for applying named single qubit gates.
-    void apply(GateType gate, size_t qubit);
+    void apply_X(size_t qubit);
+    void apply_Z(size_t qubit);
+    void apply_S(size_t qubit);
+    void apply_S_DAG(size_t qubit);
+    void apply_H(size_t qubit);
+    
     /// Helper method for applying named two qubit gates.
-    void apply(GateType gate, size_t qubit1, size_t qubit2);
+    void apply_CX(size_t qubit1, size_t qubit2);
 
     /// Modifies the state vector to be EXACTLY entries of 0, 1, -1, i, or -i.
     ///

@@ -2,6 +2,7 @@
 #define _STIM_UTIL_TOP_CIRCUIT_VS_AMPLITUDES_H
 
 #include <complex>
+#include <vector>
 
 namespace stim {
 
@@ -19,7 +20,7 @@ namespace stim {
 /// Throws:
 ///     std::invalid_argument: The given state vector cannot be produced by a stabilizer circuit.
 bool stabilizer_state_vector_to_circuit(
-    const std::vector<std::complex<float>> &stabilizer_state_vector, bool little_endian);
+    const std::vector<std::complex<float>> &stabilizer_state_vector);
 
 }  // namespace stim
 
