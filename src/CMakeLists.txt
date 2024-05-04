@@ -17,3 +17,5 @@ include(CTest)
 include(Catch)
 
 catch_discover_tests(tests)
+
+add_test( tests COMMAND tests )
