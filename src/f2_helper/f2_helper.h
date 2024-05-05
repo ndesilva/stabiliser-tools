@@ -10,17 +10,6 @@
 
 namespace fst
 {
-#ifndef __cpp_size_t_suffix 
-	// Added in C++23, we can mimic it ourselves
-	// Disable warning for user defined literal not starting with _, we know this one is safe since we compile with C++20
-	MSVC_PUSH_AND_DISABLE_WARNINGS( 4455 ) 
-	constexpr std::size_t operator""z( unsigned long long n )
-	{
-		return n;
-	}
-	MSVC_POP_WARNINGS
-#endif
-
 	/// Gives the F_2 inner product between 2 F_2 vectors (represented
 	/// as integers)
 	template<std::unsigned_integral T>
