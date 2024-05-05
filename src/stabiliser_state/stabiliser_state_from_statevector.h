@@ -13,8 +13,9 @@ namespace fst
 	/// 
 	/// Assuming valid is faster, but will result in undefined behaviour if the state vector is not in fact a
 	/// valid stabaliser state
-	std::optional<Stabiliser_State> make_stabiliser_assume_valid( const std::span<const std::complex<float>> statevector );
-	std::optional<Stabiliser_State> make_stabiliser_and_validate( const std::span<const std::complex<float>> statevector );
+	Stabiliser_State stabiliser_from_statevector( const std::span<const std::complex<float>> statevector, bool assume_valid = false );
+
+	bool is_stabiliser_state( const std::span<const std::complex<float>> statevector );
 }
 
 #endif

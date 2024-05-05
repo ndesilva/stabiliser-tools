@@ -7,8 +7,8 @@
 
 namespace
 {
-	template<bool AssumeValid>
-	std::optional<fst::Stabiliser_State> make_stabiliser_internal( const std::span<const std::complex<float>> statevector )
+	template<bool assume_valid, bool return_state>
+	std::optional<fst::Stabiliser_State> stabiliser_from_statevector_internal( const std::span<const std::complex<float>> statevector )
 	{
 		using namespace fst;
 
@@ -125,7 +125,7 @@ namespace
 			}
 		}
 
-		if constexpr ( !AssumeValid )
+		if constexpr ( !assume_valid )
 		{			
 			const std::span<const std::size_t> form_span( quadratic_form );
 			std::size_t old_vector_index = 0;
@@ -154,25 +154,46 @@ namespace
 			}
 		}
 
-		Stabiliser_State state( number_qubits, dimension );
-		state.shift = shift;
-		state.basis_vectors = std::move( basis_vectors );
-		state.real_linear_part = real_linear_part;
-		state.imaginary_part = imaginary_part;
-		state.quadratic_form = quadratic_form;
-		state.global_phase = global_phase;
-		state.row_reduced = true;
+		if constexpr (return_state)
+		{
+			Stabiliser_State state( number_qubits, dimension );
+			state.shift = shift;
+			state.basis_vectors = std::move( basis_vectors );
+			state.real_linear_part = real_linear_part;
+			state.imaginary_part = imaginary_part;
+			state.quadratic_form = quadratic_form;
+			state.global_phase = global_phase;
+			state.row_reduced = true;
 
-		return state;
+			return state;
+		}
+		else
+		{
+			Stabiliser_State state(0,0);
+
+			return state;
+		}
 	}
 }
 
-std::optional<fst::Stabiliser_State> fst::make_stabiliser_assume_valid( const std::span<const std::complex<float>> statevector )
+fst::Stabiliser_State fst::stabiliser_from_statevector( const std::span<const std::complex<float>> statevector, bool assume_valid )
 {
-	return make_stabiliser_internal<true>( statevector );
+	if (assume_valid)
+	{
+		return stabiliser_from_statevector_internal<true, true>( statevector ).value();
+	}
+
+	std::optional<fst::Stabiliser_State> stabiliser = stabiliser_from_statevector_internal<false, true>( statevector );
+
+	if (!stabiliser.has_value())
+	{
+		throw std::invalid_argument("State was not a stabiliser state");
+	}
+	
+	return stabiliser.value();
 }
 
-std::optional<fst::Stabiliser_State> fst::make_stabiliser_and_validate( const std::span<const std::complex<float>> statevector )
+bool fst::is_stabiliser_state( const std::span<const std::complex<float>> statevector )
 {
-	return make_stabiliser_internal<false>( statevector );
+	return stabiliser_from_statevector_internal<false, false>(statevector).has_value();
 }
