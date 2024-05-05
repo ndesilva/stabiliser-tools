@@ -15,7 +15,7 @@ namespace
 		const std::size_t state_vector_size = statevector.size();
 		const std::size_t number_qubits = integral_log_2( state_vector_size );
 
-		if ( 1z << number_qubits != state_vector_size )
+		if ( 1uz << number_qubits != state_vector_size )
 		{
 			return std::nullopt;
 		}
@@ -47,7 +47,7 @@ namespace
 		const std::size_t support_size = vector_space_indices.size();
 		const std::size_t dimension = integral_log_2( support_size );
 
-		if ( 1z << dimension != support_size )
+		if ( 1uz << dimension != support_size )
 		{
 			return std::nullopt;
 		}
