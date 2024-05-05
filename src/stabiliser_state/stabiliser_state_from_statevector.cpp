@@ -163,7 +163,7 @@ namespace
 		state.global_phase = global_phase;
 		state.row_reduced = true;
 
-		return std::move( state );
+		return state;
 	}
 }
 
