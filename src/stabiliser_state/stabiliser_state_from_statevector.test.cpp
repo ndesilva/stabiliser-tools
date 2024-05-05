@@ -40,7 +40,7 @@ TEST_CASE( "testing correct stabiliser states", "[statevector -> stabiliser stat
 	{
 		const std::vector<std::complex<float>> statevector = { 0, 1 };
 
-		const auto state = make_stabalizer_and_validate( statevector );
+		const auto state = make_stabiliser_and_validate( statevector );
 
 		REQUIRE( state );
 	}
@@ -49,7 +49,7 @@ TEST_CASE( "testing correct stabiliser states", "[statevector -> stabiliser stat
 	{
 		const std::array statevector = get_three_qubit_stabiliser_statevector();
 
-		const auto state = make_stabalizer_and_validate( statevector );
+		const auto state = make_stabiliser_and_validate( statevector );
 
 		REQUIRE( state );
 	}
@@ -58,7 +58,7 @@ TEST_CASE( "testing correct stabiliser states", "[statevector -> stabiliser stat
 	{
 		const std::array statevector = get_five_qubit_stabiliser_statevector();
 
-		const auto state = make_stabalizer_and_validate( statevector );
+		const auto state = make_stabiliser_and_validate( statevector );
 
 		REQUIRE( state );
 	}
@@ -74,7 +74,7 @@ TEST_CASE( "testing correct stabiliser states", "[statevector -> stabiliser stat
 			elt *= global_phase;
 		}
 
-		const auto state = make_stabalizer_and_validate( statevector );
+		const auto state = make_stabiliser_and_validate( statevector );
 
 		REQUIRE( state );
 	}
@@ -86,7 +86,7 @@ TEST_CASE( "testing incorrect stabiliser states", "[statevector -> stabiilser st
 	{
 		const std::array<std::complex<float>, 4> statevector{ 0,0,0,0 };
 
-		const auto state = make_stabalizer_and_validate( statevector );
+		const auto state = make_stabiliser_and_validate( statevector );
 
 		REQUIRE_FALSE( state );
 	}
@@ -96,7 +96,7 @@ TEST_CASE( "testing incorrect stabiliser states", "[statevector -> stabiilser st
 		std::array<std::complex<float>, 25> statevector;
 		statevector.fill( 0.2f );
 
-		const auto state = make_stabalizer_and_validate( statevector );
+		const auto state = make_stabiliser_and_validate( statevector );
 
 		REQUIRE_FALSE( state );
 	}
@@ -110,7 +110,7 @@ TEST_CASE( "testing incorrect stabiliser states", "[statevector -> stabiilser st
 			elt *= 2;
 		}
 
-		const auto state = make_stabalizer_and_validate( statevector );
+		const auto state = make_stabiliser_and_validate( statevector );
 
 		REQUIRE_FALSE( state );
 	}
@@ -121,7 +121,7 @@ TEST_CASE( "testing incorrect stabiliser states", "[statevector -> stabiilser st
 
 		statevector[ 0 ] = 1; // add an element to the support
 
-		const auto state = make_stabalizer_and_validate( statevector );
+		const auto state = make_stabiliser_and_validate( statevector );
 
 		REQUIRE_FALSE( state );
 	}
@@ -133,7 +133,7 @@ TEST_CASE( "testing incorrect stabiliser states", "[statevector -> stabiilser st
 		statevector[ 1 ] = 0; // remove element from the support
 		statevector[ 0 ] = 1; // keep support size the same, but now not affine
 
-		const auto state = make_stabalizer_and_validate( statevector );
+		const auto state = make_stabiliser_and_validate( statevector );
 
 		REQUIRE_FALSE( state );
 	}
@@ -144,7 +144,7 @@ TEST_CASE( "testing incorrect stabiliser states", "[statevector -> stabiilser st
 
 		statevector[ 7 ] = 2; //invalid entry for the first basis vector
 
-		const auto state = make_stabalizer_and_validate( statevector );
+		const auto state = make_stabiliser_and_validate( statevector );
 
 		REQUIRE_FALSE( state );
 	}
@@ -155,7 +155,7 @@ TEST_CASE( "testing incorrect stabiliser states", "[statevector -> stabiilser st
 
 		statevector[ 14 ] = { 0,-2 }; // invalid entry for e_1 + e_2
 
-		const auto state = make_stabalizer_and_validate( statevector );
+		const auto state = make_stabiliser_and_validate( statevector );
 
 		REQUIRE_FALSE( state );
 	}
@@ -166,7 +166,7 @@ TEST_CASE( "testing incorrect stabiliser states", "[statevector -> stabiilser st
 
 		statevector[ 30 ] = { 0,-1 }; // inconsistent entry for e_1 + e_2 + e_3 (should be i)
 
-		const auto state = make_stabalizer_and_validate( statevector );
+		const auto state = make_stabiliser_and_validate( statevector );
 
 		REQUIRE_FALSE( state );
 	}
@@ -178,7 +178,7 @@ TEST_CASE( "testing incorrect stabiliser state flagged as stabiliser state", "[s
 
 	statevector[ 30 ] = { 0,-1 }; // inconsistent entry for e_1 + e_2 + e_3 (should be i)
 
-	const auto state = make_stabalizer_assume_valid( statevector );
+	const auto state = make_stabiliser_assume_valid( statevector );
 
 	REQUIRE( state );
 }
@@ -189,7 +189,7 @@ TEST_CASE( "get stabiliser state", "[statevector -> stabiilser state]" )
 	{
 		const std::array statevector = get_five_qubit_stabiliser_statevector();
 
-		const Stabiliser_State state = make_stabalizer_assume_valid( statevector ).value();
+		const Stabiliser_State state = make_stabiliser_assume_valid( statevector ).value();
 
 		const std::vector<size_t> expected_basis{ 6,9,16 };
 		const std::vector<size_t> expected_quadratic_form{ 6 };
@@ -210,7 +210,7 @@ TEST_CASE( "get stabiliser state", "[statevector -> stabiilser state]" )
 
 		statevector[ 1 ] = { 1,1 }; // invalid entry
 
-		const auto state = make_stabalizer_assume_valid( statevector );
+		const auto state = make_stabiliser_assume_valid( statevector );
 
 		REQUIRE_FALSE( state );
 	}

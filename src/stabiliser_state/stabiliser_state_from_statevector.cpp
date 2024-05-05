@@ -8,7 +8,7 @@
 namespace
 {
 	template<bool AssumeValid>
-	std::optional<fst::Stabiliser_State> make_stabalizer_internal( const std::span<const std::complex<float>> statevector )
+	std::optional<fst::Stabiliser_State> make_stabiliser_internal( const std::span<const std::complex<float>> statevector )
 	{
 		using namespace fst;
 
@@ -167,12 +167,12 @@ namespace
 	}
 }
 
-std::optional<fst::Stabiliser_State> fst::make_stabalizer_assume_valid( const std::span<const std::complex<float>> statevector )
+std::optional<fst::Stabiliser_State> fst::make_stabiliser_assume_valid( const std::span<const std::complex<float>> statevector )
 {
-	return make_stabalizer_internal<true>( statevector );
+	return make_stabiliser_internal<true>( statevector );
 }
 
-std::optional<fst::Stabiliser_State> fst::make_stabalizer_and_validate( const std::span<const std::complex<float>> statevector )
+std::optional<fst::Stabiliser_State> fst::make_stabiliser_and_validate( const std::span<const std::complex<float>> statevector )
 {
-	return make_stabalizer_internal<false>( statevector );
+	return make_stabiliser_internal<false>( statevector );
 }
