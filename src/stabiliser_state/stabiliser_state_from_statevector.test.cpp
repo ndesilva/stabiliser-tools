@@ -38,7 +38,7 @@ TEST_CASE( "testing correct stabiliser states", "[statevector -> stabiliser stat
 {
 	SECTION( "1 qubit, dimension 0" )
 	{
-		const std::vector<std::complex<float>> statevector = { 0,1 };
+		const std::vector<std::complex<float>> statevector = { 0, 1 };
 
 		const auto state = make_stabalizer_and_validate( statevector );
 

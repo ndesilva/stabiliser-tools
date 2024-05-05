@@ -8,13 +8,11 @@ namespace fst
 	Stabiliser_State::Stabiliser_State( const std::size_t number_qubits, const std::size_t dim )
 		: number_qubits( number_qubits )
 		, dim( dim )
-	{
-	}
+	{}
 
 	Stabiliser_State::Stabiliser_State( const std::size_t number_qubits )
 		: Stabiliser_State( number_qubits, number_qubits )
-	{
-	}
+	{}
 
 	std::vector<std::complex<float>> Stabiliser_State::get_state_vector() const
 	{
@@ -39,7 +37,7 @@ namespace fst
 
 		for ( std::size_t j = 0; j < dim; j++ )
 		{
-			result ^= basis_vectors[ j ] * ( ( 1z << j & vector_index ) == 1z << j );
+			result ^= basis_vectors[ j ] *  std::popcount(1z << j & vector_index);
 		}
 
 		return result;
