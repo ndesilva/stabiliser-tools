@@ -16,10 +16,10 @@ namespace fst
 
 	std::vector<std::complex<float>> Stabiliser_State::get_state_vector() const
 	{
-		const std::size_t support_size = 1uz << dim;
+		const std::size_t support_size = integral_pow_2( dim );
 		const std::complex<float> factor = global_phase / float( std::sqrt( support_size ) );
 
-		std::vector<std::complex<float>> state_vector( 1uz << number_qubits, 0 );
+		std::vector<std::complex<float>> state_vector( integral_pow_2( number_qubits ), 0 );
 
 		for ( std::size_t vector_index = 0; vector_index < support_size; vector_index++ )
 		{
@@ -37,7 +37,7 @@ namespace fst
 
 		for ( std::size_t j = 0; j < dim; j++ )
 		{
-			result ^= basis_vectors[ j ] *  std::popcount(1uz << j & vector_index);
+			result ^= basis_vectors[ j ] * std::popcount( integral_pow_2( j ) & vector_index );
 		}
 
 		return result;

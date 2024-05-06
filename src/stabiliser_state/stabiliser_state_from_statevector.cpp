@@ -3,6 +3,7 @@
 #include "f2_helper/f2_helper.h"
 
 #include <algorithm>
+#include <optional>
 #include <vector>
 
 namespace
@@ -16,7 +17,7 @@ namespace
 		const std::size_t state_vector_size = statevector.size();
 		const std::size_t number_qubits = integral_log_2( state_vector_size );
 
-		if ( 1uz << number_qubits != state_vector_size )
+		if ( integral_pow_2( number_qubits ) != state_vector_size )
 		{
 			return {};
 		}
@@ -48,7 +49,7 @@ namespace
 		const std::size_t support_size = vector_space_indices.size();
 		const std::size_t dimension = integral_log_2( support_size );
 
-		if ( 1uz << dimension != support_size )
+		if ( integral_pow_2( dimension ) != support_size )
 		{
 			return {};
 		}
@@ -72,7 +73,7 @@ namespace
 
 		for ( std::size_t j = 0; j < dimension; j++ )
 		{
-			const std::size_t weight_one_string = 1uz << j;
+			const std::size_t weight_one_string = integral_pow_2( j );
 
 			const std::size_t basis_vector = vector_space_indices[ weight_one_string ];
 			basis_vectors.push_back( basis_vector );
@@ -105,7 +106,7 @@ namespace
 		{
 			for ( std::size_t i = j + 1; i < dimension; i++ )
 			{
-				const std::size_t vector_index = ( 1uz << i ) | ( 1uz << j );
+				const std::size_t vector_index = integral_pow_2( i ) | integral_pow_2( j );
 
 				const float real_linear_eval = static_cast<float>( sign_f2_dot_product( vector_index, real_linear_part ) );
 				const std::complex<float> imag_linear_eval = imag_f2_dot_product( vector_index, imaginary_part );

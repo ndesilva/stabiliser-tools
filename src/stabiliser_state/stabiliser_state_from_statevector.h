@@ -1,9 +1,8 @@
 #ifndef _FAST_STABILISER_STABILISER_STATE_FROM_VECTOR_H
 #define _FAST_STABILISER_STABILISER_STATE_FROM_VECTOR_H
 
-#include <span>
 #include <complex>
-#include <optional>
+#include <span>
 
 #include "stabiliser_state.h"
 
