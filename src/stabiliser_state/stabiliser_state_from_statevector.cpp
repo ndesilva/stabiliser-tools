@@ -8,7 +8,8 @@
 namespace
 {
 	template<bool assume_valid, bool return_state>
-	std::optional<fst::Stabiliser_State> stabiliser_from_statevector_internal( const std::span<const std::complex<float>> statevector )
+	auto stabiliser_from_statevector_internal( const std::span<const std::complex<float>> statevector )
+		-> std::conditional_t<return_state, std::optional<fst::Stabiliser_State>, bool>
 	{
 		using namespace fst;
 
@@ -17,7 +18,7 @@ namespace
 
 		if ( 1uz << number_qubits != state_vector_size )
 		{
-			return std::nullopt;
+			return {};
 		}
 
 		std::size_t shift = 0;
@@ -29,7 +30,7 @@ namespace
 
 		if ( shift == state_vector_size )
 		{
-			return std::nullopt;
+			return {};
 		}
 
 		std::vector<std::size_t> vector_space_indices;
@@ -49,7 +50,7 @@ namespace
 
 		if ( 1uz << dimension != support_size )
 		{
-			return std::nullopt;
+			return {};
 		}
 
 		const float normalisation_factor = static_cast<float>( std::sqrt( support_size ) );
@@ -58,7 +59,7 @@ namespace
 
 		if ( std::abs( std::norm( global_phase ) - 1 ) >= 0.125 )
 		{
-			return std::nullopt;
+			return {};
 		}
 
 		std::ranges::sort( vector_space_indices );
@@ -71,7 +72,7 @@ namespace
 
 		for ( std::size_t j = 0; j < dimension; j++ )
 		{
-			const std::size_t weight_one_string = 1z << j;
+			const std::size_t weight_one_string = 1uz << j;
 
 			const std::size_t basis_vector = vector_space_indices[ weight_one_string ];
 			basis_vectors.push_back( basis_vector );
@@ -93,7 +94,7 @@ namespace
 			}
 			else if ( std::norm( phase - float( 1 ) ) >= 0.125 )
 			{
-				return std::nullopt;
+				return {};
 			}
 		}
 
@@ -104,7 +105,7 @@ namespace
 		{
 			for ( std::size_t i = j + 1; i < dimension; i++ )
 			{
-				const std::size_t vector_index = ( 1z << i ) | ( 1z << j );
+				const std::size_t vector_index = ( 1uz << i ) | ( 1uz << j );
 
 				const float real_linear_eval = static_cast<float>( sign_f2_dot_product( vector_index, real_linear_part ) );
 				const std::complex<float> imag_linear_eval = imag_f2_dot_product( vector_index, imaginary_part );
@@ -120,13 +121,13 @@ namespace
 				}
 				else if ( std::norm( quadratic_form_eval - float( 1 ) ) >= 0.125 )
 				{
-					return std::nullopt;
+					return {};
 				}
 			}
 		}
 
 		if constexpr ( !assume_valid )
-		{			
+		{
 			const std::span<const std::size_t> form_span( quadratic_form );
 			std::size_t old_vector_index = 0;
 			std::size_t total_index = shift;
@@ -147,14 +148,14 @@ namespace
 
 				if ( std::norm( phase_eval * first_entry - actual_phase ) >= 0.125 )
 				{
-					return std::nullopt;
+					return {};
 				}
 
 				old_vector_index = new_vector_index;
 			}
 		}
 
-		if constexpr (return_state)
+		if constexpr ( return_state )
 		{
 			Stabiliser_State state( number_qubits, dimension );
 			state.shift = shift;
@@ -164,36 +165,30 @@ namespace
 			state.quadratic_form = quadratic_form;
 			state.global_phase = global_phase;
 			state.row_reduced = true;
-
 			return state;
 		}
 		else
 		{
-			Stabiliser_State state(0,0);
-
-			return state;
+			return true;
 		}
 	}
 }
 
 fst::Stabiliser_State fst::stabiliser_from_statevector( const std::span<const std::complex<float>> statevector, bool assume_valid )
 {
-	if (assume_valid)
+	std::optional<Stabiliser_State> state = assume_valid
+		? stabiliser_from_statevector_internal<true, true>( statevector )
+		: stabiliser_from_statevector_internal<false, true>( statevector );
+
+	if ( !state )
 	{
-		return stabiliser_from_statevector_internal<true, true>( statevector ).value();
+		throw std::invalid_argument( "State was not a stabiliser state" );
 	}
 
-	std::optional<fst::Stabiliser_State> stabiliser = stabiliser_from_statevector_internal<false, true>( statevector );
-
-	if (!stabiliser.has_value())
-	{
-		throw std::invalid_argument("State was not a stabiliser state");
-	}
-	
-	return stabiliser.value();
+	return *std::move( state );
 }
 
 bool fst::is_stabiliser_state( const std::span<const std::complex<float>> statevector )
 {
-	return stabiliser_from_statevector_internal<false, false>(statevector).has_value();
+	return stabiliser_from_statevector_internal<false, false>( statevector );
 }
