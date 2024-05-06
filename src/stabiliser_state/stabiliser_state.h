@@ -27,6 +27,7 @@ namespace fst
 
 		bool row_reduced = false;
 
+		Stabiliser_State() = default;
 		Stabiliser_State( const std::size_t number_qubits, const std::size_t dim );
 		explicit Stabiliser_State( const std::size_t number_qubits );
 
