@@ -11,7 +11,4 @@ else()
 	set( VCPKG_TARGET_TRIPLET x64-mingw-static )
 endif()
 
-find_package( Catch2 3 REQUIRED )
-
-include_directories( "./src" )
 add_subdirectory( "src" )

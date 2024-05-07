@@ -1,10 +1,9 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "stabiliser_state_from_statevector.h"
-#include "f2_helper/f2_helper.h"
+#include "f2_helper.h"
 #include <vector>
 #include <array>
-#include <iostream>
 
 using namespace fst;
 
