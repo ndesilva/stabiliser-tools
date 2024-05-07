@@ -85,7 +85,7 @@ bool stim::stabilizer_state_vector_to_circuit(
             }
         }
 
-        auto s = sim.state[1 << base_qubit];
+		auto s = sim.state[ size_t( 1 ) << base_qubit ];
         if (s == std::complex<float>{-1, 0}) {
             sim.apply_Z(base_qubit);
         } else if (s == std::complex<float>{0, 1}) {
