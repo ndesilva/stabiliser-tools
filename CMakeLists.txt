@@ -11,4 +11,5 @@ else()
 	set( VCPKG_TARGET_TRIPLET x64-mingw-static )
 endif()
 
+include( CTest )
 add_subdirectory( "src" )
