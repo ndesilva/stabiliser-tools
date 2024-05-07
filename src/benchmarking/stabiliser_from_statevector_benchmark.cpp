@@ -5,9 +5,9 @@
 #include <fstream>
 #include <numeric>
 
-#include "./stim/circuit_vs_amplitudes.h"
-#include "stabiliser_state/stabiliser_state_from_statevector.h"
-#include "f2_helper/f2_helper.h"
+#include "stim/circuit_vs_amplitudes.h"
+#include "stabiliser_state_from_statevector.h"
+#include "f2_helper.h"
 
 using namespace std::chrono;
 
