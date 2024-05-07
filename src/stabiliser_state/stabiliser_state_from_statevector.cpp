@@ -3,147 +3,193 @@
 #include "f2_helper/f2_helper.h"
 
 #include <algorithm>
-#include <iostream>
+#include <optional>
+#include <vector>
 
-using namespace fst;
+namespace
+{
+	template<bool assume_valid, bool return_state>
+	auto stabiliser_from_statevector_internal( const std::span<const std::complex<float>> statevector )
+		-> std::conditional_t<return_state, std::optional<fst::Stabiliser_State>, bool>
+	{
+		using namespace fst;
 
-Stabiliser_From_Vector_Convertor::Stabiliser_From_Vector_Convertor(const std::vector<std::complex<float>> &statevector, const bool assume_stabiliser_state) {    
-    int state_vector_size = statevector.size();
-    number_qubits = integral_log_2(state_vector_size);
+		const std::size_t state_vector_size = statevector.size();
 
-    if (1 << number_qubits != state_vector_size){
-        return;
-    };
+		if ( !is_power_of_2(state_vector_size) )
+		{
+			return {};
+		}
 
-    shift = 0;
+		const std::size_t number_qubits = integral_log_2( state_vector_size );
+		std::size_t shift = 0;
 
-    while (statevector[shift] == float(0) && shift < state_vector_size) {
-        shift++;
-    }
+		while ( shift < state_vector_size && statevector[ shift ] == float( 0 ) )
+		{
+			++shift;
+		}
 
-    if (shift == state_vector_size) {
-        return;
-    }
+		if ( shift == state_vector_size )
+		{
+			return {};
+		}
 
-    std::vector<int> vector_space_indices{0};
+		std::vector<std::size_t> vector_space_indices;
+		vector_space_indices.reserve( state_vector_size + 1 );
+		vector_space_indices.push_back( 0 );
 
-    for (int index = shift + 1; index < state_vector_size; index++) {
-        if (statevector[index] != float(0)) {
-            vector_space_indices.push_back(shift ^ index);
-        }
-    };
+		for ( std::size_t index = shift + 1; index < state_vector_size; index++ )
+		{
+			if ( statevector[ index ] != float( 0 ) )
+			{
+				vector_space_indices.push_back( shift ^ index );
+			}
+		}
 
-    support_size = vector_space_indices.size();
-    dimension = integral_log_2(support_size);
+		const std::size_t support_size = vector_space_indices.size();
 
-    if (1 << dimension != support_size){
-        return;
-    }
+		if ( !is_power_of_2(support_size) )
+		{
+			return {};
+		}
 
-    float normalisation_factor = sqrt(support_size);
-    first_entry = statevector[shift];
-    global_phase = normalisation_factor * first_entry;
+		const std::size_t dimension = integral_log_2( support_size );
+		const float normalisation_factor = static_cast<float>( std::sqrt( support_size ) );
+		const std::complex<float> first_entry = statevector[ shift ];
+		const std::complex<float> global_phase = normalisation_factor * first_entry;
 
-    if( abs(std::norm(global_phase) -1) >= 0.125 ) {
-        return;
-    }
+		if ( std::abs( std::norm( global_phase ) - 1 ) >= 0.125 )
+		{
+			return {};
+		}
 
-    std::sort(vector_space_indices.begin(), vector_space_indices.end());
+		std::ranges::sort( vector_space_indices );
 
-    for (int j = 0; j < dimension; j++) {
-        int weight_one_string = 1 << j;
+		std::vector<std::size_t> basis_vectors;
+		basis_vectors.reserve( dimension );
 
-        int basis_vector = vector_space_indices[weight_one_string];
-        basis_vectors.push_back(basis_vector);
+		std::size_t real_linear_part = 0;
+		std::size_t imaginary_part = 0;
 
-        std::complex<float> phase = statevector[basis_vector ^ shift]/first_entry;
+		for ( std::size_t j = 0; j < dimension; j++ )
+		{
+			const std::size_t weight_one_string = integral_pow_2( j );
 
-        if (std::norm(phase - float(-1)) < 0.125) {
-            real_linear_part ^= weight_one_string;
-        }
-        else if (std::norm(phase - std::complex<float>{0,1}) < 0.125) {
-            imaginary_part ^= weight_one_string;
-        }
-        else if (std::norm(phase - std::complex<float>{0,-1}) < 0.125) {
-            real_linear_part ^= weight_one_string;
-            imaginary_part ^= weight_one_string;
-        }
-        else if (std::norm(phase - float(1)) >= 0.125){
-            return;
-        }
-    }
+			const std::size_t basis_vector = vector_space_indices[ weight_one_string ];
+			basis_vectors.push_back( basis_vector );
 
-    for (int j=0; j < dimension; j++) {
-        for (int i = j + 1; i < dimension; i++) {
-            int vector_index = (1<<i) | (1<<j);
+			std::complex<float> phase = statevector[ basis_vector ^ shift ] / first_entry;
 
-            float real_linear_eval = sign_f2_dot_product(vector_index, real_linear_part);
-            std::complex<float> imag_linear_eval = imag_f2_dot_product(vector_index, imaginary_part);
-            std::complex<float> linear_eval = real_linear_eval * imag_linear_eval;
-            
-            int total_index = vector_space_indices[vector_index] ^ shift;
+			if ( std::norm( phase - float( -1 ) ) < 0.125 )
+			{
+				real_linear_part ^= weight_one_string;
+			}
+			else if ( std::norm( phase - std::complex<float>{0, 1} ) < 0.125 )
+			{
+				imaginary_part ^= weight_one_string;
+			}
+			else if ( std::norm( phase - std::complex<float>{0, -1} ) < 0.125 )
+			{
+				real_linear_part ^= weight_one_string;
+				imaginary_part ^= weight_one_string;
+			}
+			else if ( std::norm( phase - float( 1 ) ) >= 0.125 )
+			{
+				return {};
+			}
+		}
 
-            std::complex<float> quadratic_form_eval = statevector[total_index]/(first_entry * linear_eval);
+		std::vector<std::size_t> quadratic_form;
+		quadratic_form.reserve( dimension * dimension );
 
-            if (std::norm(quadratic_form_eval - float(-1)) < 0.125) {
-                quadratic_form.push_back(vector_index);
-            }
-            else if (std::norm(quadratic_form_eval - float(1)) >= 0.125) {
-                return;
-            }
-        }
-    }
+		for ( std::size_t j = 0; j < dimension; j++ )
+		{
+			for ( std::size_t i = j + 1; i < dimension; i++ )
+			{
+				const std::size_t vector_index = integral_pow_2( i ) | integral_pow_2( j );
 
-    if (assume_stabiliser_state){
-        is_stabiliser_state = true;
-        return;
-    }
+				const float real_linear_eval = static_cast<float>( sign_f2_dot_product( vector_index, real_linear_part ) );
+				const std::complex<float> imag_linear_eval = imag_f2_dot_product( vector_index, imaginary_part );
+				const std::complex<float> linear_eval = real_linear_eval * imag_linear_eval;
 
-    is_stabiliser_state = check_remaining_entries(statevector);
-};
+				const std::size_t total_index = vector_space_indices[ vector_index ] ^ shift;
 
-bool Stabiliser_From_Vector_Convertor::check_remaining_entries(const std::vector<std::complex<float>> &statevector) const {    
-    int old_vector_index = 0;
-    int total_index = shift;
-    
-    for(int i = 1; i < support_size; i++) {
-        // iterate through the gray code
-        int new_vector_index = i ^ (i >> 1);
+				const std::complex<float> quadratic_form_eval = statevector[ total_index ] / ( first_entry * linear_eval );
 
-        int flipped_bit = integral_log_2(new_vector_index ^ old_vector_index);
-        total_index ^= basis_vectors[flipped_bit];
+				if ( std::norm( quadratic_form_eval - float( -1 ) ) < 0.125 )
+				{
+					quadratic_form.push_back( vector_index );
+				}
+				else if ( std::norm( quadratic_form_eval - float( 1 ) ) >= 0.125 )
+				{
+					return {};
+				}
+			}
+		}
 
+		if constexpr ( !assume_valid )
+		{
+			const std::span<const std::size_t> quadratic_form_span( quadratic_form );
+			std::size_t old_vector_index = 0;
+			std::size_t total_index = shift;
 
-        std::complex<float> actual_phase = statevector[total_index];
-        float real_linear_eval = sign_f2_dot_product(new_vector_index, real_linear_part);
-        std::complex<float> imag_linear_eval = imag_f2_dot_product(new_vector_index, imaginary_part);
-        std::complex<float> quadratic_eval = evaluate_quadratic_form(new_vector_index, quadratic_form);
-        std::complex<float> phase_eval = real_linear_eval * imag_linear_eval * quadratic_eval;
+			for ( std::size_t i = 1; i < support_size; i++ )
+			{
+				// iterate through the gray code
+				const std::size_t new_vector_index = i ^ ( i >> 1 );
 
-        if (std::norm(phase_eval * first_entry - actual_phase) >= 0.125) {
-            return false;
-        }
+				const std::size_t flipped_bit = integral_log_2( new_vector_index ^ old_vector_index );
+				total_index ^= basis_vectors[ flipped_bit ];
 
-        old_vector_index = new_vector_index;
-    }
+				const std::complex<float> actual_phase = statevector[ total_index ];
+				const float real_linear_eval = static_cast<float>( sign_f2_dot_product( new_vector_index, real_linear_part ) );
+				const std::complex<float> imag_linear_eval = imag_f2_dot_product( new_vector_index, imaginary_part );
+				const std::complex<float> quadratic_eval = static_cast<float>( evaluate_quadratic_form( new_vector_index, quadratic_form_span ) );
+				const std::complex<float> phase_eval = real_linear_eval * imag_linear_eval * quadratic_eval;
 
-    return true;
+				if ( std::norm( phase_eval * first_entry - actual_phase ) >= 0.001 )
+				{
+					return {};
+				}
+
+				old_vector_index = new_vector_index;
+			}
+		}
+
+		if constexpr ( return_state )
+		{
+			Stabiliser_State state( number_qubits, dimension );
+			state.shift = shift;
+			state.basis_vectors = std::move( basis_vectors );
+			state.real_linear_part = real_linear_part;
+			state.imaginary_part = imaginary_part;
+			state.quadratic_form = quadratic_form;
+			state.global_phase = global_phase;
+			state.row_reduced = true;
+			return state;
+		}
+		else
+		{
+			return true;
+		}
+	}
 }
 
-Stabiliser_State Stabiliser_From_Vector_Convertor::get_stabiliser_state() const {
-    if (!is_stabiliser_state) {
-        throw std::invalid_argument("State vector is not a stabiliser state");
-    }
+fst::Stabiliser_State fst::stabiliser_from_statevector( const std::span<const std::complex<float>> statevector, bool assume_valid )
+{
+	std::optional<Stabiliser_State> state = assume_valid
+		? stabiliser_from_statevector_internal<true, true>( statevector )
+		: stabiliser_from_statevector_internal<false, true>( statevector );
 
-    Stabiliser_State state (number_qubits, dimension);
-    state.shift = shift;
-    state.basis_vectors = basis_vectors;
-    state.real_linear_part = real_linear_part;
-    state.imaginary_part = imaginary_part;
-    state.quadratic_form = quadratic_form;
-    state.global_phase = global_phase;
+	if ( !state )
+	{
+		throw std::invalid_argument( "State was not a stabiliser state" );
+	}
 
-    state.row_reduced = true;
+	return *std::move( state );
+}
 
-    return state;
+bool fst::is_stabiliser_state( const std::span<const std::complex<float>> statevector )
+{
+	return stabiliser_from_statevector_internal<false, false>( statevector );
 }

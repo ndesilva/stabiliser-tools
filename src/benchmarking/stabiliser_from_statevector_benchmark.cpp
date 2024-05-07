@@ -7,35 +7,34 @@
 
 #include "./stim/circuit_vs_amplitudes.h"
 #include "stabiliser_state/stabiliser_state_from_statevector.h"
+#include "f2_helper/f2_helper.h"
 
 using namespace std::chrono;
 
-std::vector<std::complex<float>> get_last_basis_vector(int number_qubits) {
-    size_t vector_length = 1 << number_qubits;
+std::vector<std::complex<float>> get_last_basis_vector(const std::size_t number_qubits) {
+    const std::size_t vector_length = fst::integral_pow_2( number_qubits );
     
     std::vector<std::complex<float>> statevector (vector_length, 0);
 
-    statevector.at(vector_length - 1) = 1;
+    statevector.back() = 1;
 
     return statevector;
 }
 
-std::vector<std::complex<float>> get_uniform_superposition(int number_qubits) {
-    size_t vector_length = 1 << number_qubits;
-    float normalisation_factor = 1/sqrt(vector_length);
+std::vector<std::complex<float>> get_uniform_superposition( const std::size_t number_qubits) {
+    const std::size_t vector_length = fst::integral_pow_2( number_qubits );
+	const float normalisation_factor = static_cast<float>( 1.0f / std::sqrt( vector_length ) );
     
-    std::vector<std::complex<float>> statevector (vector_length, normalisation_factor);
-
-    return statevector;
+    return std::vector<std::complex<float>>(vector_length, normalisation_factor);
 }
 
-std::vector<std::complex<float>> get_non_stabiliser_state(int number_qubits) {
-    size_t vector_length = 1 << number_qubits;
-    float normalisation_factor = 1/sqrt(vector_length);
+std::vector<std::complex<float>> get_non_stabiliser_state( const std::size_t number_qubits) {
+    const std::size_t vector_length = fst::integral_pow_2( number_qubits );
+    const float normalisation_factor = static_cast<float>( 1.0f / std::sqrt( vector_length ) );
     
     std::vector<std::complex<float>> statevector (vector_length, normalisation_factor);
 
-    statevector.at(0) *= -1;
+	statevector.back() *= -1;
 
     return statevector;
 }
@@ -54,6 +53,7 @@ int main() {
     std::vector<int> qubit_numbers (number_ns);
     std::iota(qubit_numbers.begin(), qubit_numbers.end(), MIN_N);
 
+    std::vector<bool> statevector_is_stabiliser (STATEVECTOR_TYPES);
     std::vector<std::vector<double>> ratios (STATEVECTOR_TYPES);
 
     std::vector<double> basis_vector_ratios (number_ns);
@@ -66,15 +66,22 @@ int main() {
 
     for (const auto number_qubits : qubit_numbers) {
         statevectors.clear();
+        statevector_is_stabiliser.clear();
 
         statevectors.push_back(get_last_basis_vector(number_qubits));
+        statevector_is_stabiliser.push_back(true);
+
         statevectors.push_back(get_uniform_superposition(number_qubits));
+        statevector_is_stabiliser.push_back(true);
+
         statevectors.push_back(get_non_stabiliser_state(number_qubits));
+        statevector_is_stabiliser.push_back(false);
 
         bool result;
     
         for (int i = 0; i < STATEVECTOR_TYPES; i++) {
             std::vector<std::complex<float>> statevector = statevectors[i];
+            bool expected_result = statevector_is_stabiliser[i];
             
             long long stim_total_time = 0;
             for (int j = 0; j < REPETITIONS; j++) {
@@ -84,6 +91,11 @@ int main() {
 
                 auto stim_end_time = high_resolution_clock::now();
                 stim_total_time += duration_cast<microseconds>(stim_end_time - stim_start_time).count();
+
+                if (result != expected_result)
+                {
+                    std::cout << "STIM error, expected: " << expected_result << "got: " << result << "on index: " << i << std::endl;
+                }
             }
 
             double stim_average_time = double(stim_total_time)/REPETITIONS;
@@ -92,11 +104,15 @@ int main() {
             for (int j = 0; j < REPETITIONS; j++) {
                 auto our_start_time = high_resolution_clock::now();
 
-                fst::Stabiliser_From_Vector_Convertor convertor (statevector);
-                result = convertor.is_stabiliser_state;
+                result = fst::is_stabiliser_state(statevector);
 
                 auto our_end_time = high_resolution_clock::now();
                 our_total_time += duration_cast<microseconds>(our_end_time - our_start_time).count();
+
+                if (result != expected_result)
+                {
+                    std::cout << "OUR error, expected: " << expected_result << " got " << result << " on index " << i << " qubit number: " << number_qubits << std::endl;
+                }
             }
 
             double our_average_time = double(our_total_time)/REPETITIONS;
