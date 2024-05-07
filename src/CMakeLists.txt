@@ -18,4 +18,5 @@ include(Catch)
 
 catch_discover_tests(tests)
 
+enable_testing()
 add_test( tests COMMAND tests )
