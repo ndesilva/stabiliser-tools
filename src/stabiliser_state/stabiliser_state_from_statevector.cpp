@@ -15,13 +15,13 @@ namespace
 		using namespace fst;
 
 		const std::size_t state_vector_size = statevector.size();
-		const std::size_t number_qubits = integral_log_2( state_vector_size );
 
-		if ( integral_pow_2( number_qubits ) != state_vector_size )
+		if ( !is_power_of_2(state_vector_size) )
 		{
 			return {};
 		}
 
+		const std::size_t number_qubits = integral_log_2( state_vector_size );
 		std::size_t shift = 0;
 
 		while ( shift < state_vector_size && statevector[ shift ] == float( 0 ) )
@@ -47,13 +47,13 @@ namespace
 		}
 
 		const std::size_t support_size = vector_space_indices.size();
-		const std::size_t dimension = integral_log_2( support_size );
 
-		if ( integral_pow_2( dimension ) != support_size )
+		if ( !is_power_of_2(support_size) )
 		{
 			return {};
 		}
 
+		const std::size_t dimension = integral_log_2( support_size );
 		const float normalisation_factor = static_cast<float>( std::sqrt( support_size ) );
 		const std::complex<float> first_entry = statevector[ shift ];
 		const std::complex<float> global_phase = normalisation_factor * first_entry;

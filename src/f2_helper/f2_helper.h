@@ -15,13 +15,14 @@ namespace fst
 		return std::bit_width( number ) - 1;
 	}
 
-	/// Returns 2^exponent
+	/// Returns 2^exponent for an integer exponent
 	template<std::unsigned_integral T>
 	constexpr T integral_pow_2( const T exponent ) noexcept
 	{
 		return T( 1 ) << exponent;
 	}
 
+	/// Checks if the integer is a power of 2
 	template<std::unsigned_integral T>
 	constexpr bool is_power_of_2( const T value ) noexcept
 	{
