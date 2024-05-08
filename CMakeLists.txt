@@ -8,8 +8,9 @@ if ( MSVC )
 	add_compile_options( /W4 /Zc:__cplusplus /Zc:enumTypes /Zc:inline /Zc:templateScope /Oi )
 else()
 	add_compile_options( -Wall -Wextra )
-	set( VCPKG_TARGET_TRIPLET x64-mingw-static )
 endif()
+
+set( VCPKG_TARGET_TRIPLET x64-mingw-static )
 
 include( CTest )
 add_subdirectory( "src" )
