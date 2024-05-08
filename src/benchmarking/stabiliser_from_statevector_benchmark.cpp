@@ -126,10 +126,10 @@ int main() {
 
     std::ofstream data_file ( file_name.data() );
 
-	for ( const std::vector<double>& ratio : ratios )
+	for ( const std::vector<double>& ratios_for_statevector : ratios )
 	{
 		data_file << "[";
-		std::ranges::copy( ratio, std::ostream_iterator<double>( data_file, ", " ) );
+		std::ranges::copy( ratios_for_statevector, std::ostream_iterator<double>( data_file, ", " ) );
 		data_file << "]\n";
 	}
 
