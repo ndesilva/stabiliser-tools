@@ -191,7 +191,7 @@ namespace
 
             std::vector<std::complex<float>> vector (32);
             
-            for (float index = 0; index < 32; index++)
+            for (float index = .0f; index < 32; index++)
             {
                 vector.at(index) = index + 2*index*i;
             }

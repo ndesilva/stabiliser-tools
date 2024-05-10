@@ -50,7 +50,7 @@ namespace fst
         /// Note, the current instance is set to the result.
         void multiply_by_pauli_on_right(const Pauli &other_pauli);
 
-        auto operator<=>( const Pauli& other ) const = default;
+        bool operator==( const Pauli& other ) const = default;
     };
 }
 
