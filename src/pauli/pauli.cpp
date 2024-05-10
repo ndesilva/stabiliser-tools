@@ -3,7 +3,7 @@
 
 namespace fst
 {
-    Pauli::Pauli(const int number_qubits, const std::size_t x_vector, const std::size_t z_vector, const bool sign_bit, const bool imag_bit)
+    Pauli::Pauli(const std::size_t number_qubits, const std::size_t x_vector, const std::size_t z_vector, const bool sign_bit, const bool imag_bit)
     : number_qubits(number_qubits)
     , x_vector(x_vector)
     , z_vector(z_vector)
@@ -15,7 +15,7 @@ namespace fst
 
     void Pauli::update_phase()
     {
-        phase = {(1-2*sign_bit)*(1 - imag_bit), (1-2*sign_bit)*imag_bit};
+        phase = {static_cast<float>( (1-2*sign_bit)*(1 - imag_bit) ), static_cast<float>( (1-2*sign_bit)*imag_bit )};
     }
 
     bool Pauli::is_hermitian() const
@@ -35,25 +35,26 @@ namespace fst
 
     std::vector<std::vector<std::complex<float>>> Pauli::get_matrix() const 
     {
-        size_t size = integral_pow_2(number_qubits);
+        const std::size_t size = integral_pow_2( number_qubits );
         std::vector<std::vector<std::complex<float>>> matrix (size, std::vector<std::complex<float>> (size, 0));
 
         for ( size_t col_index = 0; col_index < size; col_index++ )
         {
-            matrix.at( col_index ^ x_vector).at(col_index) = phase * sign_f2_dot_product(col_index, z_vector);
+            matrix.at( col_index ^ x_vector).at(col_index) = 
+                phase * static_cast<float>( sign_f2_dot_product( col_index, z_vector ) );
         }
         
         return matrix;
     }
 
-    std::vector<std::complex<float>> Pauli::multiply_vector (const std::complex<float> &vector) const
+    std::vector<std::complex<float>> Pauli::multiply_vector (const std::vector<std::complex<float>> &vector) const
     {
-        size_t size = vector.size();
+        const size_t size = vector.size();
         std::vector<std::complex<float>> result(size, 0);
 
         for( size_t index = 0; index < size; index++)
         {
-            result[index^x_vector] = phase * sign_f2_dot_product(index, z_vector);
+            result[index^x_vector] = phase * static_cast<float>( f2_dot_product(index, z_vector) );
         }
 
         return result;
