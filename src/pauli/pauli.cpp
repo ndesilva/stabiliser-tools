@@ -71,10 +71,10 @@ namespace fst
         z_vector ^= other_pauli.z_vector;
     }
 
-    bool Pauli::has_eigenstate(const std::vector<std::complex<float>> &vector, const unsigned int sign_bit) const
+    bool Pauli::has_eigenstate(const std::vector<std::complex<float>> &vector, const unsigned int eig_sign) const
     {
         const std::size_t size = integral_pow_2(number_qubits);
-        const std::complex<float> vector_phase = min1_pow( sign_bit ) * phase;
+        const std::complex<float> vector_phase = min1_pow( eig_sign ) * phase;
 
         for ( size_t index = 0; index < size; index++)
         {
