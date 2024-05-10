@@ -17,10 +17,11 @@ namespace fst
 
         void update_phase();
 
+        Pauli (const int number_qubits, const std::size_t x_vector, const std::size_t z_vector, const bool sign_bit, const bool imag_bit);
+
         std::vector<std::vector<std::complex<float>>> get_matrix() const;
 
         void multiply_by_pauli_on_right(const Pauli &other_pauli);
-
         std::vector<std::complex<float>> multiply_vector (const std::complex<float> &vector) const;
 
         bool is_hermitian() const;
