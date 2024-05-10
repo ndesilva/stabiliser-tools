@@ -15,7 +15,7 @@ namespace fst
 
     void Pauli::update_phase()
     {
-        phase = { min1_pow( sign_bit ) * float_not( imag_bit ), min1_pow( sign_bit ) * static_cast<float>( imag_bit ) };
+        phase = { f_min1_pow( sign_bit ) * float_not( imag_bit ), f_min1_pow( sign_bit ) * static_cast<float>( imag_bit ) };
     }
 
     bool Pauli::is_hermitian() const
@@ -74,7 +74,7 @@ namespace fst
     bool Pauli::has_eigenstate(const std::vector<std::complex<float>> &vector, const unsigned int eig_sign) const
     {
         const std::size_t size = integral_pow_2(number_qubits);
-        const std::complex<float> vector_phase = min1_pow( eig_sign ) * phase;
+        const std::complex<float> vector_phase = f_min1_pow( eig_sign ) * phase;
 
         for ( size_t index = 0; index < size; index++)
         {

@@ -29,7 +29,7 @@ namespace fst
 		return std::has_single_bit( number );
 	}
 
-	/// for an integer number (which should be 0 or 1), returns the
+	/// For an integer number (which should be 0 or 1), returns the
 	/// negation of the number (i.e. 1-it) as a float
 	template<std::unsigned_integral T>
 	constexpr float float_not(const T number ) noexcept
@@ -37,12 +37,20 @@ namespace fst
 		return static_cast<float>(number ^ 1);
 	}
 
-	/// for an integer number (which should be 0 or 1), returns
-	/// (-1)^number as a float
+	/// For an integer number (which should be 0 or 1), returns
+	/// (-1)^number as an integer
 	template<std::unsigned_integral T>
-	constexpr float min1_pow(const T number ) noexcept
+	constexpr int min1_pow(const T number ) noexcept
 	{
 		return 1-2*static_cast<float>(number);
+	}
+
+	/// For an integer number (which should be 0 or 1), returns
+	/// (-1)^number as a float
+	template<std::unsigned_integral T>
+	constexpr float f_min1_pow(const T number ) noexcept
+	{
+		return static_cast<float>(min1_pow(number));
 	}
 
 	/// Gives the F_2 inner product between 2 F_2 vectors (represented
@@ -60,7 +68,7 @@ namespace fst
 	template<std::unsigned_integral T>
 	constexpr float sign_f2_dot_product( const T x, const T y ) noexcept
 	{
-		return min1_pow( f2_dot_product( x, y ) );
+		return f_min1_pow( f2_dot_product( x, y ) );
 	}
 
 	/// Gives (i)^(x.y), where . is the F_2 inner product between 2
@@ -86,7 +94,7 @@ namespace fst
 			mod2_result ^= ( ( term & vector_index ) == term );
 		}
 
-		return min1_pow( mod2_result );
+		return f_min1_pow( mod2_result );
 	}
 }
 
