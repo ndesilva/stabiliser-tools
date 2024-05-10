@@ -42,9 +42,9 @@ namespace fst
 	/// Gives (-1)^(x.y), where . is the F_2 inner product between 2
 	/// F_2 vectors (represented as integers)
 	template<std::unsigned_integral T>
-	constexpr int sign_f2_dot_product( const T x, const T y ) noexcept
+	constexpr float sign_f2_dot_product( const T x, const T y ) noexcept
 	{
-		return 1 - 2 * f2_dot_product( x, y );
+		return static_cast<float>( 1 - 2 * f2_dot_product( x, y ));
 	}
 
 	/// Gives (i)^(x.y), where . is the F_2 inner product between 2
@@ -61,7 +61,7 @@ namespace fst
 	/// Q a quadratic form with respect to the same basis (represented as a list of 
 	/// coefficients, i.e. 101 corresponds to x_0 x_1), find the value of (-1)^Q(vector_index).
 	template<std::unsigned_integral T, std::size_t Extent>
-	constexpr int evaluate_quadratic_form( const T vector_index, const std::span<const T, Extent> quadratic_form ) noexcept
+	constexpr float evaluate_quadratic_form( const T vector_index, const std::span<const T, Extent> quadratic_form ) noexcept
 	{
 		int mod2_result = 0;
 
@@ -70,7 +70,7 @@ namespace fst
 			mod2_result ^= ( ( term & vector_index ) == term );
 		}
 
-		return 1 - 2 * mod2_result;
+		return static_cast<float> ( 1 - 2 * mod2_result );
 	}
 }
 

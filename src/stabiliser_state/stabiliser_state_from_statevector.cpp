@@ -108,7 +108,7 @@ namespace
 			{
 				const std::size_t vector_index = integral_pow_2( i ) | integral_pow_2( j );
 
-				const float real_linear_eval = static_cast<float>( sign_f2_dot_product( vector_index, real_linear_part ) );
+				const float real_linear_eval = sign_f2_dot_product( vector_index, real_linear_part );
 				const std::complex<float> imag_linear_eval = imag_f2_dot_product( vector_index, imaginary_part );
 				const std::complex<float> linear_eval = real_linear_eval * imag_linear_eval;
 
@@ -142,9 +142,9 @@ namespace
 				total_index ^= basis_vectors[ flipped_bit ];
 
 				const std::complex<float> actual_phase = statevector[ total_index ];
-				const float real_linear_eval = static_cast<float>( sign_f2_dot_product( new_vector_index, real_linear_part ) );
+				const float real_linear_eval = sign_f2_dot_product( new_vector_index, real_linear_part );
 				const std::complex<float> imag_linear_eval = imag_f2_dot_product( new_vector_index, imaginary_part );
-				const std::complex<float> quadratic_eval = static_cast<float>( evaluate_quadratic_form( new_vector_index, quadratic_form_span ) );
+				const std::complex<float> quadratic_eval = evaluate_quadratic_form( new_vector_index, quadratic_form_span );
 				const std::complex<float> phase_eval = real_linear_eval * imag_linear_eval * quadratic_eval;
 
 				if ( std::norm( phase_eval * first_entry - actual_phase ) >= 0.001 )
