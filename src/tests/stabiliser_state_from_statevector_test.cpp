@@ -7,11 +7,13 @@
 
 using namespace fst;
 
+static constexpr std::complex<float> i = {0,1};
+
 namespace
 {
 	std::array<std::complex<float>, 8> get_three_qubit_stabiliser_statevector()
 	{
-		return { 0, 0, -0.5, { 0, 0.5 }, 0.5, { 0, 0.5 }, 0, 0 };
+		return { 0, 0, -0.5, 0.5f*i, 0.5, 0.5f*i, 0, 0 };
 	}
 
 	std::array<std::complex<float>, 32> get_five_qubit_stabiliser_statevector()
@@ -22,13 +24,13 @@ namespace
 		const float root_8 = std::sqrt( 8.0f );
 
 		statevector[ 1 ] = 1.0f / root_8;
-		statevector[ 7 ] = { 0, -1 / root_8 };
+		statevector[ 7 ] = -i / root_8;
 		statevector[ 8 ] = 1 / root_8;
-		statevector[ 14 ] = { 0, -1 / root_8 };
+		statevector[ 14 ] = -i / root_8;
 		statevector[ 17 ] = -1 / root_8;
-		statevector[ 23 ] = { 0, 1 / root_8 };
+		statevector[ 23 ] = i / root_8;
 		statevector[ 24 ] = 1 / root_8;
-		statevector[ 30 ] = { 0, -1 / root_8 };
+		statevector[ 30 ] = -i / root_8 ;
 
 		return statevector;
 	}
@@ -133,7 +135,7 @@ TEST_CASE( "testing incorrect stabiliser states", "[statevector -> stabiliser st
 	{
 		std::array statevector = get_five_qubit_stabiliser_statevector();
 
-		statevector[ 14 ] = { 0,-2 }; // invalid entry for e_1 + e_2
+		statevector[ 14 ] = -2.0f*i; // invalid entry for e_1 + e_2
 
 		REQUIRE_FALSE( is_stabiliser_state( statevector ) );
 	}
@@ -142,7 +144,7 @@ TEST_CASE( "testing incorrect stabiliser states", "[statevector -> stabiliser st
 	{
 		std::array statevector = get_five_qubit_stabiliser_statevector();
 
-		statevector[ 30 ] = { 0,-1 }; // inconsistent entry for e_1 + e_2 + e_3 (should be i)
+		statevector[ 30 ] = -1.0f*i; // inconsistent entry for e_1 + e_2 + e_3 (should be i)
 
 		REQUIRE_FALSE( is_stabiliser_state( statevector ) );
 	}
@@ -163,7 +165,7 @@ TEST_CASE( "incorrect stabiliser state flagged as stabiliser state", "[statevect
 {
 	std::array statevector = get_five_qubit_stabiliser_statevector();
 
-	statevector[ 30 ] = { 0,-1 }; // inconsistent entry for e_1 + e_2 + e_3 (should be i)
+	statevector[ 30 ] = -i; // inconsistent entry for e_1 + e_2 + e_3 (should be i)
 
 	// check this doesn't throw invalid argument, despite not being a stabiliser state
 	stabiliser_from_statevector(statevector, true);

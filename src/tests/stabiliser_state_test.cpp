@@ -8,6 +8,8 @@
 using namespace Catch::Matchers;
 using namespace fst;
 
+static constexpr std::complex<float> i = {0,1};
+
 TEST_CASE( "evaluate basis expansion", "[stabiliser state]" )
 {
 	SECTION( "dimension 3" )
@@ -48,7 +50,7 @@ TEST_CASE( "get phase", "[stabiliser state]" )
 		const std::size_t point_1 = 0b011;
 		const std::size_t point_2 = 0b101;
 
-		REQUIRE( state.get_phase( point_1 ) == std::complex<float>( 0, 1 ) );
+		REQUIRE( state.get_phase( point_1 ) == i );
 		REQUIRE( state.get_phase( point_2 ) == -1.0f );
 	}
 
@@ -64,7 +66,7 @@ TEST_CASE( "get phase", "[stabiliser state]" )
 		const std::size_t point_2 = 0b0001;
 
 		REQUIRE( state.get_phase( point_1 ) == 1.0f );
-		REQUIRE( state.get_phase( point_2 ) == std::complex<float>( 0, -1 ) );
+		REQUIRE( state.get_phase( point_2 ) == -i );
 	}
 }
 
@@ -115,7 +117,7 @@ TEST_CASE( "generate state vector", "[stabiliser state]" )
 
 		state.shift = 0b100;
 
-		std::array<std::complex<float>, 8> expected_vector{ 0, 0, {0,-.5}, -.5, {0, .5}, -.5, 0, 0 };
+		std::array<std::complex<float>, 8> expected_vector{ 0, 0, -0.5f*i, -.5, 0.5f*i, -.5, 0, 0 };
 
 		REQUIRE_THAT( state.get_state_vector(), RangeEquals( expected_vector ) );
 	}

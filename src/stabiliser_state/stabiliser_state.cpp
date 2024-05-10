@@ -45,9 +45,9 @@ namespace fst
 
 	std::complex<float> Stabiliser_State::get_phase( const std::size_t vector_index ) const
 	{
-		const float real_linear = static_cast<float>( sign_f2_dot_product( vector_index, real_linear_part ) );
+		const float real_linear = sign_f2_dot_product( vector_index, real_linear_part );
 		const std::complex<float> imag_linear = imag_f2_dot_product( vector_index, imaginary_part );
-		const float real_quadratic = static_cast<float>( evaluate_quadratic_form( vector_index, std::span( quadratic_form ) ) );
+		const float real_quadratic = evaluate_quadratic_form( vector_index, std::span( quadratic_form ) );
 
 		return real_linear * imag_linear * real_quadratic;
 	}

@@ -6,6 +6,8 @@
 
 using namespace fst;
 
+static constexpr std::complex<float> i = {0,1};
+
 TEST_CASE( "mod 2 product", "[f2 helper]" )
 {
 	const std::size_t x = 0b11010;
@@ -33,7 +35,7 @@ TEST_CASE( "imaginary mod 2 product", "[f2 helper]" )
 	const std::size_t z = 0b101101;
 
 	REQUIRE( imag_f2_dot_product( x, y ) == 1.0f );
-	REQUIRE( imag_f2_dot_product( x, z ) == std::complex<float>( 0, 1 ) );
+	REQUIRE( imag_f2_dot_product( x, z ) == i );
 }
 
 TEST_CASE( "evaluate quadratic form", "[f2 helper]" )
