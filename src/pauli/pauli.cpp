@@ -63,7 +63,7 @@ namespace fst
     void Pauli::multiply_by_pauli_on_right(const Pauli &other_pauli)
     {
         imag_bit ^= other_pauli.imag_bit;
-        bool sign_bit_update = f2_dot_product(z_vector, other_pauli.x_vector) ^ (imag_bit & other_pauli.imag_bit);
+        int sign_bit_update = f2_dot_product(z_vector, other_pauli.x_vector) ^ (imag_bit & other_pauli.imag_bit);
         sign_bit ^= sign_bit_update;
         update_phase();
 
