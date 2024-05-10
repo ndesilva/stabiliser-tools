@@ -15,7 +15,7 @@ namespace fst
 
     void Pauli::update_phase()
     {
-        phase = {static_cast<float>( (1-2*sign_bit)*(1 - imag_bit) ), static_cast<float>( (1-2*sign_bit)*imag_bit )};
+        phase = { min1_pow( sign_bit ) * float_not( imag_bit ), min1_pow( sign_bit ) * static_cast<float>( imag_bit ) };
     }
 
     bool Pauli::is_hermitian() const
@@ -41,7 +41,7 @@ namespace fst
         for ( size_t col_index = 0; col_index < size; col_index++ )
         {
             matrix.at( col_index ^ x_vector).at(col_index) = 
-                phase * static_cast<float>( sign_f2_dot_product( col_index, z_vector ) );
+                phase * sign_f2_dot_product( col_index, z_vector );
         }
         
         return matrix;
@@ -54,7 +54,7 @@ namespace fst
 
         for( size_t index = 0; index < size; index++)
         {
-            result[index^x_vector] = phase * static_cast<float>( f2_dot_product(index, z_vector) );
+            result[index^x_vector] = phase * sign_f2_dot_product(index, z_vector) ;
         }
 
         return result;
@@ -69,6 +69,22 @@ namespace fst
 
         x_vector ^= other_pauli.x_vector;
         z_vector ^= other_pauli.z_vector;
+    }
+
+    bool Pauli::has_eigenstate(const std::vector<std::complex<float>> &vector, const unsigned int sign_bit) const
+    {
+        const std::size_t size = integral_pow_2(number_qubits);
+        const std::complex<float> vector_phase = min1_pow( sign_bit ) * phase;
+
+        for ( size_t index = 0; index < size; index++)
+        {
+            std::complex<float> expected_phase = vector_phase * sign_f2_dot_product(index, z_vector) * vector.at(index);
+            if (vector.at(index ^ x_vector) != expected_phase) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }
