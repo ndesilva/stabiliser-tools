@@ -31,7 +31,8 @@ namespace fst
 		Stabiliser_State( const std::size_t number_qubits, const std::size_t dim );
 		explicit Stabiliser_State( const std::size_t number_qubits );
 
-		/// Return the state vector of length 2^n of the stabiliser state
+		/// Return the state vector of length 2^n of the stabiliser state (with respect)
+		/// to the computational basis)
 		std::vector<std::complex<float>> get_state_vector() const;
 
 		/// Given vector_index, the column vector of an element of the vector
