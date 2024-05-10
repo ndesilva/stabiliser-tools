@@ -7,5 +7,5 @@ target_link_libraries(stabiliser_benchmark
 )
 target_include_directories(stabiliser_benchmark PUBLIC
                           "${PROJECT_SOURCE_DIR}/src/stabiliser_state"
-                          "${PROJECT_SOURCE_DIR}/src/f2_helper"
+                          "${PROJECT_SOURCE_DIR}/src/util"
                         )

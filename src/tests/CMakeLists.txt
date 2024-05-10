@@ -10,7 +10,7 @@ add_executable( tests ${SOURCE_FILES} )
 
 target_include_directories( tests PUBLIC
                           "${PROJECT_SOURCE_DIR}/src/stabiliser_state"
-                          "${PROJECT_SOURCE_DIR}/src/f2_helper"
+                          "${PROJECT_SOURCE_DIR}/src/util"
                         )
 
 target_link_libraries( tests PRIVATE Catch2::Catch2WithMain stabiliser_state )
