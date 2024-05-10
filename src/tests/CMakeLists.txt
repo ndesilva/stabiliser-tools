@@ -4,17 +4,22 @@ set( SOURCE_FILES
   f2_helper_test.cpp
   stabiliser_state_test.cpp
   stabiliser_state_from_statevector_test.cpp
+  pauli_test.cpp
 )
 
 add_executable( tests ${SOURCE_FILES} )
 
-target_include_directories(
-  tests PUBLIC
+target_include_directories( tests PUBLIC
   "${PROJECT_SOURCE_DIR}/src/stabiliser_state"
   "${PROJECT_SOURCE_DIR}/src/util"
+  "${PROJECT_SOURCE_DIR}/src/pauli"
 )
 
-target_link_libraries( tests PRIVATE Catch2::Catch2WithMain stabiliser_state )
+target_link_libraries(tests PRIVATE 
+  Catch2::Catch2WithMain 
+  stabiliser_state
+  pauli
+)
 
 include(CTest)
 include(Catch)

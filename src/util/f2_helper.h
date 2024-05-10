@@ -42,7 +42,7 @@ namespace fst
 	template<std::unsigned_integral T>
 	constexpr float min1_pow(const T number ) noexcept
 	{
-		return static_cast<float>(1 - 2*number);
+		return 1-2*static_cast<float>(number);
 	}
 
 	/// Gives the F_2 inner product between 2 F_2 vectors (represented
