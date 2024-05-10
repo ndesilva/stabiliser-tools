@@ -7,10 +7,10 @@ project( FastStabiliser CXX )
 
 # This currently doesnt work, because by the time this if-else statement is reached
 # vpckg --install has already been run by the project() call, so the vcpkg triplet is already
-# wrong. Unforuntately, it seems that the MSVC and MINGW flags are set by the project() call
-# so that moving project() beneath this if-else statement means both of these evaluate to false.
-# as a workaround for MINGW, one can paste the two set() commands in the MINGW branch above the 
-# project command, compile once, causing vcpkg to install with the correct triplet. As long as the
+# wrong. Unfortunately, it seems that the MSVC and MINGW flags are set by the project() call
+# so that moving project() beneath this if-else statement means both branches are not run.
+# As a workaround for MINGW, one can paste the MINGW branch above the project() command, and then
+# compile once, causing vcpkg to install with the correct triplet. As long as the
 # vcpkg_installed/x64-mingw-static folder is not subsequently deleted, or the vcpkg dependancies change,
 # the additional set() commands can then be deleted - future builds will use the wrong triplet for vcpkg
 # --install, but the correct installed folder already exists.
