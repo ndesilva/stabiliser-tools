@@ -31,7 +31,7 @@ inline uint8_t is_power_of_2(size_t value) {
 }
 
 inline uint8_t floor_lg2(size_t value) {
-    return sizeof(value) * 8 - 1 - std::countl_zero(value);
+    return static_cast<uint8_t>( sizeof(value) * 8 - 1 - std::countl_zero(value) );
 }
 
 inline size_t first_set_bit(size_t value, size_t min_result) {
