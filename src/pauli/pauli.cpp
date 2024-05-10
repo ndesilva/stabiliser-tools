@@ -15,7 +15,7 @@ namespace fst
 
     void Pauli::update_phase()
     {
-        phase = { f_min1_pow( sign_bit ) * float_not( imag_bit ), f_min1_pow( sign_bit ) * static_cast<float>( imag_bit ) };
+        phase = { f_min1_pow( sign_bit ) * float_not( imag_bit ), -f_min1_pow( sign_bit ) * static_cast<float>( imag_bit ) };
     }
 
     bool Pauli::is_hermitian() const
@@ -54,7 +54,7 @@ namespace fst
 
         for( size_t index = 0; index < size; index++)
         {
-            result[index^x_vector] = phase * sign_f2_dot_product(index, z_vector) ;
+            result[index^x_vector] = phase * sign_f2_dot_product(index, z_vector) * vector[index] ;
         }
 
         return result;

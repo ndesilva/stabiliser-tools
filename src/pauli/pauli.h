@@ -37,7 +37,6 @@ namespace fst
         /// with eigenvalue (-1)^(eig_sign).
         bool has_eigenstate(const std::vector<std::complex<float>> &vector, const unsigned int eign_sign) const;
 
-
         /// Returns the matrix of the Pauli (with respect to the computational basis) 
         std::vector<std::vector<std::complex<float>>> get_matrix() const;
 

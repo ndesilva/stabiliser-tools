@@ -2,6 +2,7 @@
 #include <catch2/matchers/catch_matchers_all.hpp>
 
 #include "pauli.h"
+#include <iostream>
 
 using namespace Catch::Matchers;
 using namespace fst;
@@ -71,6 +72,15 @@ TEST_CASE("has eigenstate", "[pauli]")
         std::vector<std::complex<float>> vector {1.0f, 0, -1.0f, 0, i, 0, -i, 0, 1.0f, 0, -1.0f, 0, i, 0, -i, 0};
 
         REQUIRE( pauli.has_eigenstate( vector, 1 ) );
+        REQUIRE_FALSE( pauli.has_eigenstate( vector, 0 ) );
+    }
+
+    SECTION("non-eigenstate")
+    {
+        Pauli pauli(1, 1, 0, 0, 0); // X
+        std::vector<std::complex<float>> vector {1,0};
+
+        REQUIRE_FALSE( pauli.has_eigenstate( vector, 1 ) );
         REQUIRE_FALSE( pauli.has_eigenstate( vector, 0 ) );
     }
 
