@@ -3,7 +3,6 @@
 
 #include "pauli.h"
 #include <iostream>
-#include <numeric>
 
 using namespace Catch::Matchers;
 using namespace fst;
@@ -176,7 +175,10 @@ namespace
             Pauli pauli (3, 0b100, 0b011, 1, 0);
 
             std::vector<std::complex<float>> vector (8,0);
-            std::iota(vector.begin(), vector.end(), 0);
+            for (int index = 0; index < 8; index++)
+            {
+                vector.at(index) = index;
+            }
 
             const std::vector<std::complex<float>> expected_product {-4.0f, 5.0f, 6.0f, -7.0f, .0f,  1.0f, 2.0f, -3.0f};
 
@@ -190,7 +192,6 @@ namespace
             Pauli pauli (5, 0b10000, 0b11111, 1, 1);
 
             std::vector<std::complex<float>> vector (32);
-            
             for (int index = 0; index < 32; index++)
             {
                 auto flt = (float) index;
