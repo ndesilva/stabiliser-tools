@@ -8,12 +8,12 @@ set( SOURCE_FILES
 
 add_executable( tests ${SOURCE_FILES} )
 
-target_link_libraries( tests PRIVATE Catch2::Catch2WithMain stabiliser_state )
 target_include_directories( tests PUBLIC
-                          "${PROJECT_BINARY_DIR}"
                           "${PROJECT_SOURCE_DIR}/src/stabiliser_state"
-                          )
+                          "${PROJECT_SOURCE_DIR}/src/f2_helper"
+                        )
 
+target_link_libraries( tests PRIVATE Catch2::Catch2WithMain stabiliser_state )
 
 include(CTest)
 include(Catch)
