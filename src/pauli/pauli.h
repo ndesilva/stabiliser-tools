@@ -15,9 +15,9 @@ namespace fst
         bool sign_bit = 0;
         bool imag_bit = 0;
 
-        void update_phase();
-
         Pauli (const int number_qubits, const std::size_t x_vector, const std::size_t z_vector, const bool sign_bit, const bool imag_bit);
+
+        void update_phase();
 
         std::vector<std::vector<std::complex<float>>> get_matrix() const;
 
