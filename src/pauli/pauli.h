@@ -4,6 +4,9 @@
 #include <complex>
 #include <vector>
 
+// TODO: add verification for pauli/pauli and pauli/vector multiplication where
+// dimensions don't match
+
 namespace fst
 {
     /// The class used to represent a Pauli operator. 
@@ -46,6 +49,8 @@ namespace fst
         /// Given another pauli Q, multiply this Pauli on the right by Q
         /// Note, the current instance is set to the result.
         void multiply_by_pauli_on_right(const Pauli &other_pauli);
+
+        auto operator<=>( const Pauli& other ) const = default;
     };
 }
 
