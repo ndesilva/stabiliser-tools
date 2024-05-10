@@ -20,36 +20,38 @@
 #include <complex>
 #include <vector>
 
-namespace stim {
+namespace stim
+{
 
-/// A state vector quantum circuit simulator.
-///
-/// Not intended to be particularly performant. Mostly used as a reference when testing.
-struct VectorSimulator {
-    std::vector<std::complex<float>> state;
-
-    /// Creates a state vector for the given number of qubits, initialized to the zero state.
-    explicit VectorSimulator(size_t num_qubits);
-
-    /// Applies a unitary operation to the given qubits, updating the state vector.
-    void apply(const std::vector<std::vector<std::complex<float>>> &matrix, const std::vector<size_t> &qubits);
-
-    void apply_X(size_t qubit);
-    void apply_Z(size_t qubit);
-    void apply_S(size_t qubit);
-    void apply_S_DAG(size_t qubit);
-    void apply_H(size_t qubit);
-    
-    /// Helper method for applying named two qubit gates.
-    void apply_CX(size_t qubit1, size_t qubit2);
-
-    /// Modifies the state vector to be EXACTLY entries of 0, 1, -1, i, or -i.
+    /// A state vector quantum circuit simulator.
     ///
-    /// Each entry is a ratio relative to the given base value.
-    /// If any entry has a ratio not near the desired set, an exception is raised.
-    bool smooth_stabilizer_state(std::complex<float> base_value);
-};
+    /// Not intended to be particularly performant. Mostly used as a reference when testing.
+    struct VectorSimulator
+    {
+        std::vector<std::complex<float>> state;
 
-}  // namespace stim
+        /// Creates a state vector for the given number of qubits, initialized to the zero state.
+        explicit VectorSimulator(size_t num_qubits);
+
+        /// Applies a unitary operation to the given qubits, updating the state vector.
+        void apply(const std::vector<std::vector<std::complex<float>>> &matrix, const std::vector<size_t> &qubits);
+
+        void apply_X(size_t qubit);
+        void apply_Z(size_t qubit);
+        void apply_S(size_t qubit);
+        void apply_S_DAG(size_t qubit);
+        void apply_H(size_t qubit);
+
+        /// Helper method for applying named two qubit gates.
+        void apply_CX(size_t qubit1, size_t qubit2);
+
+        /// Modifies the state vector to be EXACTLY entries of 0, 1, -1, i, or -i.
+        ///
+        /// Each entry is a ratio relative to the given base value.
+        /// If any entry has a ratio not near the desired set, an exception is raised.
+        bool smooth_stabilizer_state(std::complex<float> base_value);
+    };
+
+} // namespace stim
 
 #endif

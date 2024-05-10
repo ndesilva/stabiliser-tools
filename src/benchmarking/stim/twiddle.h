@@ -22,26 +22,31 @@
 #include <cstdint>
 #include <stdexcept>
 
-namespace stim {
+namespace stim
+{
 
-inline uint8_t is_power_of_2(size_t value) {
-    // Note: would use std::has_single_bit here, but as of March 2024 that method is missing when building with
-    // emscripten.
-    return std::popcount(value) == 1;
-}
-
-inline uint8_t floor_lg2(size_t value) {
-    return static_cast<uint8_t>( sizeof(value) * 8 - 1 - std::countl_zero(value) );
-}
-
-inline size_t first_set_bit(size_t value, size_t min_result) {
-    value >>= min_result;
-    if (!value) {
-        throw std::invalid_argument("No matching set bit.");
+    inline uint8_t is_power_of_2(size_t value)
+    {
+        // Note: would use std::has_single_bit here, but as of March 2024 that method is missing when building with
+        // emscripten.
+        return std::popcount(value) == 1;
     }
-    return std::countr_zero(value) + min_result;
-}
 
-}  // namespace stim
+    inline uint8_t floor_lg2(size_t value)
+    {
+        return static_cast<uint8_t>(sizeof(value) * 8 - 1 - std::countl_zero(value));
+    }
+
+    inline size_t first_set_bit(size_t value, size_t min_result)
+    {
+        value >>= min_result;
+        if (!value)
+        {
+            throw std::invalid_argument("No matching set bit.");
+        }
+        return std::countr_zero(value) + min_result;
+    }
+
+} // namespace stim
 
 #endif
