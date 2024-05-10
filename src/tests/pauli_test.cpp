@@ -177,7 +177,7 @@ namespace
             std::vector<std::complex<float>> vector (8,0);
             for (int index = 0; index < 8; index++)
             {
-                vector.at(index) = index;
+                vector.at(index) = (float) index;
             }
 
             const std::vector<std::complex<float>> expected_product {-4.0f, 5.0f, 6.0f, -7.0f, .0f,  1.0f, 2.0f, -3.0f};
