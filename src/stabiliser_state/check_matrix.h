@@ -33,7 +33,7 @@ namespace fst
 
         void set_shift_vector(Stabiliser_State stabiliser_state) const;
         void set_linear_and_quadratic_forms(Stabiliser_State stabiliser_state) const;
-    }
+    };
 } 
 
 #endif
