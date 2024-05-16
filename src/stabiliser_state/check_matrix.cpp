@@ -56,6 +56,35 @@ namespace fst
         set_shift(state);
     }
 
+    void Check_Matrix::set_linear_and_quadratic_forms(Stabiliser_State &state) const
+    {
+        std::size_t imaginary_part = 0;
+        std::size_t real_linear_part = 0;
+        std::vector<std::size_t> quadratic_form;
+
+        for (std::size_t j; j < state.dim; j++)
+        {
+            std::size_t v_j = state.basis_vectors[j];
+            Pauli *p_j = x_stabilisers[j];
+            std::size_t beta_j = (*p_j).z_vector;
+            std::size_t imag_bit = (*p_j).imag_bit;
+
+            imaginary_part |= integral_pow_2(j) * imag_bit;
+            real_linear_part |= integral_pow_2(j) * ((*p_j).sign_bit ^ f2_dot_product(beta_j, v_j ^ state.shift));
+
+            for (std::size_t i = 0; i < j; i++)
+            {
+                std::size_t v_i = state.basis_vectors[i];
+                std::size_t other_imag_bit = (*x_stabilisers[i]).imag_bit; // TODO we are accessing the imag_bits alot, optimise?
+
+                if (f2_dot_product(beta_j, v_i) ^ imag_bit*other_imag_bit)
+                {
+                    quadratic_form.push_back(integral_pow_2(i) | integral_pow_2(j));
+                }
+            }
+        }
+    }
+
     void Check_Matrix::set_basis_vectors(fst::Stabiliser_State &state) const
     {
         std::vector<std::size_t> basis_vectors;
@@ -118,6 +147,7 @@ namespace fst
         }
     }
 
+    // TODO this repeats alot of code from reducing x_stabilisers, optimise?
     void Check_Matrix::row_reduce_z_only_stabilisers()
     {
         for (int i=0; i < z_only_stabilisers.size(); i++)

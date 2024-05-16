@@ -33,7 +33,7 @@ namespace fst
 	template <std::unsigned_integral T, std::unsigned_integral U>
 	constexpr bool bit_set_at(const T number, const U index) noexcept
 	{
-		return std::has_single_bit(number & integral_pow_2(index))
+		return std::has_single_bit(number & integral_pow_2(index));
 	}
 
 	/// For an integer number (which should be 0 or 1), returns the
