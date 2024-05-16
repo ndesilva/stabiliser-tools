@@ -29,6 +29,13 @@ namespace fst
 		return std::has_single_bit(number);
 	}
 
+	/// TODO: write documentation & test
+	template <std::unsigned_integral T, std::unsigned_integral U>
+	constexpr bool bit_set_at(const T number, const U index) noexcept
+	{
+		return std::has_single_bit(number & integral_pow_2(index))
+	}
+
 	/// For an integer number (which should be 0 or 1), returns the
 	/// negation of the number (i.e. 1-it) as a float
 	template <std::unsigned_integral T>
