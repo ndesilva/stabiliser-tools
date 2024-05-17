@@ -36,7 +36,7 @@ namespace fst
 
         for (size_t col_index = 0; col_index < size; col_index++)
         {
-            matrix.at(col_index ^ x_vector).at(col_index) =
+            matrix[col_index ^ x_vector][col_index] =
                 phase * sign_f2_dot_product(col_index, z_vector);
         }
 
@@ -58,8 +58,8 @@ namespace fst
 
     void Pauli::multiply_by_pauli_on_right(const Pauli &other_pauli)
     {
+        std::size_t sign_bit_update = f2_dot_product(z_vector, other_pauli.x_vector) ^ (imag_bit & other_pauli.imag_bit) ^ other_pauli.sign_bit;
         imag_bit ^= other_pauli.imag_bit;
-        int sign_bit_update = f2_dot_product(z_vector, other_pauli.x_vector) ^ (imag_bit & other_pauli.imag_bit);
         sign_bit ^= sign_bit_update;
         update_phase();
 
@@ -74,8 +74,8 @@ namespace fst
 
         for (size_t index = 0; index < size; index++)
         {
-            std::complex<float> expected_phase = vector_phase * sign_f2_dot_product(index, z_vector) * vector.at(index);
-            if (vector.at(index ^ x_vector) != expected_phase)
+            std::complex<float> expected_phase = vector_phase * sign_f2_dot_product(index, z_vector) * vector[index];
+            if (vector[index ^ x_vector] != expected_phase)
             {
                 return false;
             }

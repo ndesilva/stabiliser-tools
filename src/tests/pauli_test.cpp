@@ -2,7 +2,6 @@
 #include <catch2/matchers/catch_matchers_all.hpp>
 
 #include "pauli.h"
-#include <iostream>
 
 using namespace Catch::Matchers;
 using namespace fst;
@@ -124,6 +123,18 @@ namespace
             Pauli other_pauli(3, 0b010, 0b101, 1, 1); // i Z X  Z
 
             Pauli expected_pauli(3, 0b100, 0b110, 0, 0); // XZ Z 1
+
+            pauli.multiply_by_pauli_on_right(other_pauli);
+
+            REQUIRE(pauli == expected_pauli);
+        }
+
+        SECTION("extra case")
+        {
+            Pauli pauli(5, 0b00110, 0b00100, 1, 1);       // i  1 1 XZ X 1
+            Pauli other_pauli(5, 0b00011, 0b00001, 0, 1); // -i 1 1 1  X XZ
+
+            Pauli expected_pauli(5, 0b00101, 0b00101, 0, 0); // 1 1 1 XZ 1 XZ
 
             pauli.multiply_by_pauli_on_right(other_pauli);
 

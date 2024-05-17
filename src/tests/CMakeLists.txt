@@ -5,6 +5,7 @@ set( SOURCE_FILES
   stabiliser_state_test.cpp
   stabiliser_state_from_statevector_test.cpp
   pauli_test.cpp
+  check_matrix_test.cpp
 )
 
 add_executable( tests ${SOURCE_FILES} )
@@ -13,6 +14,7 @@ target_include_directories( tests PUBLIC
   "${PROJECT_SOURCE_DIR}/src/stabiliser_state"
   "${PROJECT_SOURCE_DIR}/src/util"
   "${PROJECT_SOURCE_DIR}/src/pauli"
+  "${PROJECT_SOURCE_DIR}/src"
 )
 
 target_link_libraries(tests PRIVATE 

@@ -29,6 +29,14 @@ namespace fst
 		return std::has_single_bit(number);
 	}
 
+	/// Returns the binary digit of number at index index (zero indexed)
+	/// (as a bool)
+	template <std::unsigned_integral T, std::unsigned_integral U>
+	constexpr bool bit_set_at(const T number, const U index) noexcept
+	{
+		return (number >> index) & 1;
+	}
+
 	/// For an integer number (which should be 0 or 1), returns the
 	/// negation of the number (i.e. 1-it) as a float
 	template <std::unsigned_integral T>
@@ -42,7 +50,7 @@ namespace fst
 	template <std::unsigned_integral T>
 	constexpr int min1_pow(const T number) noexcept
 	{
-		return 1 - 2 * number;
+		return static_cast<int>(1 - 2 * number);
 	}
 
 	/// For an integer number (which should be 0 or 1), returns
