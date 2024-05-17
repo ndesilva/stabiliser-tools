@@ -50,7 +50,7 @@ namespace fst
 	template <std::unsigned_integral T>
 	constexpr int min1_pow(const T number) noexcept
 	{
-		return (int) 1 - 2 * number;
+		return static_cast<int>(1 - 2 * number);
 	}
 
 	/// For an integer number (which should be 0 or 1), returns
