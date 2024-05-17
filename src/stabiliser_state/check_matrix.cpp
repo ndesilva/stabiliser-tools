@@ -62,7 +62,7 @@ namespace fst
         std::size_t real_linear_part = 0;
         std::vector<std::size_t> quadratic_form;
 
-        for (std::size_t j; j < state.dim; j++)
+        for (std::size_t j = 0; j < state.dim; j++)
         {
             std::size_t v_j = state.basis_vectors[j];
             Pauli *p_j = x_stabilisers[j];
@@ -123,7 +123,7 @@ namespace fst
 
     void Check_Matrix::row_reduce_x_stabilisers()
     {
-        for (int i = 0; i < x_stabilisers.size(); i++)
+        for (std::size_t i = 0; i < x_stabilisers.size(); i++)
         {
             Pauli *pauli = x_stabilisers[i];
             int pivot_index = integral_log_2((*pauli).x_vector);
@@ -150,7 +150,7 @@ namespace fst
     // TODO this repeats alot of code from reducing x_stabilisers, optimise?
     void Check_Matrix::row_reduce_z_only_stabilisers()
     {
-        for (int i=0; i < z_only_stabilisers.size(); i++)
+        for (std::size_t i = 0; i < z_only_stabilisers.size(); i++)
         {
             Pauli *pauli = x_stabilisers[i];
             std::size_t pivot_index = integral_log_2((*pauli).x_vector);

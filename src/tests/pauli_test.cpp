@@ -2,7 +2,6 @@
 #include <catch2/matchers/catch_matchers_all.hpp>
 
 #include "pauli.h"
-#include <iostream>
 
 using namespace Catch::Matchers;
 using namespace fst;
