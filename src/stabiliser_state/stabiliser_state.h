@@ -23,7 +23,7 @@ namespace fst
 		std::size_t real_linear_part = 0;
 		std::size_t imaginary_part = 0;
 		std::vector<std::size_t> quadratic_form;
-		std::complex<float> global_phase = 1;
+		std::complex<float> global_phase = 1.0;
 
 		bool row_reduced = false;
 
