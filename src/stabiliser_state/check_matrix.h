@@ -9,6 +9,7 @@
 
 namespace fst
 {
+    /// TODO add documentation
     struct Check_Matrix
     {
         std::size_t number_qubits = 0;
