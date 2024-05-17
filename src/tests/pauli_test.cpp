@@ -128,6 +128,18 @@ namespace
 
             REQUIRE(pauli == expected_pauli);
         }
+
+        SECTION("extra case")
+        {
+            Pauli pauli(5, 0b00110, 0b00100, 1, 1);       // i  1 1 XZ X 1
+            Pauli other_pauli(5, 0b00011, 0b00001, 0, 1); // -i 1 1 1  X XZ
+
+            Pauli expected_pauli(5, 0b00101, 0b00101, 0, 0); // 1 1 1 XZ 1 XZ
+
+            pauli.multiply_by_pauli_on_right(other_pauli);
+
+            REQUIRE(pauli == expected_pauli);
+        }
     }
 
     TEST_CASE("testing commuting/anticommuting", "[pauli]")
