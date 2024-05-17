@@ -11,17 +11,14 @@ namespace fst
 {
     struct Check_Matrix
     {
-        std::vector<Pauli> paulis;
+        std::size_t number_qubits = 0;
         bool row_reduced = false;
         
-        std::size_t number_qubits = 0;
-        std::vector<std::size_t> pivot_indices;
-
+        std::vector<Pauli> paulis;
         std::vector<Pauli *> z_only_stabilisers;
         std::vector<Pauli *> x_stabilisers;
 
         Check_Matrix(std::vector<Pauli> paulis);
-        Check_Matrix(std::vector<Pauli> paulis, std::vector<std::size_t> pivot_indices);
 
         void categorise_paulis();
         

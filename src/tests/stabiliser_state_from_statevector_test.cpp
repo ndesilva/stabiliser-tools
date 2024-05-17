@@ -23,7 +23,7 @@ namespace
 
 		const float root_8 = std::sqrt(8.0f);
 
-		statevector[1] = 1.0f / root_8;
+		statevector[1] = 1 / root_8;
 		statevector[7] = -i / root_8;
 		statevector[8] = 1 / root_8;
 		statevector[14] = -i / root_8;

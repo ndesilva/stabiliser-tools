@@ -10,13 +10,6 @@ namespace fst
         categorise_paulis();
     }
 
-    Check_Matrix::Check_Matrix(std::vector<Pauli> paulis, std::vector<std::size_t> given_pivot_indices)
-        : Check_Matrix(paulis)
-    {
-        row_reduced = true;
-        pivot_indices = given_pivot_indices;
-    }
-
     void Check_Matrix::categorise_paulis()
     {
         for (auto &pauli : paulis)
@@ -41,6 +34,7 @@ namespace fst
 
         set_support(state);
         set_linear_and_quadratic_forms(state);
+        state.row_reduced = true;
 
         return state;
     }
@@ -83,6 +77,10 @@ namespace fst
                 }
             }
         }
+
+        state.imaginary_part = imaginary_part;
+        state.real_linear_part = real_linear_part;
+        state.quadratic_form = quadratic_form;
     }
 
     void Check_Matrix::set_basis_vectors(fst::Stabiliser_State &state) const
@@ -132,6 +130,7 @@ namespace fst
             {
                 x_stabilisers.erase(x_stabilisers.begin() + i);
                 z_only_stabilisers.push_back(pauli);
+                i--;
             }
             else
             {
@@ -152,12 +151,12 @@ namespace fst
     {
         for (std::size_t i = 0; i < z_only_stabilisers.size(); i++)
         {
-            Pauli *pauli = x_stabilisers[i];
-            std::size_t pivot_index = integral_log_2((*pauli).x_vector);
+            Pauli *pauli = z_only_stabilisers[i];
+            std::size_t pivot_index = integral_log_2((*pauli).z_vector);
 
             for (auto &other_pauli : z_only_stabilisers)
                 {
-                    if (other_pauli != pauli && bit_set_at((*other_pauli).x_vector, pivot_index))
+                    if (other_pauli != pauli && bit_set_at((*other_pauli).z_vector, pivot_index))
                     {
                         (*other_pauli).multiply_by_pauli_on_right(*pauli);
                     }
