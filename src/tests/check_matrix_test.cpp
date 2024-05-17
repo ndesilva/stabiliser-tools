@@ -62,12 +62,12 @@ namespace
 
         REQUIRE_THAT(starting_check_matrix.paulis, RangeEquals(row_reduced_check_matrix.paulis));
 
-        for(std::size_t i = 0; i < row_reduced_check_matrix.x_stabilisers.size(); i++){
-            REQUIRE(*row_reduced_check_matrix.x_stabilisers[i] == *starting_check_matrix.x_stabilisers[i]);
+        for(std::size_t index = 0; index < row_reduced_check_matrix.x_stabilisers.size(); index++){
+            REQUIRE(*row_reduced_check_matrix.x_stabilisers[index] == *starting_check_matrix.x_stabilisers[index]);
         }
 
-        for(std::size_t i = 0; i < row_reduced_check_matrix.z_only_stabilisers.size(); i++){
-            REQUIRE(*row_reduced_check_matrix.z_only_stabilisers[i] == *starting_check_matrix.z_only_stabilisers[i]);
+        for(std::size_t index = 0; index < row_reduced_check_matrix.z_only_stabilisers.size(); index++){
+            REQUIRE(*row_reduced_check_matrix.z_only_stabilisers[index] == *starting_check_matrix.z_only_stabilisers[index]);
         }
     }
 
