@@ -71,30 +71,6 @@ namespace
         }
     }
 
-    Stabiliser_State get_stabiliser_state()
-    {
-        Stabiliser_State state(5, 3);
-        state.basis_vectors = {3, 5, 16};
-        state.shift = 0;
-        
-        state.real_linear_part = 5;
-        state.imaginary_part = 1;
-        state.quadratic_form = {3};
-
-        state.row_reduced = true;
-
-        return state;
-    }
-
-    TEST_CASE("get stabiliser state") {
-        Check_Matrix check_matrix = get_check_matrix();
-        Stabiliser_State expected_stabiliser_state = get_stabiliser_state();
-
-        Stabiliser_State stabiliser_state = check_matrix.get_stabiliser_state();
-
-        REQUIRE(stabiliser_state == expected_stabiliser_state);
-    }
-
     std::vector<std::complex<float>> get_state_vector()
     {
         std::vector<std::complex<float>> state_vector (32, 0);

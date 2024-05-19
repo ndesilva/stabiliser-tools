@@ -2,7 +2,6 @@
 #define _FAST_STABILISER_STABILISER_STATE_H
 
 #include "pauli.h"
-#include "check_matrix.h"
 
 #include <vector>
 #include <complex>
@@ -36,9 +35,11 @@ namespace fst
 		Stabiliser_State() = default;
 		Stabiliser_State(const std::size_t number_qubits, const std::size_t dim);
 		explicit Stabiliser_State(const std::size_t number_qubits);
+		explicit Stabiliser_State(Check_Matrix &check_matrix);
 
-		/// Get the check matrix (n commuting paulis) corresponding to the stabiliser state
-		Check_Matrix get_check_matrix();
+		// TODO add documentation
+		void set_support_from_cm(const Check_Matrix &check_matrix);
+		void set_linear_and_quadratic_forms_from_cm(const Check_Matrix &check_matrix);
 
 		/// Return the state vector of length 2^n of the stabiliser state (with respect
 		/// to the computational basis)

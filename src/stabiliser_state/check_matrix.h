@@ -2,13 +2,14 @@
 #define _FAST_STABILISER_CHECK_MATRIX_H
 
 #include "pauli.h"
-#include "stabiliser_state.h"
 
 #include <vector>
 #include <complex>
 
 namespace fst
 {
+    struct Stabiliser_State;
+
     /// TODO add documentation
     struct Check_Matrix
     {
@@ -20,21 +21,17 @@ namespace fst
         
         bool row_reduced;
 
-        Check_Matrix(std::vector<Pauli> paulis, bool row_reduced = false);
+        explicit Check_Matrix(std::vector<Pauli> paulis, bool row_reduced = false);
+        explicit Check_Matrix(Stabiliser_State &stabiliser_state);
 
         void categorise_paulis();
         
-        Stabiliser_State get_stabiliser_state();
+        // Stabiliser_State get_stabiliser_state();
         std::vector<std::complex<float>> get_state_vector();
 
         void row_reduce();
         void row_reduce_x_stabilisers();
         void row_reduce_z_only_stabilisers();
-
-        void set_support(Stabiliser_State &state) const;
-        void set_basis_vectors(Stabiliser_State &state) const;
-        void set_shift(Stabiliser_State &state) const;
-        void set_linear_and_quadratic_forms(Stabiliser_State &state) const;
     };
 }
 
