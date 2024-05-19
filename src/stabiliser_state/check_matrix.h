@@ -13,13 +13,14 @@ namespace fst
     struct Check_Matrix
     {
         std::size_t number_qubits = 0;
-        bool row_reduced = false;
         
         std::vector<Pauli> paulis;
         std::vector<Pauli *> z_only_stabilisers;
         std::vector<Pauli *> x_stabilisers;
+        
+        bool row_reduced;
 
-        Check_Matrix(std::vector<Pauli> paulis);
+        Check_Matrix(std::vector<Pauli> paulis, bool row_reduced = false);
 
         void categorise_paulis();
         
@@ -31,8 +32,8 @@ namespace fst
         void row_reduce_z_only_stabilisers();
 
         void set_support(Stabiliser_State &state) const;
-        void set_basis_vectors(fst::Stabiliser_State &state) const;
-        void set_shift(fst::Stabiliser_State &state) const;
+        void set_basis_vectors(Stabiliser_State &state) const;
+        void set_shift(Stabiliser_State &state) const;
         void set_linear_and_quadratic_forms(Stabiliser_State &state) const;
     };
 }
