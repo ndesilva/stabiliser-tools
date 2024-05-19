@@ -155,12 +155,12 @@ namespace fst
             std::size_t pivot_index = integral_log_2((*pauli).z_vector);
 
             for (auto &other_pauli : z_only_stabilisers)
+            {
+                if (other_pauli != pauli && bit_set_at((*other_pauli).z_vector, pivot_index))
                 {
-                    if (other_pauli != pauli && bit_set_at((*other_pauli).z_vector, pivot_index))
-                    {
-                        (*other_pauli).multiply_by_pauli_on_right(*pauli);
-                    }
+                    (*other_pauli).multiply_by_pauli_on_right(*pauli);
                 }
+            }
         }
     }
 }
