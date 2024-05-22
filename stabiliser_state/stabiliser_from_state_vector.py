@@ -132,13 +132,39 @@ class Stabiliser_From_State_Vector: #TODO currently assumes length 2^n
                     
         return True
     
-    def __coefficients_consistent(self, non_zero_coeffs : list[complex]) -> bool:       
-        for index in range(1<<self.dimension): # TODO We are repeating columns of Hamming weight 1,2 - fast way to not do this?
-            value = self.first_entry*f2.imag_mod2product(index, self.imag_part)*f2.sign_mod2product(index, self.linear_real_part)*f2.sign_evaluate_poly(self.quadratic_real_part, index)
+    def __coefficients_consistent(self, non_zero_coeffs : list[complex]) -> bool:
+        old_vector_index = 0
+        phase = self.first_entry
+        imag_exponent = 0
 
-            if non_zero_coeffs[index] != value:
-                #print('inconsistent remainder')
+        quadratic_dictionary = {(1<<j)|(1<<i) : 0 for i in range(self.dimension - 1) for j in range(i+1, self.dimension)}
+        for coeff in self.quadratic_real_part:
+            quadratic_dictionary[coeff] = 1
+        
+        quadratic_dictionary[0] = 0
+
+        for i in range(1, 1<<self.dimension):
+            new_vector_index = i ^ (i>>1)
+            flipped_bit = f2.fast_log2(new_vector_index ^ old_vector_index)
+
+            imag_flips = f2.get_bit_at(self.imag_part, flipped_bit)
+            imag_phase_update = 1 + imag_flips*(-1 + 1j*(1-2*imag_exponent))
+            imag_exponent ^= imag_flips
+
+            real_linear_phase_update = (1-2*f2.get_bit_at(self.linear_real_part, flipped_bit))
+            quadratic_phase_exponent = 0
+
+            for j in range(self.dimension):
+                quadratic_phase_exponent ^= (quadratic_dictionary[ ( 1<< flipped_bit ^ 1 << j) ] * f2.get_bit_at(old_vector_index, j))
+
+            quadratic_phase_update = 1 -2*quadratic_phase_exponent
+
+            phase *= imag_phase_update * real_linear_phase_update * quadratic_phase_update
+
+            if non_zero_coeffs[new_vector_index] != phase:
                 return False
+            
+            old_vector_index = new_vector_index
             
         return True
 

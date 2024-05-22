@@ -136,10 +136,6 @@ class Test_Pauli_Class(unittest.TestCase):
 
         expected_product = pauli.generate_matrix() @ vector
 
-        print('{', end='')
-        for elt in expected_product:
-            print(f'{elt.real}f + {elt.imag}f*i, ', end='')
-
         self.assertTrue(np.allclose(expected_product, pauli.multiply_vector(vector)))
 
 if __name__ == '__main__':

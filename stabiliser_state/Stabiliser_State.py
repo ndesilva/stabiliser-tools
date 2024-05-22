@@ -38,17 +38,58 @@ class Stabiliser_State():
         self.dimension = len(self.vector_basis)
     
     def get_state_vector(self) -> np.ndarray:
-        size = 1 << self.number_qubits
+        #         size = 1 << self.number_qubits
         
-        state_vector = np.zeros(size, dtype=complex)
-        dimension = len(self.vector_basis)
-        normalisation = self.global_factor/math.sqrt(1 << dimension)
+        # state_vector = np.zeros(size, dtype=complex)
+        # dimension = len(self.vector_basis)
+        # normalisation = self.global_factor/math.sqrt(1 << dimension)
 
-        for j in range(1 << dimension):
-            index = f2.get_vector_expansion(dimension, self.vector_basis, j) ^ self.shift
-            phase = self.__get_phase(j)
-            state_vector[index] = normalisation*phase
+        # for j in range(1 << dimension):
+        #     index = f2.get_vector_expansion(dimension, self.vector_basis, j) ^ self.shift
+        #     phase = self.__get_phase(j)
+        #     state_vector[index] = normalisation*phase
         
+        # return state_vector
+
+        support_size = 1 << self.dimension
+        state_vector = np.zeros(1 << self.number_qubits, dtype=complex)
+
+        old_vector_index = 0
+        phase = self.global_factor/math.sqrt(support_size)
+        imag_exponent = 0
+        total_index = self.shift
+
+        state_vector[total_index] = phase
+
+        quadratic_dictionary = {(1<<j)|(1<<i) : 0 for i in range(self.dimension - 1) for j in range(i+1, self.dimension)}
+        for coeff in self.quadratic_form:
+            quadratic_dictionary[coeff] = 1
+        
+        quadratic_dictionary[0] = 0
+
+        for i in range(1, support_size):
+            new_vector_index = i ^ (i>>1)
+            flipped_bit = f2.fast_log2(new_vector_index ^ old_vector_index)
+
+            total_index ^= self.vector_basis[flipped_bit]
+
+            imag_flips = f2.get_bit_at(self.imaginary_part, flipped_bit)
+            imag_phase_update = 1 + imag_flips*(-1 + 1j*(1-2*imag_exponent))
+            imag_exponent ^= imag_flips
+
+            real_linear_phase_update = (1-2*f2.get_bit_at(self.real_linear_part, flipped_bit))
+            quadratic_phase_exponent = 0
+
+            for j in range(self.dimension):
+                quadratic_phase_exponent ^= (quadratic_dictionary[ ( 1<< flipped_bit ^ 1 << j) ] * f2.get_bit_at(old_vector_index, j))
+
+            quadratic_phase_update = 1 -2*quadratic_phase_exponent
+
+            phase *= imag_phase_update * real_linear_phase_update * quadratic_phase_update
+
+            state_vector[total_index] = phase
+            old_vector_index = new_vector_index
+
         return state_vector
     
     def get_check_matrix(self) -> cm.Check_Matrix: 
