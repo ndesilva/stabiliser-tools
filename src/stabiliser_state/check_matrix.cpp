@@ -15,12 +15,51 @@ namespace fst
     {
         for (auto &pauli : paulis)
         {
-            if (integral_log_2(pauli.x_vector) == -1)
+            if (pauli.x_vector == 0)
             {
                 z_only_stabilisers.push_back(&pauli);
             }
             else{
                 x_stabilisers.push_back(&pauli);
+            }
+        }
+    }
+
+    Check_Matrix::Check_Matrix(Stabiliser_State &stabiliser_state)
+    {
+        number_qubits = stabiliser_state.number_qubits;
+
+        std::unordered_map<std::size_t, bool> m_quadratic_form = stabiliser_state.get_quadratic_form_as_map();
+        stabiliser_state.row_reduce_basis(m_quadratic_form);
+
+        paulis.reserve(number_qubits);
+
+        std::set<int> pivot_indices;
+
+        for(const auto &vector : stabiliser_state.basis_vectors)
+        {
+            pivot_indices.insert(integral_log_2(vector));
+        }
+
+        add_z_only_stabilisers(pivot_indices);
+        add_x_stabilisers(pivot_indices, m_quadratic_form);
+
+        row_reduced = true;
+    }
+
+    void Check_Matrix::add_z_only_stabilisers(std::set<int> &pivot_indices)
+    {
+        for(std::size_t i = 0; i < number_qubits; i++)
+        {
+            if (!pivot_indices.contains(i))
+            {
+                std::size_t alpha = integral_pow_2(i);
+
+                // make alpha perpendicular to the basis vectors
+                for (std::size_t j = 0; j < pivot_indices.size(); j++)
+                {
+                    alpha |= integral_pow_2(j)*(basis_vectors[j], i);
+                }
             }
         }
     }

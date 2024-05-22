@@ -19,9 +19,9 @@ namespace fst
 
 	Stabiliser_State::Stabiliser_State(Check_Matrix &check_matrix)
 	{
-		check_matrix.row_reduce();
-
 		number_qubits = check_matrix.number_qubits;
+
+		check_matrix.row_reduce();
 		dim = check_matrix.x_stabilisers.size();
 
 		set_support_from_cm(check_matrix);
@@ -71,22 +71,6 @@ namespace fst
         }
 	}
 
-	// Check_Matrix Stabiliser_State::get_check_matrix()
-	// {
-	// 	std::map<std::size_t, bool> m_quadratic_form = get_quadratic_form_as_map();
-	// 	row_reduce_basis(m_quadratic_form);
-		
-	// 	std::vector<Pauli> paulis;
-	// 	paulis.reserve(number_qubits);
-
-	// 	std::vector<int> pivot_indices; // TODO
-
-	// 	add_z_only_stabilisers(paulis, pivot_indices);
-	// 	add_x_stabilisers(paulis, pivot_indices, m_quadratic_form);
-
-	// 	return Check_Matrix(paulis);
-	// }
-
 	std::vector<std::complex<float>> Stabiliser_State::get_state_vector() const
 	{
 		const std::size_t support_size = integral_pow_2(dim);
@@ -104,18 +88,84 @@ namespace fst
 		return state_vector;
 	}
 
-	// void Stabiliser_State::row_reduce_basis(std::map<std::size_t, bool> &m_quadratic_form)
-	// {
-	// 	if (row_reduced) {return;}
+	std::unordered_map<std::size_t, bool> Stabiliser_State::get_quadratic_form_as_map() const
+	{
+		// TODO: can this hash be forced to be the identity? basically want to make a lookup table
+		std::unordered_map<std::size_t, bool> m_quadratic_form;
+		m_quadratic_form.reserve(dim^2);
 
-	// 	// TODO : implement. MUST UPDATE CLASS QUADRATIC FORM
+		for(std::size_t i = 0; i < dim; i++)
+		{
+			for(std::size_t j = 0; j < dim; j++)
+			{
+				m_quadratic_form[(integral_pow_2(i) | integral_pow_2(j))] = 0;
+			}	
+		}
 
-	// 	// update_quadratic_form_from_map(m_quadratic_form);
+		for (const auto & elt : quadratic_form)
+		{
+			m_quadratic_form[elt] = 1;
+		}
 
-	// 	row_reduced = true;
-	// }
+		return m_quadratic_form;
+	}
 
-	std::size_t Stabiliser_State::evaluate_basis_expansion(const std::size_t vector_index) const
+	void Stabiliser_State::update_real_parts_from_map(std::unordered_map<std::size_t, bool> &m_quadratic_form)
+	{
+		quadratic_form.clear();
+		real_linear_part = 0;
+
+		for(std::size_t i = 0; i < dim; i++)
+		{
+			real_linear_part |= integral_pow_2(i)*m_quadratic_form[integral_pow_2(i)];
+			
+			for(std::size_t j = 0; j < i; j++)
+			{
+				if (m_quadratic_form[integral_pow_2(i) | integral_pow_2(j)])
+				{
+					quadratic_form.push_back(integral_pow_2(i) | integral_pow_2(j));
+				}
+			}	
+		}
+	}
+
+	void Stabiliser_State::row_reduce_basis(std::unordered_map<std::size_t, bool> &m_quadratic_form)
+	{
+		if (row_reduced) {return;}
+
+		for(std::size_t i = 0; i < dim; i++)
+		{
+			std::size_t v_i = basis_vectors[i];
+			std::size_t pivot_index = integral_log_2(v_i);
+
+			for(std::size_t j = 0; j < dim; j++)
+			{
+				if (i != j && bit_set_at(basis_vectors[j], pivot_index))
+				{
+                    add_vi_to_vj(i, j, v_i, m_quadratic_form);
+                }
+			}
+		}
+
+		update_real_parts_from_map(m_quadratic_form);
+		row_reduced = true;
+    }
+
+    void Stabiliser_State::add_vi_to_vj(const std::size_t i, const std::size_t j, const std::size_t v_i, std::unordered_map<size_t, bool> &m_quadratic_form)
+    {
+        basis_vectors[j] ^= v_i;
+
+        imaginary_part ^= integral_pow_2(j) * bit_set_at(imaginary_part, i);
+
+        for (std::size_t k = 0; k < dim; k++)
+        {
+            m_quadratic_form[integral_pow_2(k) | integral_pow_2(j)] ^= m_quadratic_form[integral_pow_2(k) | integral_pow_2(i)];
+        }
+
+        m_quadratic_form[integral_pow_2(j)] ^= m_quadratic_form[integral_pow_2(i)];
+    }
+
+    std::size_t Stabiliser_State::evaluate_basis_expansion(const std::size_t vector_index) const
 	{
 		std::size_t result = 0;
 

@@ -5,7 +5,7 @@
 
 #include <vector>
 #include <complex>
-#include <map>
+#include <unordered_map>
 
 namespace fst
 {
@@ -45,19 +45,17 @@ namespace fst
 		/// to the computational basis)
 		std::vector<std::complex<float>> get_state_vector() const;
 
-		std::map<std::size_t, bool> get_quadratic_form_as_map() const;
-		void update_quadratic_form_from_map(std::map<std::size_t, bool> m_quadratic_form);
-		
-		void row_reduce_basis(std::map<std::size_t, bool> &m_quadratic_form);
+		std::unordered_map<std::size_t, bool> get_quadratic_form_as_map() const;
+		void update_real_parts_from_map(std::unordered_map<std::size_t, bool> &m_quadratic_form);
 
-		void add_z_only_stabilisers(std::vector<Pauli> &paulis, std::vector<int> &pivot_indices);
-		void add_x_stabilisers(std::vector<Pauli> &paulis, std::vector<int> &pivot_indices, std::map<std::size_t, bool> &m_quadratic_form);
+        void row_reduce_basis(std::unordered_map<std::size_t, bool> &m_quadratic_form);
 
+        void add_vi_to_vj(const std::size_t i, const std::size_t j, const std::size_t v_i, std::unordered_map<size_t, bool> &m_quadratic_form);
 
-		/// Given vector_index, the column vector of an element of the vector
-		/// space (represented as an integer) with respect to the vector basis,
-		/// find its representation in the computational basis.
-		std::size_t evaluate_basis_expansion(const std::size_t vector_index) const;
+        /// Given vector_index, the column vector of an element of the vector
+        /// space (represented as an integer) with respect to the vector basis,
+        /// find its representation in the computational basis.
+        std::size_t evaluate_basis_expansion(const std::size_t vector_index) const;
 
 		/// Given vector_index, the column vector of an element of the vector
 		/// space (represented as an integer) with respect to the vector basis,

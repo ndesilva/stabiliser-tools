@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <complex>
+#include <set>
 
 namespace fst
 {
@@ -26,7 +27,9 @@ namespace fst
 
         void categorise_paulis();
         
-        // Stabiliser_State get_stabiliser_state();
+        void add_z_only_stabilisers(std::set<int> &pivot_indices);
+		void add_x_stabilisers(std::set<int> &pivot_indices, std::map<std::size_t, bool> &m_quadratic_form);
+        
         std::vector<std::complex<float>> get_state_vector();
 
         void row_reduce();
