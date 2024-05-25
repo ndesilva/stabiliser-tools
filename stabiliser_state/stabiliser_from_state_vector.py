@@ -35,9 +35,8 @@ class Stabiliser_From_State_Vector: #TODO currently assumes length 2^n
         non_zero_coeffs = [pair[1] for pair in vector_space_value_pairs]
         self.first_entry = non_zero_coeffs[0]
 
-        if not assume_stab_state:
-            if self.__first_entry_not_valid(allow_global_factor):
-                return
+        if self.__first_entry_not_valid(allow_global_factor):
+            return
             
         if not self.__set_linear_parts(weight_one_bitstrings, non_zero_coeffs):
             return
@@ -59,10 +58,10 @@ class Stabiliser_From_State_Vector: #TODO currently assumes length 2^n
         
         raise ValueError('State is not a stabiliser state')
     
-    def __support_is_power_two(self,) -> bool:
+    def __support_is_power_two(self) -> bool:
         return 1 << self.dimension == self.support_size
     
-    def __first_entry_not_valid(self, allow_global_factor) -> bool:
+    def __first_entry_not_valid(self, allow_global_factor : bool) -> bool:
         return not (allow_global_factor or is_valid_stabiliser_entry(self.first_entry*(math.sqrt(self.support_size))))
 
     def __get_vector_space_indices_and_amplitudes(self, nonzero_indices : list[int], state_vector : np.ndarray) -> list[tuple[int, complex]]:
@@ -123,24 +122,49 @@ class Stabiliser_From_State_Vector: #TODO currently assumes length 2^n
     def __vector_space_consistent(self, vector_space_value_pairs : list[tuple[int, complex]]) -> bool:
         # Using lemma, check that the indicies form an F2 vector space. If the support is the whole space, this is not needed
         if self.dimension != self.n:
-                for j in range(1<<self.dimension): # we check the basis vectors again here, fast way to not do that?
-                    value = f2.get_vector_expansion(self.dimension, self.basis_vectors, j)
+            for j in range(1<<self.dimension): # we check the basis vectors again here, fast way to not do that?
+                value = f2.get_vector_expansion(self.dimension, self.basis_vectors, j)
 
-                    if vector_space_value_pairs[j][0] != value:
-                        #print('Support not affine space')
-                        self.is_stab_state = False
-                        return False
+                if vector_space_value_pairs[j][0] != value:
+                    #print('Support not affine space')
+                    self.is_stab_state = False
+                    return False
                     
         return True
     
     def __coefficients_consistent(self, non_zero_coeffs : list[complex]) -> bool:
-        
-        for index in range(1<<self.dimension): # TODO We are repeating columns of Hamming weight 1,2 - fast way to not do this?
-            value = self.first_entry*f2.imag_mod2product(index, self.imag_part)*f2.sign_mod2product(index, self.linear_real_part)*f2.sign_evaluate_poly(self.quadratic_real_part, index)
+        old_vector_index = 0
+        phase = self.first_entry
+        imag_exponent = 0
 
-            if non_zero_coeffs[index] != value:
-                #print('inconsistent remainder')
+        quadratic_dictionary = {(1<<j)|(1<<i) : 0 for i in range(self.dimension - 1) for j in range(i+1, self.dimension)}
+        for coeff in self.quadratic_real_part:
+            quadratic_dictionary[coeff] = 1
+        
+        quadratic_dictionary[0] = 0
+
+        for i in range(1, 1<<self.dimension):
+            new_vector_index = i ^ (i>>1)
+            flipped_bit = f2.fast_log2(new_vector_index ^ old_vector_index)
+
+            imag_flips = f2.get_bit_at(self.imag_part, flipped_bit)
+            imag_phase_update = 1 + imag_flips*(-1 + 1j*(1-2*imag_exponent))
+            imag_exponent ^= imag_flips
+
+            real_linear_phase_update = (1-2*f2.get_bit_at(self.linear_real_part, flipped_bit))
+            quadratic_phase_exponent = 0
+
+            for j in range(self.dimension):
+                quadratic_phase_exponent ^= (quadratic_dictionary[ ( 1<< flipped_bit ^ 1 << j) ] * f2.get_bit_at(old_vector_index, j))
+
+            quadratic_phase_update = 1 -2*quadratic_phase_exponent
+
+            phase *= imag_phase_update * real_linear_phase_update * quadratic_phase_update
+
+            if non_zero_coeffs[new_vector_index] != phase:
                 return False
+            
+            old_vector_index = new_vector_index
             
         return True
 
