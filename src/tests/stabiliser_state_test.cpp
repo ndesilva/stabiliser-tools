@@ -21,11 +21,11 @@ namespace
 		quadratic_form.reserve(dimension * (dimension + 1)/2);
 		quadratic_form[0] = 0;
 
-		for (std::size_t i = 0; i < dimension; i++)
+		for (std::size_t j = 0; j < dimension; j++)
 		{
-			for (std::size_t j = 0; j < dimension; j++)
+			for (std::size_t k = 0; k < dimension; k++)
 			{
-				quadratic_form[integral_pow_2(i) ^ integral_pow_2(j)] = 0;
+				quadratic_form[integral_pow_2(j) ^ integral_pow_2(k)] = 0;
 			}
 		}
 
@@ -35,6 +35,44 @@ namespace
 		}
 
 		return quadratic_form;
+	}
+
+	Check_Matrix get_check_matrix()
+	{
+		std::vector<Pauli> paulis;
+
+		paulis.push_back(Pauli(5, 0b00011, 0b00001, 0, 1));
+		paulis.push_back(Pauli(5, 0b00101, 0b00010, 0, 0));
+		paulis.push_back(Pauli(5, 0b00110, 0b00100, 1, 1));
+		paulis.push_back(Pauli(5, 0b10000, 0b01000, 1, 0));
+		paulis.push_back(Pauli(5, 0b10110, 0b00100, 0, 1));
+
+		return Check_Matrix(paulis);
+	}
+
+	Stabiliser_State get_stabiliser_state()
+	{
+		Stabiliser_State state(5, 3);
+		state.basis_vectors = {3, 5, 16};
+		state.shift = 0;
+		
+		state.real_linear_part = 5;
+		state.imaginary_part = 1;
+		state.quadratic_form = get_quadratic_from_from_vector(3, {3});
+
+		state.row_reduced = true;
+
+		return state;
+	}
+
+	TEST_CASE("stabiliser state from check matrix", "[stabiliser state]")
+	{
+		Check_Matrix check_matrix = get_check_matrix();
+        Stabiliser_State expected_stabiliser_state = get_stabiliser_state();
+
+        Stabiliser_State stabiliser_state(check_matrix);
+
+        REQUIRE(stabiliser_state == expected_stabiliser_state);
 	}
 
 	TEST_CASE("generate state vector", "[stabiliser state]")
@@ -90,41 +128,22 @@ namespace
 		}
 	}
 
-	Check_Matrix get_check_matrix()
-	{
-		std::vector<Pauli> paulis;
-
-		paulis.push_back(Pauli(5, 0b00011, 0b00001, 0, 1));
-		paulis.push_back(Pauli(5, 0b00101, 0b00010, 0, 0));
-		paulis.push_back(Pauli(5, 0b00110, 0b00100, 1, 1));
-		paulis.push_back(Pauli(5, 0b10000, 0b01000, 1, 0));
-		paulis.push_back(Pauli(5, 0b10110, 0b00100, 0, 1));
-
-		return Check_Matrix(paulis);
-	}
-
-	Stabiliser_State get_stabiliser_state()
+	TEST_CASE("row reduce", "[stabiliser state]")
 	{
 		Stabiliser_State state(5, 3);
-		state.basis_vectors = {3, 5, 16};
-		state.shift = 0;
 		
-		state.real_linear_part = 5;
-		state.imaginary_part = 1;
 		state.quadratic_form = get_quadratic_from_from_vector(3, {3});
+		state.real_linear_part = 1;
+		state.imaginary_part = 1;
+		state.basis_vectors = {0b01101, 0b10110, 0b11010};
+		state.shift = 0b00010;
 
-		state.row_reduced = true;
+		std::vector<std::size_t> row_reduced_basis {0b01100, 0b10110, 0b00001};
+		std::vector<std::complex<float>> statevector = state.get_state_vector();
 
-		return state;
-	}
+		state.row_reduce_basis();
 
-	TEST_CASE("from check matrix", "[stabiliser state]")
-	{
-		Check_Matrix check_matrix = get_check_matrix();
-        Stabiliser_State expected_stabiliser_state = get_stabiliser_state();
-
-        Stabiliser_State stabiliser_state(check_matrix);
-
-        REQUIRE(stabiliser_state == expected_stabiliser_state);
+		REQUIRE_THAT(state.basis_vectors, RangeEquals(row_reduced_basis));
+		REQUIRE_THAT(statevector, RangeEquals(state.get_state_vector()));
 	}
 }

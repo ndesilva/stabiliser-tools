@@ -17,11 +17,11 @@ namespace
 		quadratic_form.reserve(dimension * (dimension + 1)/2);
 		quadratic_form[0] = 0;
 
-		for (std::size_t i = 0; i < dimension; i++)
+		for (std::size_t j = 0; j < dimension; j++)
 		{
-			for (std::size_t j = 0; j < dimension; j++)
+			for (std::size_t k = 0; k < dimension; k++)
 			{
-				quadratic_form[integral_pow_2(i) ^ integral_pow_2(j)] = 0;
+				quadratic_form[integral_pow_2(j) ^ integral_pow_2(k)] = 0;
 			}
 		}
 
