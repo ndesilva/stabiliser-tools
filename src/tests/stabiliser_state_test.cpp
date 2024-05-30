@@ -143,6 +143,7 @@ namespace
 
 		state.row_reduce_basis();
 
+		REQUIRE(state.row_reduced);
 		REQUIRE_THAT(state.basis_vectors, RangeEquals(row_reduced_basis));
 		REQUIRE_THAT(statevector, RangeEquals(state.get_state_vector()));
 	}

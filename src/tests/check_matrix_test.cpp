@@ -26,7 +26,7 @@ namespace
         return Check_Matrix(paulis);
     }
 
-    TEST_CASE("categorise paulis", "[check_matrix]")
+    TEST_CASE("from list of paulis", "[check_matrix]")
     {
         Pauli pauli1 = Pauli(2, 0b10, 0b01, 0, 0); // X Z
         Pauli pauli2 = Pauli(2, 0b00, 0b01, 0, 0); // 1 Z
@@ -60,6 +60,7 @@ namespace
 
         starting_check_matrix.row_reduce();
 
+        REQUIRE(starting_check_matrix.row_reduced);
         REQUIRE_THAT(starting_check_matrix.paulis, RangeEquals(row_reduced_check_matrix.paulis));
 
         for(std::size_t index = 0; index < row_reduced_check_matrix.x_stabilisers.size(); index++){
