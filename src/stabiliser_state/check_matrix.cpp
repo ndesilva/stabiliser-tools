@@ -29,40 +29,39 @@ namespace fst
     {
         number_qubits = stabiliser_state.number_qubits;
 
-        std::unordered_map<std::size_t, bool> m_quadratic_form = stabiliser_state.get_quadratic_form_as_map();
-        stabiliser_state.row_reduce_basis(m_quadratic_form);
+        stabiliser_state.row_reduce_basis();
 
         paulis.reserve(number_qubits);
 
-        std::set<int> pivot_indices;
+        // std::set<int> pivot_indices;
 
-        for(const auto &vector : stabiliser_state.basis_vectors)
-        {
-            pivot_indices.insert(integral_log_2(vector));
-        }
+        // for(const auto &vector : stabiliser_state.basis_vectors)
+        // {
+        //     pivot_indices.insert(integral_log_2(vector));
+        // }
 
-        add_z_only_stabilisers(pivot_indices);
-        add_x_stabilisers(pivot_indices, m_quadratic_form);
+        // add_z_only_stabilisers(pivot_indices);
+        // add_x_stabilisers(pivot_indices);
 
         row_reduced = true;
     }
 
-    void Check_Matrix::add_z_only_stabilisers(std::set<int> &pivot_indices)
-    {
-        for(std::size_t i = 0; i < number_qubits; i++)
-        {
-            if (!pivot_indices.contains(i))
-            {
-                std::size_t alpha = integral_pow_2(i);
+    // void Check_Matrix::add_z_only_stabilisers(std::set<int> &pivot_indices)
+    // {
+    //     for(std::size_t i = 0; i < number_qubits; i++)
+    //     {
+    //         if (!pivot_indices.contains(i))
+    //         {
+    //             std::size_t alpha = integral_pow_2(i);
 
-                // make alpha perpendicular to the basis vectors
-                for (std::size_t j = 0; j < pivot_indices.size(); j++)
-                {
-                    alpha |= integral_pow_2(j)*(basis_vectors[j], i);
-                }
-            }
-        }
-    }
+    //             // make alpha perpendicular to the basis vectors
+    //             for (std::size_t j = 0; j < pivot_indices.size(); j++)
+    //             {
+    //                 alpha |= integral_pow_2(j)*(basis_vectors[j], i);
+    //             }
+    //         }
+    //     }
+    // }
 
     std::vector<std::complex<float>> Check_Matrix::get_state_vector()
     {

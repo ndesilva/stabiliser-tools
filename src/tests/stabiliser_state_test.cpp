@@ -3,6 +3,7 @@
 
 #include "stabiliser_state.h"
 #include "check_matrix.h"
+#include "f2_helper.h"
 
 #include <array>
 
@@ -13,64 +14,27 @@ static constexpr std::complex<float> i = {0, 1};
 
 namespace
 {
-	TEST_CASE("evaluate basis expansion", "[stabiliser state]")
+	// TODO extract to test util file
+	std::unordered_map<std::size_t, bool> get_quadratic_from_from_vector(std::size_t dimension, std::vector<std::size_t> non_zero_coeffs)
 	{
-		SECTION("dimension 3")
+		std::unordered_map<std::size_t, bool> quadratic_form;
+		quadratic_form.reserve(dimension * (dimension + 1)/2);
+		quadratic_form[0] = 0;
+
+		for (std::size_t i = 0; i < dimension; i++)
 		{
-			Stabiliser_State state(3, 3);
-
-			state.basis_vectors = {0b001, 0b010, 0b100};
-
-			const std::size_t vector_index = 0b101;
-			const std::size_t expected_vector = 0b101;
-
-			REQUIRE(state.evaluate_basis_expansion(vector_index) == expected_vector);
+			for (std::size_t j = 0; j < dimension; j++)
+			{
+				quadratic_form[integral_pow_2(i) ^ integral_pow_2(j)] = 0;
+			}
 		}
 
-		SECTION("dimension 4")
+		for (const auto coeff : non_zero_coeffs)
 		{
-			Stabiliser_State state(5, 4);
-
-			state.basis_vectors = {0b10001, 0b01100, 0b00001, 0b11010};
-
-			const std::size_t vector_index = 0b1011;
-			const std::size_t expected_vector = 0b00111;
-
-			REQUIRE(state.evaluate_basis_expansion(vector_index) == expected_vector);
-		}
-	}
-
-	TEST_CASE("get phase", "[stabiliser state]")
-	{
-		SECTION("dimension 3")
-		{
-			Stabiliser_State state(3);
-
-			state.quadratic_form = {3}; // x_0 x_1
-			state.real_linear_part = 1; // x_0
-			state.imaginary_part = 2;	// x_1
-
-			const std::size_t point_1 = 0b011;
-			const std::size_t point_2 = 0b101;
-
-			REQUIRE(state.get_phase(point_1) == i);
-			REQUIRE(state.get_phase(point_2) == -1.0f);
+			quadratic_form[coeff] = 1;
 		}
 
-		SECTION("dimension 4")
-		{
-			Stabiliser_State state(3);
-
-			state.quadratic_form = {3, 12}; // x_0 x_1 + x_2 x_3
-			state.real_linear_part = 1;		// x_0
-			state.imaginary_part = 7;		// x_0 + x_1 + x_2
-
-			const std::size_t point_1 = 0b0011;
-			const std::size_t point_2 = 0b0001;
-
-			REQUIRE(state.get_phase(point_1) == 1.0f);
-			REQUIRE(state.get_phase(point_2) == -i);
-		}
+		return quadratic_form;
 	}
 
 	TEST_CASE("generate state vector", "[stabiliser state]")
@@ -79,7 +43,7 @@ namespace
 		{
 			Stabiliser_State state(1, 0);
 
-			state.quadratic_form = {};
+			state.quadratic_form = get_quadratic_from_from_vector(0, {});
 			state.real_linear_part = 1;
 			state.imaginary_part = 0;
 
@@ -95,7 +59,7 @@ namespace
 		{
 			Stabiliser_State state(1);
 
-			state.quadratic_form = {};
+			state.quadratic_form = get_quadratic_from_from_vector(1, {});
 			state.real_linear_part = 1;
 			state.imaginary_part = 0;
 
@@ -111,7 +75,7 @@ namespace
 		{
 			Stabiliser_State state(3, 2);
 
-			state.quadratic_form = {3}; // x_0 x_1
+			state.quadratic_form = get_quadratic_from_from_vector(2, {3}); // x_0 x_1
 			state.real_linear_part = 1; // x_0
 			state.imaginary_part = 2;	// x_1
 			state.global_phase = {0, 1};
@@ -147,7 +111,7 @@ namespace
 		
 		state.real_linear_part = 5;
 		state.imaginary_part = 1;
-		state.quadratic_form = {3};
+		state.quadratic_form = get_quadratic_from_from_vector(3, {3});
 
 		state.row_reduced = true;
 

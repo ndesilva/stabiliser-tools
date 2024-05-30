@@ -28,7 +28,7 @@ namespace fst
         void categorise_paulis();
         
         void add_z_only_stabilisers(std::set<int> &pivot_indices);
-		void add_x_stabilisers(std::set<int> &pivot_indices, std::map<std::size_t, bool> &m_quadratic_form);
+		void add_x_stabilisers(std::set<int> &pivot_indices);
         
         std::vector<std::complex<float>> get_state_vector();
 

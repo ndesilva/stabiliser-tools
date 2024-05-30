@@ -11,6 +11,28 @@ static constexpr std::complex<float> i = {0, 1};
 
 namespace
 {
+	std::unordered_map<std::size_t, bool> get_quadratic_from_from_vector(std::size_t dimension, std::vector<std::size_t> non_zero_coeffs)
+	{
+		std::unordered_map<std::size_t, bool> quadratic_form;
+		quadratic_form.reserve(dimension * (dimension + 1)/2);
+		quadratic_form[0] = 0;
+
+		for (std::size_t i = 0; i < dimension; i++)
+		{
+			for (std::size_t j = 0; j < dimension; j++)
+			{
+				quadratic_form[integral_pow_2(i) ^ integral_pow_2(j)] = 0;
+			}
+		}
+
+		for (const auto coeff : non_zero_coeffs)
+		{
+			quadratic_form[coeff] = 1;
+		}
+
+		return quadratic_form;
+	}
+
 	std::array<std::complex<float>, 8> get_three_qubit_stabiliser_statevector()
 	{
 		return {0, 0, -0.5, 0.5f * i, 0.5, 0.5f * i, 0, 0};
@@ -187,7 +209,7 @@ Stabiliser_State get_expected_five_qubit_stabiliser_state(std::complex<float> gl
 
 	state.real_linear_part = 5;
 	state.imaginary_part = 1;
-	state.quadratic_form = {6};
+	state.quadratic_form = get_quadratic_from_from_vector(3, {6});
 	state.global_phase = global_phase;
 
 	state.row_reduced = true;

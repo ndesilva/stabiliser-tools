@@ -87,23 +87,6 @@ namespace fst
 		const unsigned int dot_product = f2_dot_product(x, y);
 		return {float_not(dot_product), static_cast<float>(dot_product)};
 	}
-
-	/// Given vector_index, the column vector of an element of the vector
-	/// space (represented as an integer) with respect to the vector basis, and
-	/// Q a quadratic form with respect to the same basis (represented as a list of
-	/// coefficients, i.e. 101 corresponds to x_0 x_1), find the value of (-1)^Q(vector_index).
-	template <std::unsigned_integral T, std::size_t Extent>
-	constexpr float evaluate_quadratic_form(const T vector_index, const std::span<const T, Extent> quadratic_form) noexcept
-	{
-		unsigned int mod2_result = 0;
-
-		for (const T term : quadratic_form)
-		{
-			mod2_result ^= ((term & vector_index) == term);
-		}
-
-		return f_min1_pow(mod2_result);
-	}
 }
 
 #endif
