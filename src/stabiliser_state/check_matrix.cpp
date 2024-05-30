@@ -34,13 +34,13 @@ namespace fst
         paulis.reserve(number_qubits);
 
         std::vector<std::size_t> pivot_vectors;
-        std::unordered_set<int> pivot_indices_set;
+        std::unordered_set<std::size_t> pivot_indices_set;
 
         for(std::size_t i = 0; i < stabiliser_state.dim; i++)
         {
-            int pivot_index = integral_log_2(stabiliser_state.basis_vectors[i]);
+            std::size_t pivot_index = integral_log_2(stabiliser_state.basis_vectors[i]);
             pivot_indices_set.insert(pivot_index);
-            pivot_vectors[i] = integral_pow_2((std::size_t) pivot_index);
+            pivot_vectors[i] = integral_pow_2(pivot_index);
         }
 
         add_z_only_stabilisers(pivot_vectors, pivot_indices_set, stabiliser_state);
@@ -49,7 +49,7 @@ namespace fst
         row_reduced = true;
     }
 
-    void Check_Matrix::add_z_only_stabilisers(std::vector<std::size_t> &pivot_vectors, std::unordered_set<int> pivot_indices_set, Stabiliser_State &state)
+    void Check_Matrix::add_z_only_stabilisers(std::vector<std::size_t> &pivot_vectors, std::unordered_set<std::size_t> pivot_indices_set, Stabiliser_State &state)
     {
         for(std::size_t i = 0; i < number_qubits; i++)
         {
