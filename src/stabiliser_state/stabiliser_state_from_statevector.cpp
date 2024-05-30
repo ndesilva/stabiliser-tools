@@ -159,7 +159,7 @@ namespace
 
 				for (std::size_t j = 0; j < dimension; j++)
 				{
-					quadratic_update_exponent ^= quadratic_form.at(integral_pow_2(flipped_bit) ^ integral_pow_2(j)) * bit_set_at(vector_index, j);
+					quadratic_update_exponent ^= (quadratic_form.at(integral_pow_2(flipped_bit) ^ integral_pow_2(j)) & bit_set_at(vector_index, j));
 				}
 
 				float quadratic_phase_update = f_min1_pow(quadratic_update_exponent);

@@ -100,7 +100,7 @@ namespace fst
 
 			for (std::size_t j = 0; j < dim; j++)
 			{
-				quadratic_update_exponent ^= quadratic_form.at(integral_pow_2(flipped_bit) ^ integral_pow_2(j)) * bit_set_at(vector_index, j);
+				quadratic_update_exponent ^= (quadratic_form.at(integral_pow_2(flipped_bit) ^ integral_pow_2(j)) & bit_set_at(vector_index, j));
 			}
 
 			float quadratic_phase_update = f_min1_pow(quadratic_update_exponent);
@@ -144,7 +144,7 @@ namespace fst
 
         for (std::size_t k = 0; k < dim; k++)
         {
-            quadratic_form[integral_pow_2(k) ^ integral_pow_2(j)] ^= quadratic_form[integral_pow_2(k) ^ integral_pow_2(i)] * (1 - k == j);
+            quadratic_form[integral_pow_2(k) ^ integral_pow_2(j)] ^= (quadratic_form[integral_pow_2(k) ^ integral_pow_2(i)] & (k!=j));
         }
 
         quadratic_form[integral_pow_2(j)] ^= quadratic_form[integral_pow_2(i)];
