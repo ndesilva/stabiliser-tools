@@ -1,13 +1,13 @@
 #include <catch2/catch_test_macros.hpp>
 
+#include "test_util.h"
 #include "f2_helper.h"
 #include "platform.h"
 
 #include <array>
 
 using namespace fst;
-
-static constexpr std::complex<float> i = {0, 1};
+using namespace test;
 
 TEST_CASE("integral log 2", "[f2 helper]")
 {
@@ -58,8 +58,8 @@ TEST_CASE("float not", "[f2 helper]")
 	REQUIRE(float_not(non_standard_input) == 3);
 
 	// This should run without error
-	std::complex<float> product = i * float_not(0uz);
-	REQUIRE(product == i);
+	std::complex<float> product = I * float_not(0uz);
+	REQUIRE(product == I);
 }
 
 TEST_CASE("minus one to the power", "[f2 helper]")
@@ -82,8 +82,8 @@ TEST_CASE("minus one to the power", "[f2 helper]")
 		REQUIRE(f_min1_pow(non_standard_input) == -3);
 
 		// This should run without error
-		std::complex<float> product = i * f_min1_pow(0uz);
-		REQUIRE(product == i);
+		std::complex<float> product = I * f_min1_pow(0uz);
+		REQUIRE(product == I);
 	}
 }
 
@@ -114,5 +114,5 @@ TEST_CASE("imaginary mod 2 product", "[f2 helper]")
 	const std::size_t z = 0b101101;
 
 	REQUIRE(imag_f2_dot_product(x, y) == 1.0f);
-	REQUIRE(imag_f2_dot_product(x, z) == i);
+	REQUIRE(imag_f2_dot_product(x, z) == I);
 }
