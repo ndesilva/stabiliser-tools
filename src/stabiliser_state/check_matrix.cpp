@@ -81,7 +81,7 @@ namespace fst
             
             std::size_t z_vector = 0;
 
-            // TODO explain why this works
+            // Ensure that the z_vector has the correct inner product with all the basis vectors
             for (std::size_t j = 0; j < state.dim; j++)
             {
                 z_vector ^= pivot_vectors[j] * (state.quadratic_form.at(integral_pow_2(i) ^ integral_pow_2(j)) ^ ( (int) imag_bit & bit_set_at(state.imaginary_part, j) ));

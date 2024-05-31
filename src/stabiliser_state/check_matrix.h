@@ -11,12 +11,16 @@ namespace fst
 {
     struct Stabiliser_State;
 
-    /// TODO add documentation
+    /// The class used to represent a list of n commuting paulis, an alternative representation
+    /// of a stabiliser state
     struct Check_Matrix
     {
         std::size_t number_qubits = 0;
         
         std::vector<Pauli> paulis;
+        
+        /// Paulis are sorted into 2 types: "z_only", which have no X component, and "x_stabilisers",
+        /// which may have both an x and z component
         std::vector<Pauli *> z_only_stabilisers;
         std::vector<Pauli *> x_stabilisers;
         
@@ -25,8 +29,13 @@ namespace fst
         explicit Check_Matrix(std::vector<Pauli> paulis, bool row_reduced = false);
         explicit Check_Matrix(Stabiliser_State &stabiliser_state);
 
+        /// Return the state vector of length 2^n stabilised by each of the Paulis in the check matrix
         std::vector<std::complex<float>> get_state_vector();
         
+        /// Row reduce the check_matrix, giving a new set of paulis that generate the same stabiliser group.
+        /// The new paulis have the x_vectors of the "x_stabiliser" paulis, and z_vectors of the "z_only" stabilisers
+        /// in reduced row_echelon form. Note that the collection of all the pauli's z_vectors may NOT be in reduced row
+        /// echelon form.
         void row_reduce();
 
         private:

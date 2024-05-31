@@ -27,6 +27,9 @@ namespace fst
 
 		std::size_t real_linear_part = 0;
 		std::size_t imaginary_part = 0;
+		
+		/// The quadratic form is stored as map. It should always have quadratic_form[0] = 0
+		/// Q(e_i, e_j) is stored as quadratic_form[2^i ^ 2^j] 
 		std::unordered_map<std::size_t, bool> quadratic_form;
 		std::complex<float> global_phase = 1.0;
 
