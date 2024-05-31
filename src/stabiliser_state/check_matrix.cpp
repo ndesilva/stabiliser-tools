@@ -63,11 +63,11 @@ namespace fst
                     alpha |= bit_set_at(state.basis_vectors[j], i) * pivot_vectors[j];
                 }
 
-            bool sign_bit = f2_dot_product(alpha, state.shift);
-            
-            Pauli pauli(number_qubits, 0, alpha, sign_bit, 0);
-            paulis.push_back(pauli);
-            z_only_stabilisers.push_back(&pauli);
+                bool sign_bit = f2_dot_product(alpha, state.shift);
+                
+                Pauli pauli(number_qubits, 0, alpha, sign_bit, 0);
+                paulis.push_back(pauli);
+                z_only_stabilisers.push_back(&paulis.back());
             }
 
         }
@@ -91,7 +91,7 @@ namespace fst
 
             Pauli pauli(number_qubits, state.basis_vectors[i], z_vector, sign_bit, imag_bit);
             paulis.push_back(pauli);
-            x_stabilisers.push_back(&pauli);
+            x_stabilisers.push_back(&paulis.back());
         }
     }
 

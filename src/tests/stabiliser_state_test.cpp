@@ -37,7 +37,7 @@ namespace
 		return quadratic_form;
 	}
 
-	Check_Matrix get_check_matrix()
+	Check_Matrix get_unreduced_check_matrix()
 	{
 		std::vector<Pauli> paulis;
 
@@ -67,7 +67,7 @@ namespace
 
 	TEST_CASE("stabiliser state from check matrix", "[stabiliser state]")
 	{
-		Check_Matrix check_matrix = get_check_matrix();
+		Check_Matrix check_matrix = get_unreduced_check_matrix();
         Stabiliser_State expected_stabiliser_state = get_stabiliser_state();
 
         Stabiliser_State stabiliser_state(check_matrix);
