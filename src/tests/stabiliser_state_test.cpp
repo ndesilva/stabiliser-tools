@@ -4,39 +4,16 @@
 #include "stabiliser_state.h"
 #include "check_matrix.h"
 #include "f2_helper.h"
+#include "test_util.h"
 
 #include <array>
 
 using namespace Catch::Matchers;
 using namespace fst;
-
-static constexpr std::complex<float> i = {0, 1};
+using namespace test;
 
 namespace
 {
-	// TODO extract to test util file
-	std::unordered_map<std::size_t, bool> get_quadratic_from_from_vector(std::size_t dimension, std::vector<std::size_t> non_zero_coeffs)
-	{
-		std::unordered_map<std::size_t, bool> quadratic_form;
-		quadratic_form.reserve(dimension * (dimension + 1)/2);
-		quadratic_form[0] = 0;
-
-		for (std::size_t j = 0; j < dimension; j++)
-		{
-			for (std::size_t k = 0; k < dimension; k++)
-			{
-				quadratic_form[integral_pow_2(j) ^ integral_pow_2(k)] = 0;
-			}
-		}
-
-		for (const auto coeff : non_zero_coeffs)
-		{
-			quadratic_form[coeff] = 1;
-		}
-
-		return quadratic_form;
-	}
-
 	Check_Matrix get_unreduced_check_matrix()
 	{
 		std::vector<Pauli> paulis;
@@ -50,29 +27,17 @@ namespace
 		return Check_Matrix(paulis);
 	}
 
-	Stabiliser_State get_stabiliser_state()
-	{
-		Stabiliser_State state(5, 3);
-		state.basis_vectors = {3, 5, 16};
-		state.shift = 0;
-		
-		state.real_linear_part = 5;
-		state.imaginary_part = 1;
-		state.quadratic_form = get_quadratic_from_from_vector(3, {3});
-
-		state.row_reduced = true;
-
-		return state;
-	}
-
 	TEST_CASE("stabiliser state from check matrix", "[stabiliser state]")
 	{
 		Check_Matrix check_matrix = get_unreduced_check_matrix();
-        Stabiliser_State expected_stabiliser_state = get_stabiliser_state();
-
         Stabiliser_State stabiliser_state(check_matrix);
 
-        REQUIRE(stabiliser_state == expected_stabiliser_state);
+		std::vector<std::complex<float>> statevector = stabiliser_state.get_state_vector();
+
+		for (const auto pauli : check_matrix.paulis)
+        {
+            REQUIRE_THAT(matrix_vector_mult(pauli.get_matrix(), statevector), RangeEquals(statevector));
+        }
 	}
 
 	TEST_CASE("generate state vector", "[stabiliser state]")
@@ -88,7 +53,7 @@ namespace
 			state.basis_vectors = {0};
 			state.shift = 1;
 
-			const std::array<std::complex<float>, 2> expected_vector{0, 1};
+			const std::array<std::complex<float>, 2> expected_vector {0, 1};
 
 			REQUIRE_THAT(state.get_state_vector(), RangeEquals(expected_vector));
 		}
@@ -122,7 +87,7 @@ namespace
 
 			state.shift = 0b100;
 
-			std::array<std::complex<float>, 8> expected_vector{0, 0, -0.5f * i, -.5, 0.5f * i, -.5, 0, 0};
+			std::array<std::complex<float>, 8> expected_vector{0, 0, -0.5f * I, -.5, 0.5f * I, -.5, 0, 0};
 
 			REQUIRE_THAT(state.get_state_vector(), RangeEquals(expected_vector));
 		}
@@ -138,13 +103,12 @@ namespace
 		state.basis_vectors = {0b01101, 0b10110, 0b11010};
 		state.shift = 0b00010;
 
-		std::vector<std::size_t> row_reduced_basis {0b01100, 0b10110, 0b00001};
-		std::vector<std::complex<float>> statevector = state.get_state_vector();
+		std::vector<std::complex<float>> old_statevector = state.get_state_vector();
 
 		state.row_reduce_basis();
 
 		REQUIRE(state.row_reduced);
-		REQUIRE_THAT(state.basis_vectors, RangeEquals(row_reduced_basis));
-		REQUIRE_THAT(statevector, RangeEquals(state.get_state_vector()));
+		REQUIRE(vectors_row_reduced(state.basis_vectors));
+		REQUIRE_THAT(old_statevector, RangeEquals(state.get_state_vector()));
 	}
 }

@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_all.hpp>
 
 #include <vector>
 #include <array>
@@ -7,6 +8,7 @@
 #include "f2_helper.h"
 #include "test_util.h"
 
+using namespace Catch::Matchers;
 using namespace fst;
 using namespace test;
 
@@ -179,22 +181,6 @@ namespace
 		stabiliser_from_statevector(statevector, true);
 	}
 
-	Stabiliser_State get_expected_five_qubit_stabiliser_state(std::complex<float> global_phase)
-	{
-		Stabiliser_State state(5, 3);
-
-		state.basis_vectors = {6,9,16};
-		state.shift = 1;
-
-		state.real_linear_part = 5;
-		state.imaginary_part = 1;
-		state.quadratic_form = get_quadratic_from_from_vector(3, {6});
-		state.global_phase = global_phase;
-
-		state.row_reduced = true;
-		return state;
-	}
-
 	TEST_CASE("get stabiliser state", "[statevector -> stabiilser state]")
 	{
 		SECTION("stabiliser input, dimension 5")
@@ -202,17 +188,9 @@ namespace
 			const std::complex<float> global_phase(1 / std::sqrt(2.0f), 1 / std::sqrt(2.0f));
 			const std::array statevector = get_five_qubit_stabiliser_statevector_with_phase(global_phase);
 
-			const Stabiliser_State expected_state = get_expected_five_qubit_stabiliser_state(global_phase);
-
 			Stabiliser_State state = stabiliser_from_statevector(statevector);
 
-			// allow for some tolerance
-			if (std::abs(state.global_phase - global_phase) <= 0.01)
-			{
-				state.global_phase = global_phase;
-			}
-
-			REQUIRE(expected_state == state);
+			REQUIRE_THAT(state.get_state_vector(), RangeEquals(statevector));
 		}
 
 		SECTION("non-stabiliser input")
