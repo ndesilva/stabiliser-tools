@@ -63,7 +63,6 @@ namespace
 			return {};
 		}
 
-		// TODO can we construct the vector spaces to be sorted to start with?
 		std::ranges::sort(vector_space_indices);
 
 		std::vector<std::size_t> basis_vectors;
