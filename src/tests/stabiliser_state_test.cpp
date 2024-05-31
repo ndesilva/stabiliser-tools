@@ -2,123 +2,113 @@
 #include <catch2/matchers/catch_matchers_all.hpp>
 
 #include "stabiliser_state.h"
+#include "check_matrix.h"
+#include "f2_helper.h"
+#include "test_util.h"
 
 #include <array>
 
 using namespace Catch::Matchers;
 using namespace fst;
+using namespace test;
 
-static constexpr std::complex<float> i = {0, 1};
-
-TEST_CASE("evaluate basis expansion", "[stabiliser state]")
+namespace
 {
-	SECTION("dimension 3")
+	Check_Matrix get_unreduced_check_matrix()
 	{
-		Stabiliser_State state(3, 3);
+		std::vector<Pauli> paulis;
 
-		state.basis_vectors = {0b001, 0b010, 0b100};
+		paulis.push_back(Pauli(5, 0b00011, 0b00001, 0, 1));
+		paulis.push_back(Pauli(5, 0b00101, 0b00010, 0, 0));
+		paulis.push_back(Pauli(5, 0b00110, 0b00100, 1, 1));
+		paulis.push_back(Pauli(5, 0b10000, 0b01000, 1, 0));
+		paulis.push_back(Pauli(5, 0b10110, 0b00100, 0, 1));
 
-		const std::size_t vector_index = 0b101;
-		const std::size_t expected_vector = 0b101;
-
-		REQUIRE(state.evaluate_basis_expansion(vector_index) == expected_vector);
+		return Check_Matrix(paulis);
 	}
 
-	SECTION("dimension 4")
+	TEST_CASE("stabiliser state from check matrix", "[stabiliser state]")
 	{
-		Stabiliser_State state(5, 4);
+		Check_Matrix check_matrix = get_unreduced_check_matrix();
+        Stabiliser_State stabiliser_state(check_matrix);
 
-		state.basis_vectors = {0b10001, 0b01100, 0b00001, 0b11010};
+		std::vector<std::complex<float>> statevector = stabiliser_state.get_state_vector();
 
-		const std::size_t vector_index = 0b1011;
-		const std::size_t expected_vector = 0b00111;
-
-		REQUIRE(state.evaluate_basis_expansion(vector_index) == expected_vector);
-	}
-}
-
-TEST_CASE("get phase", "[stabiliser state]")
-{
-	SECTION("dimension 3")
-	{
-		Stabiliser_State state(3);
-
-		state.quadratic_form = {3}; // x_0 x_1
-		state.real_linear_part = 1; // x_0
-		state.imaginary_part = 2;	// x_1
-
-		const std::size_t point_1 = 0b011;
-		const std::size_t point_2 = 0b101;
-
-		REQUIRE(state.get_phase(point_1) == i);
-		REQUIRE(state.get_phase(point_2) == -1.0f);
+		for (const auto pauli : check_matrix.paulis)
+        {
+            REQUIRE_THAT(matrix_vector_mult(pauli.get_matrix(), statevector), RangeEquals(statevector));
+        }
 	}
 
-	SECTION("dimension 4")
+	TEST_CASE("generate state vector", "[stabiliser state]")
 	{
-		Stabiliser_State state(3);
+		SECTION("dimension 0, 1 qubit")
+		{
+			Stabiliser_State state(1, 0);
 
-		state.quadratic_form = {3, 12}; // x_0 x_1 + x_2 x_3
-		state.real_linear_part = 1;		// x_0
-		state.imaginary_part = 7;		// x_0 + x_1 + x_2
+			state.quadratic_form = get_quadratic_from_from_vector(0, {});
+			state.real_linear_part = 1;
+			state.imaginary_part = 0;
 
-		const std::size_t point_1 = 0b0011;
-		const std::size_t point_2 = 0b0001;
+			state.basis_vectors = {0};
+			state.shift = 1;
 
-		REQUIRE(state.get_phase(point_1) == 1.0f);
-		REQUIRE(state.get_phase(point_2) == -i);
+			const std::array<std::complex<float>, 2> expected_vector {0, 1};
+
+			REQUIRE_THAT(state.get_state_vector(), RangeEquals(expected_vector));
+		}
+
+		SECTION("dimension 1, 1 qubit")
+		{
+			Stabiliser_State state(1);
+
+			state.quadratic_form = get_quadratic_from_from_vector(1, {});
+			state.real_linear_part = 1;
+			state.imaginary_part = 0;
+
+			state.basis_vectors = {1};
+			state.shift = 1;
+
+			std::array<std::complex<float>, 2> expected_vector{-1 / std::sqrt(2.0f), 1 / std::sqrt(2.0f)};
+
+			REQUIRE_THAT(state.get_state_vector(), RangeEquals(expected_vector));
+		}
+
+		SECTION("dimension 2, 3 qubits")
+		{
+			Stabiliser_State state(3, 2);
+
+			state.quadratic_form = get_quadratic_from_from_vector(2, {3}); // x_0 x_1
+			state.real_linear_part = 1; // x_0
+			state.imaginary_part = 2;	// x_1
+			state.global_phase = {0, 1};
+
+			state.basis_vectors = {0b110, 0b001};
+
+			state.shift = 0b100;
+
+			std::array<std::complex<float>, 8> expected_vector{0, 0, -0.5f * I, -.5, 0.5f * I, -.5, 0, 0};
+
+			REQUIRE_THAT(state.get_state_vector(), RangeEquals(expected_vector));
+		}
 	}
-}
 
-TEST_CASE("generate state vector", "[stabiliser state]")
-{
-	SECTION("dimension 0, 1 qubit")
+	TEST_CASE("row reduce", "[stabiliser state]")
 	{
-		Stabiliser_State state(1, 0);
-
-		state.quadratic_form = {};
+		Stabiliser_State state(5, 3);
+		
+		state.quadratic_form = get_quadratic_from_from_vector(3, {3});
 		state.real_linear_part = 1;
-		state.imaginary_part = 0;
+		state.imaginary_part = 1;
+		state.basis_vectors = {0b01101, 0b10110, 0b11010};
+		state.shift = 0b00010;
 
-		state.basis_vectors = {0};
-		state.shift = 1;
+		std::vector<std::complex<float>> old_statevector = state.get_state_vector();
 
-		const std::array<std::complex<float>, 2> expected_vector{0, 1};
+		state.row_reduce_basis();
 
-		REQUIRE_THAT(state.get_state_vector(), RangeEquals(expected_vector));
-	}
-
-	SECTION("dimension 1, 1 qubit")
-	{
-		Stabiliser_State state(1);
-
-		state.quadratic_form = {};
-		state.real_linear_part = 1;
-		state.imaginary_part = 0;
-
-		state.basis_vectors = {1};
-		state.shift = 1;
-
-		std::array<std::complex<float>, 2> expected_vector{-1 / std::sqrt(2.0f), 1 / std::sqrt(2.0f)};
-
-		REQUIRE_THAT(state.get_state_vector(), RangeEquals(expected_vector));
-	}
-
-	SECTION("dimension 2, 3 qubits")
-	{
-		Stabiliser_State state(3, 2);
-
-		state.quadratic_form = {3}; // x_0 x_1
-		state.real_linear_part = 1; // x_0
-		state.imaginary_part = 2;	// x_1
-		state.global_phase = {0, 1};
-
-		state.basis_vectors = {0b110, 0b001};
-
-		state.shift = 0b100;
-
-		std::array<std::complex<float>, 8> expected_vector{0, 0, -0.5f * i, -.5, 0.5f * i, -.5, 0, 0};
-
-		REQUIRE_THAT(state.get_state_vector(), RangeEquals(expected_vector));
+		REQUIRE(state.row_reduced);
+		REQUIRE(vectors_row_reduced(state.basis_vectors));
+		REQUIRE_THAT(old_statevector, RangeEquals(state.get_state_vector()));
 	}
 }

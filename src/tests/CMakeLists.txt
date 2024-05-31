@@ -6,6 +6,7 @@ set( SOURCE_FILES
   stabiliser_state_from_statevector_test.cpp
   pauli_test.cpp
   check_matrix_test.cpp
+  test_util.cpp
 )
 
 add_executable( tests ${SOURCE_FILES} )

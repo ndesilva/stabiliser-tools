@@ -63,6 +63,7 @@ namespace
 			return {};
 		}
 
+		// TODO can we construct the vector spaces to be sorted to start with?
 		std::ranges::sort(vector_space_indices);
 
 		std::vector<std::size_t> basis_vectors;
@@ -99,8 +100,10 @@ namespace
 			}
 		}
 
-		std::vector<std::size_t> quadratic_form;
-		quadratic_form.reserve(dimension * dimension);
+		std::unordered_map<std::size_t, bool> quadratic_form;
+		quadratic_form.reserve(dimension * (dimension + 1)/2 + 1);
+
+		quadratic_form[0] = 0;
 
 		for (std::size_t j = 0; j < dimension; j++)
 		{
@@ -118,9 +121,13 @@ namespace
 
 				if (std::norm(quadratic_form_eval - float(-1)) < 0.125)
 				{
-					quadratic_form.push_back(vector_index);
+					quadratic_form[vector_index] = 1;
 				}
-				else if (std::norm(quadratic_form_eval - float(1)) >= 0.125)
+				else if(std::norm(quadratic_form_eval - float(1)) < 0.125)
+				{
+					quadratic_form[vector_index] = 0;
+				}
+				else
 				{
 					return {};
 				}
@@ -129,30 +136,43 @@ namespace
 
 		if constexpr (!assume_valid)
 		{
-			const std::span<const std::size_t> quadratic_form_span(quadratic_form);
-			std::size_t old_vector_index = 0;
+			// TODO this duplicates alot of code from the get_state_vector() method of stabiliser_state. Fix
+			std::size_t vector_index = 0;
+			bool imag_exponent = 0;
 			std::size_t total_index = shift;
+			std::complex<float> phase = global_phase / float(std::sqrt(support_size));
 
-			for (std::size_t i = 1; i < support_size; i++)
+			for (std::size_t iterate = 1; iterate < support_size; iterate++)
 			{
-				// iterate through the gray code
-				const std::size_t new_vector_index = i ^ (i >> 1);
+				// Iterate through the Gray code
+				std::size_t new_vector_index = iterate ^ (iterate >> 1);
+				std::size_t flipped_bit = integral_log_2(vector_index ^ new_vector_index);
 
-				const std::size_t flipped_bit = integral_log_2(new_vector_index ^ old_vector_index);
 				total_index ^= basis_vectors[flipped_bit];
+				float real_linear_phase_update = f_min1_pow(bit_set_at(real_linear_part, flipped_bit));
 
-				const std::complex<float> actual_phase = statevector[total_index];
-				const float real_linear_eval = sign_f2_dot_product(new_vector_index, real_linear_part);
-				const std::complex<float> imag_linear_eval = imag_f2_dot_product(new_vector_index, imaginary_part);
-				const std::complex<float> quadratic_eval = evaluate_quadratic_form(new_vector_index, quadratic_form_span);
-				const std::complex<float> phase_eval = real_linear_eval * imag_linear_eval * quadratic_eval;
+				bool new_imag_exponent = bit_set_at(imaginary_part, flipped_bit) ^ imag_exponent;
+				// multiply by i if going from 1 to i, multiply by -i if going from i to 1
+				std::complex<float> imaginary_phase_update {(float) 1-(imag_exponent^new_imag_exponent), (float) (imag_exponent^new_imag_exponent)*(1-2*imag_exponent)};
 
-				if (std::norm(phase_eval * first_entry - actual_phase) >= 0.001)
+				bool quadratic_update_exponent = 0;
+
+				for (std::size_t j = 0; j < dimension; j++)
+				{
+					quadratic_update_exponent ^= (quadratic_form.at(integral_pow_2(flipped_bit) ^ integral_pow_2(j)) & bit_set_at(vector_index, j));
+				}
+
+				float quadratic_phase_update = f_min1_pow(quadratic_update_exponent);
+
+				phase *= real_linear_phase_update * imaginary_phase_update * quadratic_phase_update;
+
+				if (std::norm(phase - statevector[total_index]) >= 0.001)
 				{
 					return {};
 				}
 
-				old_vector_index = new_vector_index;
+				vector_index = new_vector_index;
+				imag_exponent = new_imag_exponent;
 			}
 		}
 
@@ -163,7 +183,7 @@ namespace
 			state.basis_vectors = std::move(basis_vectors);
 			state.real_linear_part = real_linear_part;
 			state.imaginary_part = imaginary_part;
-			state.quadratic_form = quadratic_form;
+			state.quadratic_form = std::move(quadratic_form);
 			state.global_phase = global_phase;
 			state.row_reduced = true;
 			return state;

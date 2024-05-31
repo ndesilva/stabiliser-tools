@@ -1,10 +1,11 @@
 #include "check_matrix.h"
+#include "stabiliser_state.h"
 #include "f2_helper.h"
 
 namespace fst
 {
-    Check_Matrix::Check_Matrix(std::vector<Pauli> paulis)
-        : paulis(paulis)
+    Check_Matrix::Check_Matrix(std::vector<Pauli> paulis, bool row_reduced)
+        : paulis(paulis), row_reduced(row_reduced)
     {
         number_qubits = paulis.size();
         categorise_paulis();
@@ -14,7 +15,7 @@ namespace fst
     {
         for (auto &pauli : paulis)
         {
-            if (integral_log_2(pauli.x_vector) == -1)
+            if (pauli.x_vector == 0)
             {
                 z_only_stabilisers.push_back(&pauli);
             }
@@ -24,89 +25,79 @@ namespace fst
         }
     }
 
-    Stabiliser_State Check_Matrix::get_stabiliser_state()
+    Check_Matrix::Check_Matrix(Stabiliser_State &stabiliser_state)
     {
-        row_reduce();
-        
-        std::size_t dim = x_stabilisers.size();
+        number_qubits = stabiliser_state.number_qubits;
 
-        Stabiliser_State state(number_qubits, dim);
+        stabiliser_state.row_reduce_basis();
 
-        set_support(state);
-        set_linear_and_quadratic_forms(state);
-        state.row_reduced = true;
+        paulis.reserve(number_qubits);
 
-        return state;
+        std::vector<std::size_t> pivot_vectors;
+        std::unordered_set<std::size_t> pivot_indices_set;
+
+        for(const auto basis_vector : stabiliser_state.basis_vectors)
+        {
+            std::size_t pivot_index = integral_log_2(basis_vector);
+            pivot_indices_set.insert(pivot_index);
+            pivot_vectors.push_back(integral_pow_2(pivot_index));
+        }
+
+        add_z_only_stabilisers(pivot_vectors, pivot_indices_set, stabiliser_state);
+        add_x_stabilisers(pivot_vectors, stabiliser_state);
+
+        row_reduced = true;
+    }
+
+    void Check_Matrix::add_z_only_stabilisers(const std::vector<std::size_t> &pivot_vectors, const std::unordered_set<std::size_t> &pivot_indices_set, const Stabiliser_State &state)
+    {
+        for(std::size_t i = 0; i < number_qubits; i++)
+        {
+            if (!pivot_indices_set.contains(i))
+            {
+                std::size_t alpha = integral_pow_2(i);
+
+                // Make alpha perpendicular to the basis vectors
+                for (std::size_t j = 0; j < state.dim; j++)
+                {
+                    alpha |= bit_set_at(state.basis_vectors[j], i) * pivot_vectors[j];
+                }
+
+                bool sign_bit = f2_dot_product(alpha, state.shift);
+                
+                Pauli pauli(number_qubits, 0, alpha, sign_bit, 0);
+                paulis.push_back(pauli);
+                z_only_stabilisers.push_back(&paulis.back());
+            }
+
+        }
+    }
+
+    void Check_Matrix::add_x_stabilisers(const std::vector<std::size_t> &pivot_vectors, const Stabiliser_State &state)
+    {
+        for (std::size_t i = 0; i < state.dim; i++)
+        {
+            bool imag_bit = bit_set_at(state.imaginary_part, i);
+            
+            std::size_t z_vector = 0;
+
+            // TODO explain why this works
+            for (std::size_t j = 0; j < state.dim; j++)
+            {
+                z_vector ^= pivot_vectors[j] * (state.quadratic_form.at(integral_pow_2(i) ^ integral_pow_2(j)) ^ ( (int) imag_bit & bit_set_at(state.imaginary_part, j) ));
+            }
+
+            bool sign_bit = bit_set_at(state.real_linear_part, i) ^ imag_bit ^ f2_dot_product(z_vector, state.shift);
+
+            Pauli pauli(number_qubits, state.basis_vectors[i], z_vector, sign_bit, imag_bit);
+            paulis.push_back(pauli);
+            x_stabilisers.push_back(&paulis.back());
+        }
     }
 
     std::vector<std::complex<float>> Check_Matrix::get_state_vector()
     {
-        return get_stabiliser_state().get_state_vector();
-    }
-
-    void Check_Matrix::set_support(Stabiliser_State &state) const
-    {
-        set_basis_vectors(state);
-        set_shift(state);
-    }
-
-    void Check_Matrix::set_linear_and_quadratic_forms(Stabiliser_State &state) const
-    {
-        std::size_t imaginary_part = 0;
-        std::size_t real_linear_part = 0;
-        std::vector<std::size_t> quadratic_form;
-
-        for (std::size_t j = 0; j < state.dim; j++)
-        {
-            std::size_t v_j = state.basis_vectors[j];
-            Pauli *p_j = x_stabilisers[j];
-            std::size_t beta_j = (*p_j).z_vector;
-            std::size_t imag_bit = (*p_j).imag_bit;
-
-            imaginary_part |= integral_pow_2(j) * imag_bit;
-            real_linear_part |= integral_pow_2(j) * ((*p_j).sign_bit ^ f2_dot_product(beta_j, v_j ^ state.shift));
-
-            for (std::size_t i = 0; i < j; i++)
-            {
-                std::size_t v_i = state.basis_vectors[i];
-                std::size_t other_imag_bit = (*x_stabilisers[i]).imag_bit; // TODO we are accessing the imag_bits alot, optimise?
-
-                if (f2_dot_product(beta_j, v_i) ^ imag_bit*other_imag_bit)
-                {
-                    quadratic_form.push_back(integral_pow_2(i) | integral_pow_2(j));
-                }
-            }
-        }
-
-        state.imaginary_part = imaginary_part;
-        state.real_linear_part = real_linear_part;
-        state.quadratic_form = quadratic_form;
-    }
-
-    void Check_Matrix::set_basis_vectors(fst::Stabiliser_State &state) const
-    {
-        std::vector<std::size_t> basis_vectors;
-        basis_vectors.reserve(state.dim);
-
-        for (const auto &pauli : x_stabilisers)
-        {
-            basis_vectors.push_back((*pauli).x_vector);
-        }
-
-        state.basis_vectors = std::move(basis_vectors);
-    }
-
-    void Check_Matrix::set_shift(fst::Stabiliser_State &state) const
-    {
-        std::size_t shift = 0;
-
-        for (const auto &pauli : z_only_stabilisers)
-        {
-            std::size_t pivot_index = integral_log_2((*pauli).z_vector);
-            shift |= (integral_pow_2(pivot_index) * (*pauli).sign_bit);
-        }
-
-        state.shift = shift;
+        return Stabiliser_State(*this).get_state_vector();
     }
 
     void Check_Matrix::row_reduce()
@@ -155,12 +146,12 @@ namespace fst
             std::size_t pivot_index = integral_log_2((*pauli).z_vector);
 
             for (auto &other_pauli : z_only_stabilisers)
+            {
+                if (other_pauli != pauli && bit_set_at((*other_pauli).z_vector, pivot_index))
                 {
-                    if (other_pauli != pauli && bit_set_at((*other_pauli).z_vector, pivot_index))
-                    {
-                        (*other_pauli).multiply_by_pauli_on_right(*pauli);
-                    }
+                    (*other_pauli).multiply_by_pauli_on_right(*pauli);
                 }
+            }
         }
     }
 }
