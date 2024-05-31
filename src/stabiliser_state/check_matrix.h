@@ -33,8 +33,8 @@ namespace fst
         
         void categorise_paulis();
         
-        void add_z_only_stabilisers(std::vector<std::size_t> &pivot_vectors, std::unordered_set<std::size_t> pivot_indices_set, Stabiliser_State &state);
-		void add_x_stabilisers(std::vector<std::size_t> &pivot_vectors, Stabiliser_State &state);  
+        void add_z_only_stabilisers(const std::vector<std::size_t> &pivot_vectors, const std::unordered_set<std::size_t> &pivot_indices_set, const Stabiliser_State &state);
+		void add_x_stabilisers(const std::vector<std::size_t> &pivot_vectors, const Stabiliser_State &state);  
 
         void row_reduce_x_stabilisers();
         void row_reduce_z_only_stabilisers();

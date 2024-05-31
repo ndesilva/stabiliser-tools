@@ -36,11 +36,11 @@ namespace fst
         std::vector<std::size_t> pivot_vectors;
         std::unordered_set<std::size_t> pivot_indices_set;
 
-        for(std::size_t i = 0; i < stabiliser_state.dim; i++)
+        for(const auto basis_vector : stabiliser_state.basis_vectors)
         {
-            std::size_t pivot_index = integral_log_2(stabiliser_state.basis_vectors[i]);
+            std::size_t pivot_index = integral_log_2(basis_vector);
             pivot_indices_set.insert(pivot_index);
-            pivot_vectors[i] = integral_pow_2(pivot_index);
+            pivot_vectors.push_back(integral_pow_2(pivot_index));
         }
 
         add_z_only_stabilisers(pivot_vectors, pivot_indices_set, stabiliser_state);
@@ -49,7 +49,7 @@ namespace fst
         row_reduced = true;
     }
 
-    void Check_Matrix::add_z_only_stabilisers(std::vector<std::size_t> &pivot_vectors, std::unordered_set<std::size_t> pivot_indices_set, Stabiliser_State &state)
+    void Check_Matrix::add_z_only_stabilisers(const std::vector<std::size_t> &pivot_vectors, const std::unordered_set<std::size_t> &pivot_indices_set, const Stabiliser_State &state)
     {
         for(std::size_t i = 0; i < number_qubits; i++)
         {
@@ -73,7 +73,7 @@ namespace fst
         }
     }
 
-    void Check_Matrix::add_x_stabilisers(std::vector<std::size_t> &pivot_vectors, Stabiliser_State &state)
+    void Check_Matrix::add_x_stabilisers(const std::vector<std::size_t> &pivot_vectors, const Stabiliser_State &state)
     {
         for (std::size_t i = 0; i < state.dim; i++)
         {
@@ -84,7 +84,7 @@ namespace fst
             // TODO explain why this works
             for (std::size_t j = 0; j < state.dim; j++)
             {
-                z_vector ^= pivot_vectors[j] * (state.quadratic_form[integral_pow_2(i) ^ integral_pow_2(j)] ^ (imag_bit * bit_set_at(state.imaginary_part, j) ));
+                z_vector ^= pivot_vectors[j] * (state.quadratic_form.at(integral_pow_2(i) ^ integral_pow_2(j)) ^ ( (int) imag_bit & bit_set_at(state.imaginary_part, j) ));
             }
 
             bool sign_bit = bit_set_at(state.real_linear_part, i) ^ imag_bit ^ f2_dot_product(z_vector, state.shift);
