@@ -45,6 +45,11 @@ namespace fst
 
     std::vector<std::complex<float>> Pauli::multiply_vector(const std::vector<std::complex<float>> &vector) const
     {
+        if (integral_pow_2(number_qubits) != vector.size())
+        {
+            throw std::invalid_argument("Invalid vector dimension");
+        }
+        
         const size_t size = vector.size();
         std::vector<std::complex<float>> result(size, 0);
 
@@ -58,6 +63,11 @@ namespace fst
 
     void Pauli::multiply_by_pauli_on_right(const Pauli &other_pauli)
     {
+        if (number_qubits != other_pauli.number_qubits)
+        {
+            throw std::invalid_argument("Paulis act on a different number of qubits");
+        }
+        
         std::size_t sign_bit_update = f2_dot_product(z_vector, other_pauli.x_vector) ^ (imag_bit & other_pauli.imag_bit) ^ other_pauli.sign_bit;
         imag_bit ^= other_pauli.imag_bit;
         sign_bit ^= sign_bit_update;
@@ -69,6 +79,11 @@ namespace fst
 
     bool Pauli::has_eigenstate(const std::vector<std::complex<float>> &vector, const unsigned int eig_sign) const
     {
+        if (integral_pow_2(number_qubits) != vector.size())
+        {
+            throw std::invalid_argument("Invalid vector dimension");
+        }
+        
         const std::size_t size = integral_pow_2(number_qubits);
         const std::complex<float> vector_phase = f_min1_pow(eig_sign) * phase;
 

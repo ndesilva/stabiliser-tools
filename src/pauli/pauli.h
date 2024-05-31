@@ -4,9 +4,6 @@
 #include <complex>
 #include <vector>
 
-// TODO: add verification for pauli/pauli and pauli/vector multiplication where
-// dimensions don't match
-
 namespace fst
 {
     /// The class used to represent a Pauli operator.

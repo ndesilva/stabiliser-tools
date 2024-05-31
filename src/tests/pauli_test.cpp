@@ -101,6 +101,19 @@ namespace
             REQUIRE_FALSE(pauli.has_eigenstate(vector, 1));
             REQUIRE_FALSE(pauli.has_eigenstate(vector, 0));
         }
+
+        SECTION("invalid vector size")
+        {
+            Pauli pauli(5, 0b10000, 0b11111, 1, 1);
+
+            std::vector<std::complex<float>> length_31_vector (31, 0);
+            std::vector<std::complex<float>> length_33_vector (33, 0);
+
+            REQUIRE_THROWS_AS(pauli.has_eigenstate(length_31_vector, 0), std::invalid_argument);
+            REQUIRE_THROWS_AS(pauli.has_eigenstate(length_31_vector, 1), std::invalid_argument);
+            REQUIRE_THROWS_AS(pauli.has_eigenstate(length_33_vector, 0), std::invalid_argument);
+            REQUIRE_THROWS_AS(pauli.has_eigenstate(length_33_vector, 1), std::invalid_argument);
+        }
     }
 
     TEST_CASE("multiply_by_pauli_on_right", "[pauli]")
@@ -139,6 +152,16 @@ namespace
             pauli.multiply_by_pauli_on_right(other_pauli);
 
             REQUIRE(pauli == expected_pauli);
+        }
+
+        SECTION("incompatible sizes")
+        {
+            Pauli five_qubit_pauli(5, 0b00110, 0b00100, 1, 1);
+            Pauli four_qubit_pauli(4, 0, 0, 0, 0);
+            Pauli six_qubit_pauli(6, 0, 0, 0, 0);
+
+            REQUIRE_THROWS_AS(five_qubit_pauli.multiply_by_pauli_on_right(four_qubit_pauli), std::invalid_argument);
+            REQUIRE_THROWS_AS(five_qubit_pauli.multiply_by_pauli_on_right(six_qubit_pauli), std::invalid_argument);
         }
     }
 
@@ -230,6 +253,17 @@ namespace
             auto product = pauli.multiply_vector(vector);
 
             REQUIRE_THAT(product, RangeEquals(expected_product));
+        }
+
+        SECTION("invlaid vector size")
+        {
+            Pauli pauli(5, 0b10000, 0b11111, 1, 1);
+
+            std::vector<std::complex<float>> length_31_vector (31, 0);
+            std::vector<std::complex<float>> length_33_vector (33, 0);
+
+            REQUIRE_THROWS_AS(pauli.multiply_vector(length_31_vector), std::invalid_argument);
+            REQUIRE_THROWS_AS(pauli.multiply_vector(length_33_vector), std::invalid_argument);
         }
     }
 }
