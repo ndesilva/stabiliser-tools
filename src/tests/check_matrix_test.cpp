@@ -10,6 +10,7 @@
 
 using namespace Catch::Matchers;
 using namespace fst;
+using namespace test;
 
 namespace
 {
@@ -82,7 +83,7 @@ namespace
         Check_Matrix check_matrix(paulis);
 
         REQUIRE_FALSE(check_matrix.row_reduced);
-        REQUIRE(paulis_sorted_correctly);
+        REQUIRE(paulis_sorted_correctly(check_matrix));
         REQUIRE_THAT(check_matrix.paulis, RangeEquals(paulis));
     }
 
