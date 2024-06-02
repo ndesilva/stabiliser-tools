@@ -1,6 +1,6 @@
 #include "stabiliser_state_from_statevector.h"
 
-#include "f2_helper.h"
+#include "util/f2_helper.h"
 
 #include <algorithm>
 #include <optional>

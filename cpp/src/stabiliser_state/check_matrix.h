@@ -1,7 +1,7 @@
 #ifndef _FAST_STABILISER_CHECK_MATRIX_H
 #define _FAST_STABILISER_CHECK_MATRIX_H
 
-#include "pauli.h"
+#include "pauli/pauli.h"
 
 #include <vector>
 #include <complex>

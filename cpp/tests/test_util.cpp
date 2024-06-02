@@ -1,5 +1,5 @@
 #include "test_util.h"
-#include "f2_helper.h"
+#include "util/f2_helper.h"
 
 using namespace fst;
 

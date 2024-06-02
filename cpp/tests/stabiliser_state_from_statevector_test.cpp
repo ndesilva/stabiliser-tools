@@ -4,8 +4,8 @@
 #include <vector>
 #include <array>
 
-#include "stabiliser_state_from_statevector.h"
-#include "f2_helper.h"
+#include "stabiliser_state/stabiliser_state_from_statevector.h"
+#include "util/f2_helper.h"
 #include "test_util.h"
 
 using namespace Catch::Matchers;

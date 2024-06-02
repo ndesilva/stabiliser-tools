@@ -25,4 +25,4 @@ endif()
 find_package( Catch2 3 REQUIRED )
 
 include( CTest )
-add_subdirectory( "src" )
+add_subdirectory( "cpp" )

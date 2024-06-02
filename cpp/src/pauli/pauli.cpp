@@ -1,5 +1,5 @@
 #include "pauli.h"
-#include "f2_helper.h"
+#include "util/f2_helper.h"
 
 namespace fst
 {

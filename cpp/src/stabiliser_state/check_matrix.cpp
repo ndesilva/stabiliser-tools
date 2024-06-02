@@ -1,6 +1,6 @@
 #include "check_matrix.h"
 #include "stabiliser_state.h"
-#include "f2_helper.h"
+#include "util/f2_helper.h"
 
 namespace fst
 {

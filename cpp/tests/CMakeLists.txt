@@ -1,6 +1,6 @@
 find_package( Catch2 3 REQUIRED )
 
-set( SOURCE_FILES
+set( TEST_SOURCE_FILES
   f2_helper_test.cpp
   stabiliser_state_test.cpp
   stabiliser_state_from_statevector_test.cpp
@@ -9,19 +9,15 @@ set( SOURCE_FILES
   test_util.cpp
 )
 
-add_executable( tests ${SOURCE_FILES} )
+add_executable( tests ${TEST_SOURCE_FILES} )
 
-target_include_directories( tests PUBLIC
-  "${PROJECT_SOURCE_DIR}/src/stabiliser_state"
-  "${PROJECT_SOURCE_DIR}/src/util"
-  "${PROJECT_SOURCE_DIR}/src/pauli"
-  "${PROJECT_SOURCE_DIR}/src"
+target_include_directories( tests PRIVATE
+  "${PROJECT_SOURCE_DIR}/cpp/src"
 )
 
 target_link_libraries(tests PRIVATE 
   Catch2::Catch2WithMain 
-  stabiliser_state
-  pauli
+  fast_stabiliser
 )
 
 include(CTest)
