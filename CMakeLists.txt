@@ -23,6 +23,8 @@ elseif( MINGW )
 endif()
 
 find_package( Catch2 3 REQUIRED )
+find_package( Python3 REQUIRED COMPONENTS Interpreter Development)
+find_package( pybind11 REQUIRED CONFIG)
 
 include( CTest )
 add_subdirectory( "cpp" )

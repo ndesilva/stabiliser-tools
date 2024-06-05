@@ -24,10 +24,10 @@ namespace fst
         public:
         Pauli(const std::size_t number_qubits, const std::size_t x_vector, const std::size_t z_vector, const bool sign_bit, const bool imag_bit);
 
-        /// returns whether the pauli operator is Hermitian
+        /// Returns whether the pauli operator is Hermitian
         bool is_hermitian() const;
 
-        /// given another Pauli, used to check whether it commutes/anticommutes
+        /// Given another Paulis, used to check whether it commutes/anticommutes
         /// with this Pauli
         bool commutes_with(const Pauli &other_pauli) const;
         bool anticommutes_with(const Pauli &other_pauli) const;

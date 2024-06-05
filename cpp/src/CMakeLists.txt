@@ -6,6 +6,14 @@ set( SOURCE_FILES
 )
 
 add_library(fast_stabiliser ${SOURCE_FILES})
+
 target_include_directories( fast_stabiliser PRIVATE
     "${PROJECT_SOURCE_DIR}/cpp/src"
 )
+
+set ( PYBIND_FILES
+    pauli/pauli_pybind.cpp
+)
+
+pybind11_add_module(fast ${PYBIND_FILES})
+target_link_libraries(fast PRIVATE fast_stabiliser)
