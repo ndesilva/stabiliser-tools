@@ -32,6 +32,7 @@
 // Added in C++23, we can mimic it ourselves
 // Disable warning for user defined literal not starting with _, we know this one is safe since we compile with C++20
 MSVC_PUSH_AND_DISABLE_WARNINGS(4455)
+MSVC_PUSH_AND_DISABLE_WARNINGS(4244)
 GCC_PUSH_AND_DISABLE_WARNINGS("-Wno-c++23-extensions")
 constexpr std::size_t operator"" uz(unsigned long long n)
 {

@@ -5,7 +5,7 @@
 namespace py = pybind11;
 using namespace fst;
 
-PYBIND11_MODULE(example, m)
+PYBIND11_MODULE(fast, m)
 {
     py::class_<Pauli>(m, "Pauli")
         .def(py::init<const std::size_t, const std::size_t, const std::size_t, const bool, const bool>())

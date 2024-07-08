@@ -17,13 +17,6 @@
   ],
   "buildPresets": [
     {
-      "name": "ninja-vcpkg-debug",
-      "configurePreset": "ninja-multi-vcpkg",
-      "displayName": "Build (Debug)",
-      "description": "Build with Ninja/vcpkg (Debug)",
-      "configuration": "Debug"
-    },
-    {
       "name": "ninja-vcpkg-release",
       "configurePreset": "ninja-multi-vcpkg",
       "displayName": "Build (Release)",
