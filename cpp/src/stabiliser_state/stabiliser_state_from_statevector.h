@@ -15,7 +15,7 @@ namespace fst
 	Stabiliser_State stabiliser_from_statevector(const std::span<const std::complex<float>> statevector, bool assume_valid = false);
 
 	/// Test wheter a state vector of complex amplitudes corresponds to a stabiliser state.
-	bool is_stabiliser_state(const std::span<const std::complex<float>> statevector);
+	bool is_stabiliser_state(const std::vector<std::complex<float>> &statevector);
 }
 
 #endif

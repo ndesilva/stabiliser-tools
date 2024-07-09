@@ -5,7 +5,6 @@
 #include <pybind11/complex.h>
 #include <pybind11/stl.h>
 
-#include "check_matrix.h"
 #include "stabiliser_state.h"
 
 namespace py = pybind11;

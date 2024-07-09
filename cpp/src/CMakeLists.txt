@@ -16,13 +16,7 @@ target_include_directories( fast_stabiliser_for_tests PRIVATE
     "${PROJECT_SOURCE_DIR}/cpp/src"
 )
 
-set ( PYBIND_FILES
-    pybind.cpp
-    pauli/pauli_pybind.h
-    stabiliser_state/check_matrix.pybind.h
-)
-
-pybind11_add_module(fast ${PYBIND_FILES})
+pybind11_add_module(fast pybind.cpp)
 target_include_directories( fast PRIVATE
     "${PROJECT_SOURCE_DIR}/cpp/src"
 )
