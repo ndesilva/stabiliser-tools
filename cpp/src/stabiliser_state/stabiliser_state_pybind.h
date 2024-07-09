@@ -28,7 +28,7 @@ namespace fst_pybind{
             .def_readwrite("row_reduced", &Stabiliser_State::row_reduced)
             .def(py::init<const std::size_t, const std::size_t>())
             .def(py::init<const std::size_t>())
-            .def(py::init<Check_Matrix>())
+            .def(py::init<Check_Matrix&>())
             .def("get_state_vector", &Stabiliser_State::get_state_vector)
             .def("row_reduce_basis", &Stabiliser_State::row_reduce_basis);
     }
