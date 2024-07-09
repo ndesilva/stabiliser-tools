@@ -6,8 +6,13 @@ set( SOURCE_FILES
 )
 
 add_library(fast_stabiliser SHARED ${SOURCE_FILES})
+add_library(fast_stabiliser_for_tests ${SOURCE_FILES})
 
 target_include_directories( fast_stabiliser PRIVATE
+    "${PROJECT_SOURCE_DIR}/cpp/src"
+)
+
+target_include_directories( fast_stabiliser_for_tests PRIVATE
     "${PROJECT_SOURCE_DIR}/cpp/src"
 )
 

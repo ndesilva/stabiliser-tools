@@ -17,7 +17,7 @@ target_include_directories( tests PRIVATE
 
 target_link_libraries(tests PRIVATE 
   Catch2::Catch2WithMain 
-  fast_stabiliser
+  fast_stabiliser_for_tests
 )
 
 include(CTest)

@@ -16,6 +16,7 @@ project( FastStabiliser CXX )
 # --install, but the correct installed folder already exists.
 if ( MSVC )
 	add_compile_options( /W4 /Zc:__cplusplus /Zc:enumTypes /Zc:inline /Zc:templateScope /Oi )
+	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 	message("Compiler detected as MSVC")
 elseif( MINGW ) 
 	add_compile_options( -Wall -Wextra )
