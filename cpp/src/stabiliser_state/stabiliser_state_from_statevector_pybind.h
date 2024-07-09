@@ -14,6 +14,7 @@ using namespace fst;
 namespace fst_pybind {
     void init_stabiliser_state_from_statevector(py::module_ &m)
     {
+        m.def("stabiliser_state_from_statevector", &stabiliser_from_statevector, py::arg("statevector"), py::arg("assume_valid") = false);
         m.def("is_stabiliser_state", &is_stabiliser_state);
     }
 }

@@ -194,7 +194,7 @@ namespace
 	}
 }
 
-fst::Stabiliser_State fst::stabiliser_from_statevector(const std::span<const std::complex<float>> statevector, bool assume_valid)
+fst::Stabiliser_State fst::stabiliser_from_statevector(const std::vector<std::complex<float>> &statevector, bool assume_valid)
 {
 	std::optional<Stabiliser_State> state = assume_valid
 												? stabiliser_from_statevector_internal<true, true>(statevector)
