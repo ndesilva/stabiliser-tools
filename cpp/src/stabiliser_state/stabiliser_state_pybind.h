@@ -1,3 +1,6 @@
+#ifndef _FAST_STABILISER_STABILISER_STATE_PYBIND_H
+#define _FAST_STABILISER_STABILISER_STATE_PYBIND_H
+
 #include <pybind11/pybind11.h>
 #include <pybind11/complex.h>
 #include <pybind11/stl.h>
@@ -11,7 +14,7 @@ using namespace fst;
 
 // TODO: Try and export the operator == 
 namespace fst_pybind{
-    PYBIND11_MODULE(fast, m)
+    void init_stabiliser_state(py::module_ &m)
     {
         py::class_<Stabiliser_State>(m, "Stabiliser_State")
             .def_readwrite("number_qubits", &Stabiliser_State::number_qubits)
@@ -30,3 +33,5 @@ namespace fst_pybind{
             .def("row_reduce_basis", &Stabiliser_State::row_reduce_basis);
     }
 }
+
+#endif
