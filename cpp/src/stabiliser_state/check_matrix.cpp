@@ -4,7 +4,7 @@
 
 namespace fst
 {
-    Check_Matrix::Check_Matrix(std::vector<Pauli> paulis, bool row_reduced)
+    Check_Matrix::Check_Matrix(const std::vector<Pauli> &paulis, const bool row_reduced)
         : paulis(paulis), row_reduced(row_reduced)
     {
         number_qubits = paulis.size();

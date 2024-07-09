@@ -1,3 +1,6 @@
+#ifndef _FAST_STABILISER_PAULI_PYBIND_H
+#define _FAST_STABILISER_PAULI_PYBIND_H
+
 #include <pybind11/pybind11.h>
 #include <pybind11/complex.h>
 #include <pybind11/stl.h>
@@ -7,10 +10,10 @@
 namespace py = pybind11;
 using namespace fst;
 
-
-// TODO: Try and export the operator == 
-namespace fst_pybind{
-    PYBIND11_MODULE(fast, m)
+// TODO: Export the operator ==
+// TODO: Return numpy arrays rather than arrays. Eliminate copying by making types opaque?
+namespace fst_pybind {
+    void init_pauli(py::module_ &m)
     {
         py::class_<Pauli>(m, "Pauli")
             .def_readwrite("number_qubits", &Pauli::number_qubits)
@@ -28,3 +31,5 @@ namespace fst_pybind{
             .def("multiply_by_pauli_on_right", &Pauli::multiply_by_pauli_on_right);
     }
 }
+
+#endif

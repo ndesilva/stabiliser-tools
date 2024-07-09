@@ -17,8 +17,13 @@ target_include_directories( fast_stabiliser_for_tests PRIVATE
 )
 
 set ( PYBIND_FILES
-    pauli/pauli_pybind.cpp
+    pybind.cpp
+    pauli/pauli_pybind.h
+    stabiliser_state/check_matrix.pybind.h
 )
 
 pybind11_add_module(fast ${PYBIND_FILES})
+target_include_directories( fast PRIVATE
+    "${PROJECT_SOURCE_DIR}/cpp/src"
+)
 target_link_libraries(fast PRIVATE fast_stabiliser)

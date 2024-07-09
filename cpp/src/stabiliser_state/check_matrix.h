@@ -26,7 +26,7 @@ namespace fst
         
         bool row_reduced;
 
-        explicit Check_Matrix(std::vector<Pauli> paulis, bool row_reduced = false);
+        explicit Check_Matrix(const std::vector<Pauli> &paulis, const bool row_reduced = false);
         explicit Check_Matrix(Stabiliser_State &stabiliser_state);
 
         /// Return the state vector of length 2^n stabilised by each of the Paulis in the check matrix
