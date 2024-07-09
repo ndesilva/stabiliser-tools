@@ -5,7 +5,7 @@ set( SOURCE_FILES
     stabiliser_state/stabiliser_state.cpp
 )
 
-add_library(fast_stabiliser ${SOURCE_FILES})
+add_library(fast_stabiliser SHARED ${SOURCE_FILES})
 
 target_include_directories( fast_stabiliser PRIVATE
     "${PROJECT_SOURCE_DIR}/cpp/src"
