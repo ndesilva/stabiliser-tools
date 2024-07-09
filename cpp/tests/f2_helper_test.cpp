@@ -1,7 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "test_util.h"
-#include "f2_helper.h"
+#include "util/f2_helper.h"
 #include "platform.h"
 
 #include <array>

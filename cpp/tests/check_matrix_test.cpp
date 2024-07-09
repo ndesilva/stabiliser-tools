@@ -3,9 +3,9 @@
 
 #include <unordered_set>
 
-#include "check_matrix.h"
-#include "stabiliser_state.h"
-#include "pauli.h"
+#include "stabiliser_state/check_matrix.h"
+#include "stabiliser_state/stabiliser_state.h"
+#include "pauli/pauli.h"
 #include "test_util.h"
 
 using namespace Catch::Matchers;

@@ -1,7 +1,7 @@
 #ifndef _FAST_STABILISER_STABILISER_STATE_H
 #define _FAST_STABILISER_STABILISER_STATE_H
 
-#include "pauli.h"
+#include "pauli/pauli.h"
 
 #include <vector>
 #include <complex>
@@ -32,7 +32,7 @@ namespace fst
 		/// Q(e_i, e_j) is stored as quadratic_form[2^i ^ 2^j] 
 		std::unordered_map<std::size_t, bool> quadratic_form;
 		std::complex<float> global_phase = 1.0;
-
+		
 		bool row_reduced = false;
 
 		Stabiliser_State() = default;

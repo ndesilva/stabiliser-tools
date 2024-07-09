@@ -1,7 +1,7 @@
 #include "stabiliser_state.h"
 #include "check_matrix.h"
-#include "f2_helper.h"
-#include "pauli.h"
+#include "util/f2_helper.h"
+#include "pauli/pauli.h"
 
 #include <cmath>
 

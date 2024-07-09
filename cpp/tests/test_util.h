@@ -5,7 +5,7 @@
 #include <complex>
 #include <unordered_map>
 
-#include "pauli.h"
+#include "pauli/pauli.h"
 
 using namespace fst;
 

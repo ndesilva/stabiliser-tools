@@ -1,9 +1,9 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_all.hpp>
 
-#include "stabiliser_state.h"
-#include "check_matrix.h"
-#include "f2_helper.h"
+#include "stabiliser_state/stabiliser_state.h"
+#include "stabiliser_state/check_matrix.h"
+#include "util/f2_helper.h"
 #include "test_util.h"
 
 #include <array>

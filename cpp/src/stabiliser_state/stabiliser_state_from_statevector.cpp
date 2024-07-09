@@ -1,6 +1,6 @@
 #include "stabiliser_state_from_statevector.h"
 
-#include "f2_helper.h"
+#include "util/f2_helper.h"
 
 #include <algorithm>
 #include <optional>
@@ -208,7 +208,7 @@ fst::Stabiliser_State fst::stabiliser_from_statevector(const std::span<const std
 	return *std::move(state);
 }
 
-bool fst::is_stabiliser_state(const std::span<const std::complex<float>> statevector)
+bool fst::is_stabiliser_state(const std::vector<std::complex<float>> &statevector)
 {
 	return stabiliser_from_statevector_internal<false, false>(statevector);
 }

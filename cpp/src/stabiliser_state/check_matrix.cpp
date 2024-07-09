@@ -1,10 +1,10 @@
 #include "check_matrix.h"
 #include "stabiliser_state.h"
-#include "f2_helper.h"
+#include "util/f2_helper.h"
 
 namespace fst
 {
-    Check_Matrix::Check_Matrix(std::vector<Pauli> paulis, bool row_reduced)
+    Check_Matrix::Check_Matrix(const std::vector<Pauli> &paulis, const bool row_reduced)
         : paulis(paulis), row_reduced(row_reduced)
     {
         number_qubits = paulis.size();
