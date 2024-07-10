@@ -4,6 +4,7 @@
 #include <complex>
 #include <vector>
 
+//TODO: make sign_bit and imag_bit bools for memory efficiency. Update f2_dot_product etc. to also return bools
 namespace fst
 {
     /// The class used to represent a Pauli operator.

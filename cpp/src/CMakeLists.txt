@@ -3,6 +3,7 @@ set( SOURCE_FILES
     stabiliser_state/check_matrix.cpp
     stabiliser_state/stabiliser_state_from_statevector.cpp
     stabiliser_state/stabiliser_state.cpp
+    clifford/clifford.cpp
 )
 
 add_library(fast_stabiliser SHARED ${SOURCE_FILES})
