@@ -5,11 +5,12 @@ from benchmarking.Benchmarking_Data import Benchmarking_Data
 import benchmarking.generators as gs
 import cProfile
 
-import clifford.Clifford as c
-import benchmarking.brute_force.clifford_check as bf_cc
-import clifford.clifford_from_matrix as cc
+# import clifford.Clifford as c
+import benchmarking.brute_force.stab_state_check as bf_ss
+# import clifford.clifford_from_matrix as cc
 
-import stabiliser_state.stabiliser_from_state_vector as ssc
+# import stabiliser_state.stabiliser_from_state_vector as ssc
+import fast as fst  # TODO Make this work
 
 reps = int(5)
 
@@ -44,17 +45,21 @@ def time_function_with_generator(function_to_time, generator) -> np.ndarray:
     
     return times
 
-def our_method_clifford(matrix : np.ndarray) -> bool:
-    return cc.Clifford_From_Matrix(matrix, only_testing = True).is_clifford
+# def our_method_clifford(matrix : np.ndarray) -> bool:
+#     return cc.Clifford_From_Matrix(matrix, only_testing = True).is_clifford
 
 def our_method_stabiliser_state(state : np.ndarray) -> bool:
-    return ssc.Stabiliser_From_State_Vector(state).is_stab_state
+    # return ssc.Stabiliser_From_State_Vector(state).is_stab_state
+    return fst.is_stabiliser_state(state)
 
-functions_to_time = [bf_cc.is_clifford, our_method_clifford] 
+functions_to_time = [bf_ss.is_clifford, our_method_stabiliser_state] 
 function_strings = ['brute force', 'our method']
 
-generation_types = [gs.random_clifford]
-generation_strings = ['random clifford']
+# generation_types = [gs.random_clifford]
+# generation_strings = ['random clifford']
+
+generation_types = [gs.random_stab_state]
+generation_strings = ['random stab state']
 
 pre_string = 'testing C1'
 

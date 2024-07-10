@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from pauli.Pauli import Pauli
+from fast import Pauli
 import benchmarking.generator_dependencies.randstab as rs
 import scipy.stats as sts
 import qiskit.quantum_info as qi
