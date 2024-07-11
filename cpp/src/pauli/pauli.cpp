@@ -1,6 +1,8 @@
 #include "pauli.h"
 #include "util/f2_helper.h"
 
+#include <format>
+
 namespace fst
 {
     Pauli::Pauli(const std::size_t number_qubits, const std::size_t x_vector, const std::size_t z_vector, const bool sign_bit, const bool imag_bit)
@@ -47,7 +49,7 @@ namespace fst
     {
         if (integral_pow_2(number_qubits) != vector.size())
         {
-            throw std::invalid_argument("Invalid vector dimension");
+            throw std::invalid_argument(std::format("Invalid vector dimension, expected {}, got {}", integral_pow_2(number_qubits), vector.size()));
         }
         
         const size_t size = vector.size();
