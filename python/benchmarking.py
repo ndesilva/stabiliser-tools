@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 import time
 import pickle
 from benchmarking.Benchmarking_Data import Benchmarking_Data
@@ -9,13 +10,16 @@ import cProfile
 import benchmarking.brute_force.stab_state_check as bf_ss
 # import clifford.clifford_from_matrix as cc
 
+PATH_TO_LIBRARY = './build/ninja-multi-vcpkg/cpp/src/Release'
+sys.path.append(PATH_TO_LIBRARY)
+
 # import stabiliser_state.stabiliser_from_state_vector as ssc
 import fast as fst  # TODO Make this work
 
 reps = int(5)
 
-min_qubits = 1
-max_qubits = 12
+min_qubits = 5
+max_qubits = 10
 qubit_numbers = list(range(min_qubits, max_qubits + 1))
 
 profile = cProfile.Profile()

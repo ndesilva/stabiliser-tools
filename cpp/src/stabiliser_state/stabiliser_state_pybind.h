@@ -25,7 +25,7 @@ namespace fst_pybind {
             .def_readwrite("quadratic_form", &Stabiliser_State::quadratic_form, "dict[int]\tThe (rest of the) quadratic form. The quadratic form is stored as a map. It should always have quadratic_form[0] = 0. Q(e_i, e_j) is stored as quadratic_form[2^i ^ 2^j]")
             .def_readwrite("global_phase", &Stabiliser_State::global_phase, "complex\t\tThe global phase")
             .def_readwrite("row_reduced", &Stabiliser_State::row_reduced, "bool\t\tWhether the matrix of basis vectors is row reduced")
-            .def(py::init<const std::size_t>(), "number_qubits"_a) // TODO: Default value?
+            .def(py::init<const std::size_t>(), "number_qubits"_a)  // TODO: Do we want this?
             .def(py::init<Check_Matrix &>(), "check_matrix"_a)
             .def("get_state_vector", &Stabiliser_State::get_state_vector, "Return the state vector of length 2^n of the stabiliser state (with respect to the computational basis), as type list[complex]")
             .def("row_reduce_basis", &Stabiliser_State::row_reduce_basis, "Row reduces the basis to reduced row-echelon form. Note that the quadratic form and the real and imaginary linear parts are also updated, so the instance represents the same stabiliser state")
