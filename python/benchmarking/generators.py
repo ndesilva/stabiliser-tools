@@ -7,7 +7,7 @@ import qiskit.quantum_info as qi
 
 PATH_TO_LIBRARY = './build/ninja-multi-vcpkg/cpp/src/Release'
 sys.path.append(PATH_TO_LIBRARY)
-from fast import Pauli
+from fast import Pauli, Stabiliser_State
 
 from typing import Tuple
 
@@ -59,6 +59,34 @@ def random_almost_stab_state(n: int) -> np.ndarray:
         stab_state[i] = 1
 
     return stab_state
+
+
+def worst_case_stab_state(n: int) -> np.ndarray:
+    stab = Stabiliser_State(n)
+    stab.basis_vectors = [1 << k for k in range(n)]
+    stab.dim = 1 << n
+    stab.imaginary_part = 1 << (n+1) - 1
+    stab.real_linear_part = 1 << (n+1) - 1
+    stab.quadratic_form = {}
+    for i in range(n):
+        for j in range(i+1, n):
+            stab.quadratic_form[(1 << i) ** (1 << j)] = 1
+    return np.array(stab.get_state_vector)
+
+
+def worst_case_almost_stab_state(n: int) -> np.ndarray:
+    stab_vector = worst_case_stab_state(n)
+    return
+
+
+def best_case_stab_state(n: int) -> np.ndarray:
+    e_1 = np.zeros(1 << n)
+    e_1[0] = 1
+    return e_1
+
+
+def best_case_stab_state_with_assump(n: int) -> Tuple[np.ndarray, bool]:
+    return best_case_stab_state(n), True
 
 
 def random_clifford(n: int) -> np.ndarray:
