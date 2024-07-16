@@ -76,7 +76,17 @@ def worst_case_stab_state(n: int) -> np.ndarray:
 
 def worst_case_almost_stab_state(n: int) -> np.ndarray:
     stab_vector = worst_case_stab_state(n)
-    return
+    i = random.randrange(1 << n)
+
+    if stab_vector[i]:
+        if random.randrange(2):
+            stab_vector[i] *= 1j
+        else:
+            stab_vector[i] = 0
+    else:
+        stab_vector[i] = 1
+
+    return stab_vector
 
 
 def best_case_stab_state(n: int) -> np.ndarray:

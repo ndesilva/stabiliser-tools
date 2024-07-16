@@ -1,20 +1,9 @@
 import numpy as np
-import sys
 import time
 import pickle
 from benchmarking.Benchmarking_Data import Benchmarking_Data
-import benchmarking.generators as gs
+from benchmarking_config import configs
 import cProfile
-
-# import clifford.Clifford as c
-import benchmarking.brute_force.stab_state_check as bf_ss
-# import clifford.clifford_from_matrix as cc
-
-PATH_TO_LIBRARY = './build/ninja-multi-vcpkg/cpp/src/Release'
-sys.path.append(PATH_TO_LIBRARY)
-
-# import stabiliser_state.stabiliser_from_state_vector as ssc
-import fast as fst  # TODO Make this work
 
 reps = int(5)
 
@@ -24,9 +13,10 @@ qubit_numbers = list(range(min_qubits, max_qubits + 1))
 
 profile = cProfile.Profile()
 
+
 def time_function_with_generator(function_to_time, generator) -> np.ndarray:
     times = np.zeros(max_qubits)
-    
+
     for n in qubit_numbers:
         print(f'n is {n}')
         timer = 0
@@ -37,58 +27,49 @@ def time_function_with_generator(function_to_time, generator) -> np.ndarray:
 
             st = time.perf_counter()
             # profile.enable()
-            
+
             function_to_time(input)
-            
+
             # profile.disable()
             et = time.perf_counter()
 
             timer += et-st
 
         times[n-1] = timer/reps
-    
+
     return times
 
-# def our_method_clifford(matrix : np.ndarray) -> bool:
-#     return cc.Clifford_From_Matrix(matrix, only_testing = True).is_clifford
-
-def our_method_stabiliser_state(state : np.ndarray) -> bool:
-    # return ssc.Stabiliser_From_State_Vector(state).is_stab_state
-    return fst.is_stabiliser_state(state)
-
-functions_to_time = [bf_ss.is_clifford, our_method_stabiliser_state] 
-function_strings = ['brute force', 'our method']
-
-# generation_types = [gs.random_clifford]
-# generation_strings = ['random clifford']
-
-generation_types = [gs.random_stab_state]
-generation_strings = ['random stab state']
-
-pre_string = 'testing C1'
-
-num_functions = len(functions_to_time)
-num_generators = len(generation_types)
-
-assert num_functions == len(function_strings)
-assert num_generators == len(generation_strings) 
 
 base_filestring = './benchmarking/data'
 
-for function_index in range(num_functions):
-    for generation_index in range(num_generators):
-        function_string = function_strings[function_index]
-        generation_string = generation_strings[generation_index]
-        
-        filename = f'{base_filestring}/{pre_string} {function_string} on {generation_string}.npy'
 
-        print(f'timing {function_string} with {generation_string}')
+def append_benchmarking_data(pre_string='', title='', functions_to_time=[], 
+                             function_strings=[], generation_types=[], generation_strings=[]):
+    num_functions = len(functions_to_time)
+    num_generators = len(generation_types)
 
-        times = time_function_with_generator(functions_to_time[function_index], generation_types[generation_index])
+    assert num_functions == len(function_strings)
+    assert num_generators == len(generation_strings)
 
-        data = Benchmarking_Data(function_string, generation_string, qubit_numbers, times)
+    for function_index in range(num_functions):
+        for generation_index in range(num_generators):
+            function_string = function_strings[function_index]
+            generation_string = generation_strings[generation_index]
 
-        with open(filename, 'wb') as fl:
-            pickle.dump(data, fl)
+            filename = f'{base_filestring}/{pre_string} {function_string} on {generation_string}.npy'
 
-# profile.dump_stats('./logs/numba_with_compound_ifs.log')
+            print(f'timing {function_string} with {generation_string}')
+
+            times = time_function_with_generator(
+                functions_to_time[function_index], generation_types[generation_index])
+
+            data = Benchmarking_Data(
+                function_string, generation_string, qubit_numbers, times)
+
+            with open(filename, 'wb') as fl:
+                pickle.dump(data, fl)
+
+
+if __name__ == '__main__':
+    for config in configs:
+        append_benchmarking_data(**config)
