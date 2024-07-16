@@ -38,7 +38,9 @@ inline static size_t compute_occupation(const std::vector<std::complex<float>> &
 }
 
 bool stim::stabilizer_state_vector_to_circuit(
-    const std::vector<std::complex<float>> &state_vector)
+    const std::vector<std::complex<float>> &state_vector,
+    const bool assume_valid
+    )
 {
     if (!is_power_of_2(state_vector.size()))
     {
@@ -127,10 +129,14 @@ bool stim::stabilizer_state_vector_to_circuit(
             return false;
         }
 
-        if (compute_occupation(sim.state) * 2 != occupation)
+        if (!assume_valid)
         {
-            return false;
+            if (compute_occupation(sim.state) * 2 != occupation)
+            {
+                return false;
+            }
         }
+        
         occupation >>= 1;
     }
 

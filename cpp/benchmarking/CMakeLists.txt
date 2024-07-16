@@ -6,6 +6,7 @@ target_link_libraries(stabiliser_benchmark
     stim 
     fast_stabiliser
 )
+
 target_include_directories(
     stabiliser_benchmark PUBLIC
     "${PROJECT_SOURCE_DIR}/cpp/src"

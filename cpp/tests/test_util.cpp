@@ -30,7 +30,7 @@ namespace test {
 
 		for (std::size_t j = 0; j < dimension; j++)
 		{
-			for (std::size_t k = 0; k < dimension; k++)
+			for (std::size_t k = j + 1; k < dimension; k++)
 			{
 				quadratic_form[integral_pow_2(j) ^ integral_pow_2(k)] = 0;
 			}
