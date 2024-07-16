@@ -21,7 +21,8 @@ namespace stim
     /// Throws:
     ///     std::invalid_argument: The given state vector cannot be produced by a stabilizer circuit.
     bool stabilizer_state_vector_to_circuit(
-        const std::vector<std::complex<float>> &stabilizer_state_vector);
+        const std::vector<std::complex<float>> &stabilizer_state_vector, const bool assume_valid = false
+        );
 
 } // namespace stim
 

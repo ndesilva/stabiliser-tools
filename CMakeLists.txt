@@ -1,7 +1,7 @@
 cmake_minimum_required( VERSION 3.28 )
 
-set( CMAKE_COMPILE_WARNING_AS_ERROR ON )
-set( CMAKE_CXX_STANDARD 23 )
+set ( CMAKE_COMPILE_WARNING_AS_ERROR ON )
+set ( CMAKE_CXX_STANDARD 23 )
 
 project( FastStabiliser CXX )
 

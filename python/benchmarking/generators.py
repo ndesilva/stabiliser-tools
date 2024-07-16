@@ -11,7 +11,6 @@ from fast import Pauli, Stabiliser_State
 
 from typing import Tuple
 
-
 def random_unitary(n: int) -> np.ndarray:
     return sts.unitary_group.rvs(1 << n)
 
@@ -64,14 +63,16 @@ def random_almost_stab_state(n: int) -> np.ndarray:
 def worst_case_stab_state(n: int) -> np.ndarray:
     stab = Stabiliser_State(n)
     stab.basis_vectors = [1 << k for k in range(n)]
-    stab.dim = 1 << n
+    stab.dim = n
     stab.imaginary_part = 1 << (n+1) - 1
     stab.real_linear_part = 1 << (n+1) - 1
-    stab.quadratic_form = {}
+    quadratic_form = {}
+    quadratic_form[0] = 0
     for i in range(n):
         for j in range(i+1, n):
-            stab.quadratic_form[(1 << i) ** (1 << j)] = 1
-    return np.array(stab.get_state_vector)
+            quadratic_form[(1 << i) ^ (1 << j)] = 1
+    stab.quadratic_form = quadratic_form # for now, the quadratic_form is not opaque (see https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html), so this is a workaround
+    return np.array(stab.get_state_vector())
 
 
 def worst_case_almost_stab_state(n: int) -> np.ndarray:

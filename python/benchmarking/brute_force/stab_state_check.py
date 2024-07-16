@@ -41,7 +41,7 @@ def get_matrix(check_vector, phase):
     check_vector : numpy.ndarray
         The check vector.
     phase : complex
-        The phase of the element: should be :math:`\pm 1`.
+        The phase of the element: should be :math:+-1.
 
     Returns
     -------
@@ -183,7 +183,7 @@ def pauli_to_symplectic(pauli_string):
     return x + z
 
 
-def stab_to_xmatr(state: np.ndarray):
+def stab_to_xmatr(state: np.ndarray, assume_valid : bool = False):
     """
     Returns
     -------

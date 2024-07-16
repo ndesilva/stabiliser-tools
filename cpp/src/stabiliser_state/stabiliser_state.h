@@ -7,6 +7,8 @@
 #include <complex>
 #include <unordered_map>
 
+// TODO: enforce quadratic_form[0] = 0
+// TODO: make quadratic_form opaque so it behaves as you expect (and reduce copying)
 namespace fst
 {
 	struct Check_Matrix;

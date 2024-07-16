@@ -4,7 +4,7 @@ import pickle
 from benchmarking.Benchmarking_Data import Benchmarking_Data
 from benchmarking_config import configs
 
-base_data_path = './benchmarking/data/'
+base_data_path = './python/benchmarking/data/'
 
 def make_plots(pre_string='', title='', function_strings='', generation_strings='', **kwargs):
     data_to_plot = []
@@ -26,8 +26,9 @@ def make_plots(pre_string='', title='', function_strings='', generation_strings=
     ax.set_ylabel('execution time (s)')
     ax.set_title(title)
     ax.legend()
+    ax.set_xticks(data.number_qubits)
 
-    fig.savefig(f'./benchmarking/plots/{title}.pdf')
+    fig.savefig(f'./python/benchmarking/plots/{title}.pdf')
 
 
 if __name__ == '__main__':

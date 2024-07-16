@@ -5,42 +5,46 @@ from benchmarking.Benchmarking_Data import Benchmarking_Data
 from benchmarking_config import configs
 import cProfile
 
-reps = int(5)
+reps = int(1e3)
 
-min_qubits = 5
-max_qubits = 10
+min_qubits = 3
+max_qubits = 11
 qubit_numbers = list(range(min_qubits, max_qubits + 1))
 
 profile = cProfile.Profile()
 
 
 def time_function_with_generator(function_to_time, generator) -> np.ndarray:
-    times = np.zeros(max_qubits)
+    times = np.zeros(max_qubits - min_qubits + 1)
 
     for n in qubit_numbers:
         print(f'n is {n}')
         timer = 0
 
         for j in range(reps):
-            print(j)
             input = generator(n)
 
-            st = time.perf_counter()
-            # profile.enable()
-
-            function_to_time(input)
-
-            # profile.disable()
-            et = time.perf_counter()
+            if type(input) is tuple:
+                st = time.perf_counter()
+                # profile.enable()
+                function_to_time(*input)
+                # profile.disable()
+                et = time.perf_counter()
+            else:
+                st = time.perf_counter()
+                # profile.enable()
+                function_to_time(input)
+                # profile.disable()
+                et = time.perf_counter()
 
             timer += et-st
 
-        times[n-1] = timer/reps
+        times[n - min_qubits] = timer/reps
 
     return times
 
 
-base_filestring = './benchmarking/data'
+base_filestring = './python/benchmarking/data'
 
 
 def append_benchmarking_data(pre_string='', title='', functions_to_time=[], 
