@@ -19,10 +19,8 @@ namespace fst
         unsigned int sign_bit = 0;
         unsigned int imag_bit = 0;
 
-        private:
-        std::complex<float> phase = 1;
-
         public:
+        Pauli() = default;
         Pauli(const std::size_t number_qubits, const std::size_t x_vector, const std::size_t z_vector, const bool sign_bit, const bool imag_bit);
 
         /// Returns whether the pauli operator is Hermitian
@@ -48,12 +46,10 @@ namespace fst
         /// Note, the current instance is set to the result.
         void multiply_by_pauli_on_right(const Pauli &other_pauli);
 
-        bool operator==(const Pauli &other) const = default;
+        /// Gets the current phase of the pauli: (-1)^(sign_bit) * (-i)^(imag_bit)
+        std::complex<float> get_phase() const;
 
-        private:
-        
-        /// Updates the phase to be consistent with the current sign & imag bits
-        void update_phase();
+        bool operator==(const Pauli &other) const = default;
     };
 }
 

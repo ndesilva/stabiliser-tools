@@ -28,7 +28,8 @@ namespace fst_pybind {
             .def("has_eigenstate", &Pauli::has_eigenstate)
             .def("get_matrix", &Pauli::get_matrix)
             .def("multiply_vector", &Pauli::multiply_vector)
-            .def("multiply_by_pauli_on_right", &Pauli::multiply_by_pauli_on_right);
+            .def("multiply_by_pauli_on_right", &Pauli::multiply_by_pauli_on_right)
+            .def("get_phase", &Pauli::get_phase);
     }
 }
 

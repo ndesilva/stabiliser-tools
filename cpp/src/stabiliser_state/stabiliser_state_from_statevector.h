@@ -2,7 +2,6 @@
 #define _FAST_STABILISER_STABILISER_STATE_FROM_VECTOR_H
 
 #include <complex>
-#include <span>
 
 #include "stabiliser_state.h"
 

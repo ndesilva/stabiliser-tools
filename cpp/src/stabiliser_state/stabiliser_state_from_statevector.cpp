@@ -6,14 +6,14 @@
 #include <optional>
 #include <vector>
 
+using namespace fst;
+
 namespace
 {
 	template <bool assume_valid, bool return_state>
 	auto stabiliser_from_statevector_internal(const std::span<const std::complex<float>> statevector)
 		-> std::conditional_t<return_state, std::optional<fst::Stabiliser_State>, bool>
 	{
-		using namespace fst;
-
 		const std::size_t state_vector_size = statevector.size();
 
 		if (!is_power_of_2(state_vector_size))
@@ -80,7 +80,7 @@ namespace
 
 			std::complex<float> phase = statevector[basis_vector ^ shift] / first_entry;
 
-			if (std::norm(phase - float(-1)) < 0.125)
+			if (std::norm(phase + 1.0f) < 0.125)
 			{
 				real_linear_part ^= weight_one_string;
 			}
@@ -93,7 +93,7 @@ namespace
 				real_linear_part ^= weight_one_string;
 				imaginary_part ^= weight_one_string;
 			}
-			else if (std::norm(phase - float(1)) >= 0.125)
+			else if (std::norm(phase - 1.0f) >= 0.125)
 			{
 				return {};
 			}
@@ -118,11 +118,11 @@ namespace
 
 				const std::complex<float> quadratic_form_eval = statevector[total_index] / (first_entry * linear_eval);
 
-				if (std::norm(quadratic_form_eval - float(-1)) < 0.125)
+				if (std::norm(quadratic_form_eval + 1.0f) < 0.125)
 				{
 					quadratic_form[vector_index] = 1;
 				}
-				else if(std::norm(quadratic_form_eval - float(1)) < 0.125)
+				else if(std::norm(quadratic_form_eval - 1.0f) < 0.125)
 				{
 					quadratic_form[vector_index] = 0;
 				}
