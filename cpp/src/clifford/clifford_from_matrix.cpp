@@ -140,7 +140,6 @@ namespace
             W_paulis[i] = std::move(uncorrected_W_paulis[pauli_ordering[i]]);
         }
 
-
         if constexpr (!assume_valid)
         {
             for (std::size_t col_index = 1; col_index < size; col_index++)
@@ -155,11 +154,86 @@ namespace
             }
         }
 
-        std::vector<Pauli> x_conjugates;
+        for (std::size_t i = 0; i < number_qubits; i++)
+        {
+            Pauli pauli = W_paulis[i];
+            std::size_t non_zero_index = first_col_state.shift ^ pauli.x_vector;
+            std::size_t col_index = integral_pow_2(i);
+            std::complex<float> relative_phase = transposed_matrix[col_index][non_zero_index]/(transposed_matrix[0][first_col_state.shift]*sign_f2_dot_product(first_col_state.shift, pauli.z_vector)*pauli.get_phase());
+
+            if (std::norm(relative_phase + 1.0f) < 0.125)
+            {
+                pauli.sign_bit ^=1;
+            }
+            else if (std::norm(relative_phase + std::complex<float>{0,1}) < 0.125)
+            {
+                pauli.sign_bit ^= !pauli.imag_bit;
+                pauli.imag_bit ^= 1;
+            }
+            else if (std::norm(relative_phase - std::complex<float>{0,1}) < 0.125)
+            {
+                pauli.sign_bit ^= pauli.imag_bit;
+                pauli.imag_bit ^= 1;
+            }
+            else if (std::norm(relative_phase - 1.0f) >= 0.125)
+            {
+                return {};
+            }
+        }
+
+        for (std::size_t i = 0; i < number_qubits; i++)
+        {
+            std::size_t i_non_zero_index = first_col_state.shift ^ W_paulis[i].x_vector;
+            std::size_t i_col_index = integral_pow_2(i);
+            std::complex<float> i_non_zero_entry = matrix[i_col_index][i_non_zero_index]; 
+
+            for (std::size_t j = 0; j < number_qubits; j++)
+            {
+                if (j!=i)
+                {
+                    Pauli pauli = W_paulis[j];
+                    std::size_t ij_non_zero_index = i_non_zero_index ^ pauli.x_vector;
+                    std::complex<float> relative_phase = transposed_matrix[integral_pow_2(j)^i_col_index][ij_non_zero_index]/(i_non_zero_entry*sign_f2_dot_product(i_non_zero_index, pauli.z_vector)*pauli.get_phase());
+
+                    if (std::norm(relative_phase + 1.0f) < 0.125)
+                    {
+                        pauli.multiply_by_pauli_on_right(z_conjugates[i]);
+                    }
+                    else if (std::norm(relative_phase - 1.0f) >= 0.125)
+                    {
+                        return {};
+                    }
+                }
+            }
+        }
+
+        if constexpr (!assume_valid)
+        {
+            std::size_t old_col_index = 0;
+            std::size_t old_support = first_col_state.shift;
+
+            for (std::size_t i = 1; i < size ; i++)
+            {   
+                // Iterate through the gray code
+                std::size_t new_col_index = i ^ (i >> 1);
+                std::size_t flipped_bit = integral_log_2(new_col_index ^ old_col_index);
+
+                Pauli pauli_flip = W_paulis[flipped_bit];
+                std::size_t new_support = old_col_index ^ pauli_flip.x_vector;
+
+                if (std::norm(transposed_matrix[new_col_index][new_support] - transposed_matrix[old_col_index][old_support]*sign_f2_dot_product(old_support, pauli_flip.z_vector)*pauli_flip.get_phase()) >= 0.001)
+                {
+                    return {};
+                }
+                
+                old_col_index = new_col_index;
+                old_support = new_support;
+            }
+        }
 
         if constexpr (return_state)
         {
-            return Clifford (z_conjugates, x_conjugates, first_col_state.global_phase);
+            return Clifford (z_conjugates, W_paulis, first_col_state.global_phase);
         }
         else
         {
