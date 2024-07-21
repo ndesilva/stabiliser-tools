@@ -43,7 +43,7 @@ namespace
 
         try
         {
-            first_col_state = stabiliser_from_statevector(matrix[0], assume_valid);
+            first_col_state = std::move(stabiliser_from_statevector(transposed_matrix[0], assume_valid));
         }
         catch (const std::exception& e)
         {
@@ -53,25 +53,28 @@ namespace
         
         std::size_t number_qubits = first_col_state.number_qubits;
 
-        Check_Matrix first_col_check_matrix(first_col_state);
+        Check_Matrix first_col_check_matrix (first_col_state);
         
-        std::vector<Pauli> uncorrected_W_paulis (number_qubits);
+        std::vector<Pauli> uncorrected_W_paulis;
+        uncorrected_W_paulis.reserve(number_qubits);
 
-        for (const auto pauli : first_col_check_matrix.paulis)
+        // TODO: we calculate these when constructing the check_matrix, remove calculation?
+        std::unordered_set<std::size_t> pivot_indices;
+        pivot_indices.reserve(number_qubits);
+
+        for (auto pauli_p : first_col_check_matrix.x_stabilisers)
         {
-            std::size_t x_vector = 0;
-            std::size_t z_vector = 0;
+            std::size_t pivot_index = integral_log_2(pauli_p->x_vector);
+            pivot_indices.insert(pivot_index);            
+            uncorrected_W_paulis.push_back(Pauli(number_qubits, 0, integral_pow_2(pivot_index), 0, 0));
+        }
 
-            if (pauli.x_vector == 0)
+        for (std::size_t i = 0; i < number_qubits; i++)
+        {
+            if (!pivot_indices.contains(i))
             {
-                x_vector = integral_pow_2((std::size_t) integral_log_2(pauli.z_vector));
+                uncorrected_W_paulis.push_back(Pauli(number_qubits, integral_pow_2(i),0, 0, 0));
             }
-            else
-            {
-                z_vector = integral_pow_2((std::size_t) integral_log_2(pauli.x_vector));
-            }
-
-            uncorrected_W_paulis.push_back(Pauli(number_qubits, x_vector, z_vector, 0, 0));
         }
 
         std::vector<std::size_t> first_col_effects (number_qubits, 0);
@@ -79,17 +82,13 @@ namespace
         for (std::size_t i = 0; i < number_qubits; i++)
         {
             std::size_t col_index = integral_pow_2(i);
-
             std::size_t row_index = 0;
-            
-            for (; row_index < size; row_index++)
-            {
-                if (transposed_matrix[col_index][row_index] != .0f)
-                {
-                    break;
-                }
-            }
 
+            while (row_index < size && transposed_matrix[col_index][row_index] == .0f)
+            {
+                ++row_index;
+            }
+            
             if (row_index == size)
             {
                 return {};
@@ -99,6 +98,7 @@ namespace
 
             for (std::size_t j = 0; j < number_qubits; j++)
             {
+                //TODO make pointer?
                 Pauli pauli = first_col_check_matrix.paulis[j];
                 std::complex<float> phase = transposed_matrix[col_index][row_index ^ pauli.x_vector]/(non_zero_entry * sign_f2_dot_product(row_index, pauli.z_vector) * pauli.get_phase());
 
@@ -117,6 +117,14 @@ namespace
 
         for (std::size_t i = 0; i < number_qubits; i++)
         {
+            if constexpr (!assume_valid)
+            {
+                if (first_col_effects[i] == 0)
+                {
+                    return {};
+                }
+            }
+
             std::size_t pivot_index = integral_log_2(first_col_effects[i]);
             pauli_ordering[pivot_index] = i;
 
@@ -156,24 +164,23 @@ namespace
 
         for (std::size_t i = 0; i < number_qubits; i++)
         {
-            Pauli pauli = W_paulis[i];
-            std::size_t non_zero_index = first_col_state.shift ^ pauli.x_vector;
+            std::size_t non_zero_index = first_col_state.shift ^ W_paulis[i].x_vector;
             std::size_t col_index = integral_pow_2(i);
-            std::complex<float> relative_phase = transposed_matrix[col_index][non_zero_index]/(transposed_matrix[0][first_col_state.shift]*sign_f2_dot_product(first_col_state.shift, pauli.z_vector)*pauli.get_phase());
+            std::complex<float> relative_phase = transposed_matrix[col_index][non_zero_index]/(transposed_matrix[0][first_col_state.shift]*sign_f2_dot_product(first_col_state.shift, W_paulis[i].z_vector)*W_paulis[i].get_phase());
 
             if (std::norm(relative_phase + 1.0f) < 0.125)
             {
-                pauli.sign_bit ^=1;
+                W_paulis[i].sign_bit ^= 1;
             }
             else if (std::norm(relative_phase + std::complex<float>{0,1}) < 0.125)
             {
-                pauli.sign_bit ^= !pauli.imag_bit;
-                pauli.imag_bit ^= 1;
+                W_paulis[i].sign_bit ^= W_paulis[i].imag_bit;
+                W_paulis[i].imag_bit ^= 1;
             }
             else if (std::norm(relative_phase - std::complex<float>{0,1}) < 0.125)
             {
-                pauli.sign_bit ^= pauli.imag_bit;
-                pauli.imag_bit ^= 1;
+                W_paulis[i].sign_bit ^= !W_paulis[i].imag_bit;
+                W_paulis[i].imag_bit ^= 1;
             }
             else if (std::norm(relative_phase - 1.0f) >= 0.125)
             {
@@ -185,19 +192,18 @@ namespace
         {
             std::size_t i_non_zero_index = first_col_state.shift ^ W_paulis[i].x_vector;
             std::size_t i_col_index = integral_pow_2(i);
-            std::complex<float> i_non_zero_entry = matrix[i_col_index][i_non_zero_index]; 
+            std::complex<float> i_non_zero_entry = transposed_matrix[i_col_index][i_non_zero_index]; 
 
             for (std::size_t j = 0; j < number_qubits; j++)
             {
                 if (j!=i)
                 {
-                    Pauli pauli = W_paulis[j];
-                    std::size_t ij_non_zero_index = i_non_zero_index ^ pauli.x_vector;
-                    std::complex<float> relative_phase = transposed_matrix[integral_pow_2(j)^i_col_index][ij_non_zero_index]/(i_non_zero_entry*sign_f2_dot_product(i_non_zero_index, pauli.z_vector)*pauli.get_phase());
+                    std::size_t ij_non_zero_index = i_non_zero_index ^ W_paulis[j].x_vector;
+                    std::complex<float> relative_phase = transposed_matrix[integral_pow_2(j)^i_col_index][ij_non_zero_index]/(i_non_zero_entry*sign_f2_dot_product(i_non_zero_index, W_paulis[j].z_vector)*W_paulis[j].get_phase());
 
                     if (std::norm(relative_phase + 1.0f) < 0.125)
                     {
-                        pauli.multiply_by_pauli_on_right(z_conjugates[i]);
+                        W_paulis[j].multiply_by_pauli_on_right(z_conjugates[i]);
                     }
                     else if (std::norm(relative_phase - 1.0f) >= 0.125)
                     {
@@ -219,7 +225,7 @@ namespace
                 std::size_t flipped_bit = integral_log_2(new_col_index ^ old_col_index);
 
                 Pauli pauli_flip = W_paulis[flipped_bit];
-                std::size_t new_support = old_col_index ^ pauli_flip.x_vector;
+                std::size_t new_support = old_support ^ pauli_flip.x_vector;
 
                 if (std::norm(transposed_matrix[new_col_index][new_support] - transposed_matrix[old_col_index][old_support]*sign_f2_dot_product(old_support, pauli_flip.z_vector)*pauli_flip.get_phase()) >= 0.001)
                 {
@@ -258,5 +264,8 @@ fst::Clifford fst::clifford_from_matrix(const std::vector<std::vector<std::compl
 
 bool fst::is_clifford_matrix(const std::vector<std::vector<std::complex<float>>> &matrix )
 {
-    return clifford_from_matrix_internal<false, false>(matrix);
+    bool result = clifford_from_matrix_internal<false, false>(matrix);
+    return result;
+
+    // return clifford_from_matrix_internal<false, false>(matrix);
 }

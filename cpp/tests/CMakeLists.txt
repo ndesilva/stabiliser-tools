@@ -8,6 +8,7 @@ set( TEST_SOURCE_FILES
   check_matrix_test.cpp
   test_util.cpp
   clifford_test.cpp
+  clifford_from_matrix_test.cpp
 )
 
 add_executable( tests ${TEST_SOURCE_FILES} )

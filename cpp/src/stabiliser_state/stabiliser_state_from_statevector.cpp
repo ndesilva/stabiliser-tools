@@ -24,7 +24,7 @@ namespace
 		const std::size_t number_qubits = integral_log_2(state_vector_size);
 		std::size_t shift = 0;
 
-		while (shift < state_vector_size && statevector[shift] == float(0))
+		while (shift < state_vector_size && statevector[shift] == .0f)
 		{
 			++shift;
 		}
