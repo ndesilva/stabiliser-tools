@@ -45,9 +45,8 @@ namespace
         {
             first_col_state = std::move(stabiliser_from_statevector(transposed_matrix[0], assume_valid));
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            (void) e; // for compilation
             return {};
         }
         
