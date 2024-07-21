@@ -12,6 +12,8 @@ import fast as fst
 
 print("imported library")
 
+# TODO : add the python tests to the workflow?
+
 class TestStabiliserStateMethods(unittest.TestCase):
     def test_stabiliser_state_consistency(self):
         XXX = fst.Pauli(3, 7, 0, 0, 0)
@@ -61,5 +63,52 @@ class TestStabiliserStateMethods(unittest.TestCase):
         non_stabiliser_statevector = self.get_uniform_stabiliser_state(number_qubits)
         non_stabiliser_statevector[-1] *= -1
         return non_stabiliser_statevector
+
+class TestCliffordMethods(unittest.TestCase):
+    def test_clifford_consistency(self):
+        X = fst.Pauli(1,1,0,0,0)
+        Z = fst.Pauli(1,0,1,0,0)
+
+        clifford = fst.Clifford([X], [Z], -1)
+        matrix = np.array(clifford.get_matrix())
+
+        X_matrix = np.array(X.get_matrix())
+        Z_matrix = np.array(Z.get_matrix())
+
+        self.assertTrue(np.allclose(X_matrix, matrix@Z_matrix@matrix.conj().T))
+        self.assertTrue(np.allclose(Z_matrix, matrix@X_matrix@matrix.conj().T))
+
+    def test_is_clifford_matrix(self):
+        matrix = self.get_hadamard_tensor_hadamard()
+        almost_clifford = self.get_almost_clifford_matrix()
+
+        self.assertTrue(fst.is_clifford_matrix(matrix))
+        self.assertFalse(fst.is_clifford_matrix(almost_clifford))
+
+    def test_clifford_from_matrix(self):
+        expected_matrix = np.array(self.get_hadamard_tensor_hadamard())
+        clifford = fst.clifford_from_matrix(expected_matrix)
+
+        matrix = np.array(clifford.get_matrix())
+
+        self.assertTrue(np.allclose(expected_matrix, matrix))
+
+    def test_almost_clifford(self):
+        almost_hadamard = self.get_almost_clifford_matrix()
+
+        with self.assertRaises(ValueError):
+            fst.clifford_from_matrix(almost_hadamard)
+
+        # Check doesn't Raise and exception
+        fst.clifford_from_matrix(almost_hadamard, assume_valid = True)
+
+    def get_hadamard_tensor_hadamard(self):
+        return [[.5, .5, .5, .5], [.5, -.5, .5, -.5], [.5, .5, -.5, -.5], [.5, -.5, -.5, .5]]
+    
+    def get_almost_clifford_matrix(self):
+        matrix = self.get_hadamard_tensor_hadamard()
+        matrix[3][3] *= -1
+
+        return matrix
 
 unittest.main()

@@ -37,7 +37,7 @@ namespace
 		return statevector;
 	}
 
-	std::vector<std::complex<float>> get_five_qubit_stabiliser_statevector_with_phase(std::complex<float> phase)
+	std::vector<std::complex<float>> get_five_qubit_stabiliser_statevector_with_phase(const std::complex<float> phase)
 	{
 		std::vector<std::complex<float>> statevector = get_five_qubit_stabiliser_statevector();
 		
@@ -179,7 +179,7 @@ namespace
 		stabiliser_from_statevector(statevector, true);
 	}
 
-	TEST_CASE("get stabiliser state", "[statevector -> stabiilser state]")
+	TEST_CASE("returning stabiliser state", "[statevector -> stabiilser state]")
 	{
 		SECTION("stabiliser input, dimension 5")
 		{
@@ -195,9 +195,12 @@ namespace
 		{
 			std::vector<std::complex<float>> statevector = get_five_qubit_stabiliser_statevector();
 
-			statevector[1] = {1, 1}; // invalid entry
+			statevector[30] = {1, 1}; // invalid entry
 
 			REQUIRE_THROWS_AS(stabiliser_from_statevector(statevector), std::invalid_argument);
+
+			// Check doesn't throw
+			stabiliser_from_statevector(statevector, true);
 		}
 	}
 }

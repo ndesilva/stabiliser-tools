@@ -4,7 +4,7 @@
 
 namespace fst
 {
-    Check_Matrix::Check_Matrix(const std::vector<Pauli> &paulis, const bool row_reduced)
+    Check_Matrix::Check_Matrix(const std::vector<Pauli> paulis, const bool row_reduced)
         : paulis(paulis), row_reduced(row_reduced)
     {
         number_qubits = paulis.size();
@@ -43,8 +43,8 @@ namespace fst
             pivot_vectors.push_back(integral_pow_2(pivot_index));
         }
 
-        add_z_only_stabilisers(pivot_vectors, pivot_indices_set, stabiliser_state);
         add_x_stabilisers(pivot_vectors, stabiliser_state);
+        add_z_only_stabilisers(pivot_vectors, pivot_indices_set, stabiliser_state);
 
         row_reduced = true;
     }
