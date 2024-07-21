@@ -12,6 +12,8 @@ import fast as fst
 
 print("imported library")
 
+# TODO : add the python tests to the workflow?
+
 class TestStabiliserStateMethods(unittest.TestCase):
     def test_stabiliser_state_consistency(self):
         XXX = fst.Pauli(3, 7, 0, 0, 0)
