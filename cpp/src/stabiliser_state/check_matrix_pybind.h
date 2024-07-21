@@ -11,7 +11,8 @@ namespace py = pybind11;
 using namespace fst;
 
 // TODO: Return numpy arrays rather than arrays. Eliminate copying by making types opaque?
-namespace fst_pybind {
+namespace fst_pybind 
+{
     void init_check_matrix(py::module_ &m)
     {
         py::class_<Check_Matrix>(m, "Check_Matrix")

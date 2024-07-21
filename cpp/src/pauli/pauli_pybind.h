@@ -12,7 +12,8 @@ using namespace fst;
 
 // TODO: Export the operator ==
 // TODO: Return numpy arrays rather than arrays. Eliminate copying by making types opaque?
-namespace fst_pybind {
+namespace fst_pybind 
+{
     void init_pauli(py::module_ &m)
     {
         py::class_<Pauli>(m, "Pauli")
