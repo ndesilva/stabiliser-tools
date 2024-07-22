@@ -2,7 +2,6 @@
 
 #include "util/f2_helper.h"
 
-#include <algorithm>
 #include <optional>
 #include <vector>
 
@@ -38,6 +37,8 @@ namespace
 		vector_space_indices.reserve(state_vector_size + 1);
 		vector_space_indices.push_back(0);
 
+		// TODO: create seperate array of the statevector entries here as well, so we don't have to keep XORing with shift later on
+
 		for (std::size_t index = shift + 1; index < state_vector_size; index++)
 		{
 			if (statevector[index] != float(0))
@@ -62,8 +63,6 @@ namespace
 		{
 			return {};
 		}
-
-		std::ranges::sort(vector_space_indices);
 
 		std::vector<std::size_t> basis_vectors;
 		basis_vectors.reserve(dimension);
