@@ -5,7 +5,7 @@ from Benchmarking_Data import Benchmarking_Data
 from benchmarking_config import configs
 import cProfile
 
-reps = int(1e3)
+reps = int(1)
 
 min_qubits = 3
 max_qubits = 11
@@ -45,7 +45,7 @@ def time_function_with_generator(function_to_time, generator) -> list[list[float
 
 base_filestring = './python/benchmarking/data'
 
-def append_benchmarking_data(pre_string='', title='', functions_to_time=[], 
+def append_benchmarking_data(pre_string='', functions_to_time=[], 
                              function_strings=[], generation_types=[], generation_strings=[]):
     num_functions = len(functions_to_time)
     num_generators = len(generation_types)
@@ -63,10 +63,12 @@ def append_benchmarking_data(pre_string='', title='', functions_to_time=[],
             print(f'timing {function_string} with {generation_string}')
 
             times = time_function_with_generator(
-                functions_to_time[function_index], generation_types[generation_index])
+                functions_to_time[function_index], 
+                generation_types[generation_index]
+            )
 
             data = Benchmarking_Data(
-                function_string, generation_string, qubit_numbers, times, title, reps)
+                function_string, generation_string, qubit_numbers, times, reps)
 
             with open(filename, 'wb') as fl:
                 pickle.dump(data, fl)

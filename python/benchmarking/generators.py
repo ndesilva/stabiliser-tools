@@ -4,6 +4,7 @@ import sys
 import generator_dependencies.randstab as rs
 import scipy.stats as sts
 import qiskit.quantum_info as qi
+from math import sqrt
 
 PATH_TO_LIBRARY = './build/ninja-multi-vcpkg/cpp/src/Release'
 sys.path.append(PATH_TO_LIBRARY)
@@ -60,7 +61,7 @@ def random_almost_stab_state(n: int) -> np.ndarray:
     return stab_state
 
 
-def worst_case_stab_state(n: int) -> np.ndarray:
+def random_full_support_stab_state(n: int) -> np.ndarray:
     stab = Stabiliser_State(n)
     stab.basis_vectors = [1 << k for k in range(n)]
     stab.dim = n
@@ -75,8 +76,8 @@ def worst_case_stab_state(n: int) -> np.ndarray:
     return np.array(stab.get_state_vector())
 
 
-def worst_case_almost_stab_state(n: int) -> np.ndarray:
-    stab_vector = worst_case_stab_state(n)
+def random_full_support_almost_stab_state(n: int) -> np.ndarray:
+    stab_vector = random_full_support_stab_state(n)
     i = random.randrange(1 << n)
 
     if stab_vector[i]:
@@ -90,18 +91,28 @@ def worst_case_almost_stab_state(n: int) -> np.ndarray:
     return stab_vector
 
 
-def best_case_stab_state(n: int) -> np.ndarray:
+def computational_zero(n: int) -> np.ndarray:
     e_1 = np.zeros(1 << n)
     e_1[0] = 1
     return e_1
 
 
-def best_case_stab_state_with_assump(n: int) -> Tuple[np.ndarray, bool]:
-    return best_case_stab_state(n), True
-
-
 def random_clifford(n: int) -> np.ndarray:
     return qi.random_clifford(n).to_matrix()
+
+
+def random_clifford_with_assumption(n : int) -> Tuple[np.ndarray, bool]:
+    return random_clifford(n), True
+
+def get_identity_matrix(n : int) -> np.ndarray:
+    return np.eye( 1<< n )
+
+def get_Hadamard_matrix(n : int) -> np.ndarray:
+    N = 1 << n
+    factor = 1/sqrt(N)
+    matrix = [ [factor * (1 - 2 * ((i & j).bit_count() & 1)) for i in range(N)] for j in range(N)]
+
+    return np.array(matrix)
 
 
 def random_almost_clifford(n: int) -> np.ndarray:

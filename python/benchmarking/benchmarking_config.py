@@ -1,4 +1,6 @@
 import generators as gs
+import qiskit.quantum_info as qi
+import stim
 
 import sys
 PATH_TO_LIBRARY = './build/ninja-multi-vcpkg/cpp/src/Release'
@@ -7,10 +9,28 @@ sys.path.extend([PATH_TO_LIBRARY, PATH_TO_STIM_MOCK])
 import fast as fst
 import stim_mock as sm
 
+def qiskit_C1_converter(matrix, assume_valid = True):
+    return qi.Clifford.from_matrix(matrix)
+
+def stim_C1_convertor(matrix, assume_valid = True):
+    return stim.Tableau.from_unitary_matrix(matrix)
+
+def qiskit_C1_test(matrix):
+    try:
+        qi.Clifford.from_matrix(matrix)
+    except:
+        pass
+
+def stim_C1_test(matrix):
+    try:
+        stim.Tableau.from_unitary_matrix(matrix)
+    except:
+        pass
+
+
 configs = [
     {
         "pre_string": "converting S1 to efficient rep",
-        "title": "Converting a random stabiliser state vector (S1) to an efficient representation",
         "functions_to_time": [
             sm.circuit_from_statevector,
             fst.stabiliser_state_from_statevector
@@ -21,41 +41,20 @@ configs = [
         ],
         "generation_types": [
             gs.random_stab_state_with_assump,
-            gs.random_stab_state
+            gs.random_stab_state,
+            gs.computational_zero,
+            gs.random_full_support_stab_state,
         ],
         "generation_strings": [
             "random stab state with assump",
-            "random stab state without assump"
+            "random stab state without assump",
+            "computational zero",
+            "random full support stabiliser state"
         ]
     },
 
     {
-        "pre_string": "converting S1 to efficient rep",
-        "title": "Converting a stabiliser state vector (S1) to an efficient representation, "
-                 "extremal cases",
-        "functions_to_time": [
-            sm.circuit_from_statevector,
-            fst.stabiliser_state_from_statevector
-        ],
-        "function_strings": [
-            "stim",
-            "our method"
-        ],
-        "generation_types": [
-            gs.best_case_stab_state_with_assump,
-            gs.best_case_stab_state,
-            gs.worst_case_stab_state
-        ],
-        "generation_strings": [
-            "best case stab state with assump",
-            "best case stab state",
-            "worst case stab state without assump"
-        ]
-    },
-
-    {
-        "pre_string": "non-stab reject",
-        "title": "Rejecting a non-stabiliser state",
+        "pre_string": "testing S1",
         "functions_to_time": [
             sm.circuit_from_statevector,
             fst.is_stabiliser_state
@@ -65,12 +64,60 @@ configs = [
             "our method"
         ],
         "generation_types": [
-            gs.worst_case_almost_stab_state,
-            gs.random_stab_state
+            gs.random_stab_state,
+            gs.random_full_support_almost_stab_state
         ],
         "generation_strings": [
-            "worst case non-stab state",
-            "random stabiliser state"
+            "random stabiliser state",
+            "almost stab state"
+        ]
+    },
+
+    {
+        "pre_string": "converting C1 to efficient rep",
+        "functions_to_time": [
+            fst.clifford_from_matrix,
+            qiskit_C1_converter,
+            stim_C1_convertor
+        ],
+        "function_strings": [
+            "our method",
+            "Qiskit",
+            "stim"
+        ],
+        "generation_types": [
+            gs.random_clifford,
+            gs.random_clifford_with_assumption,
+            gs.get_identity_matrix,
+            gs.get_Hadamard_matrix,
+        ],
+        "generation_strings": [
+            "random clifford without assump",
+            "random clifford with assump",
+            "identity matrix",
+            "Hadamard matrix"
+        ]  
+    },
+
+    {
+        "pre_string": "testing C1",
+        "functions_to_time":[
+            fst.is_clifford_matrix,
+            qiskit_C1_test,
+            stim_C1_test
+        ],
+        "function_strings": [
+            "our method",
+            "Qiskit",
+            "stim"
+        ],
+        "generation_types": [
+            gs.random_clifford,
+            gs.random_almost_clifford,
+        ],
+        "generation_strings": [
+            "random clifford",
+            "almost clifford"
         ]
     }
 ]
