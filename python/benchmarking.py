@@ -13,7 +13,6 @@ qubit_numbers = list(range(min_qubits, max_qubits + 1))
 
 profile = cProfile.Profile()
 
-
 def time_function_with_generator(function_to_time, generator) -> np.ndarray:
     times = np.zeros(max_qubits - min_qubits + 1)
 
@@ -21,7 +20,7 @@ def time_function_with_generator(function_to_time, generator) -> np.ndarray:
         print(f'n is {n}')
         timer = 0
 
-        for j in range(reps):
+        for _ in range(reps):
             input = generator(n)
 
             if type(input) is tuple:
@@ -68,7 +67,7 @@ def append_benchmarking_data(pre_string='', title='', functions_to_time=[],
                 functions_to_time[function_index], generation_types[generation_index])
 
             data = Benchmarking_Data(
-                function_string, generation_string, qubit_numbers, times)
+                function_string, generation_string, qubit_numbers, times, title)
 
             with open(filename, 'wb') as fl:
                 pickle.dump(data, fl)
