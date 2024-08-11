@@ -64,13 +64,13 @@ def worst_case_stab_state(n: int) -> np.ndarray:
     stab = Stabiliser_State(n)
     stab.basis_vectors = [1 << k for k in range(n)]
     stab.dim = n
-    stab.imaginary_part = 1 << (n+1) - 1
-    stab.real_linear_part = 1 << (n+1) - 1
+    stab.imaginary_part = random.randrange(1 << n)
+    stab.real_linear_part = random.randrange(1 << n)
     quadratic_form = {}
     quadratic_form[0] = 0
     for i in range(n):
         for j in range(i+1, n):
-            quadratic_form[(1 << i) ^ (1 << j)] = 1
+            quadratic_form[(1 << i) ^ (1 << j)] = random.randrange(2)
     stab.quadratic_form = quadratic_form # for now, the quadratic_form is not opaque (see https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html), so this is a workaround
     return np.array(stab.get_state_vector())
 

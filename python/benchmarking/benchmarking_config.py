@@ -65,10 +65,12 @@ configs = [
             "our method"
         ],
         "generation_types": [
-            gs.worst_case_almost_stab_state
+            gs.worst_case_almost_stab_state,
+            gs.random_stab_state
         ],
         "generation_strings": [
-            "worst case non-stab state"
+            "worst case non-stab state",
+            "random stabiliser state"
         ]
     }
 ]
