@@ -13,12 +13,16 @@ qubit_numbers = list(range(min_qubits, max_qubits + 1))
 
 profile = cProfile.Profile()
 
-def time_function_with_generator(function_to_time, generator) -> np.ndarray:
+def time_function_with_generator(function_to_time, generator) -> tuple[np.ndarray, np.ndarray , np.ndarray]:
     times = np.zeros(max_qubits - min_qubits + 1)
+    best_times = np.zeros(max_qubits - min_qubits + 1)
+    worst_times = np.zeros(max_qubits - min_qubits + 1)
 
     for n in qubit_numbers:
         print(f'n is {n}')
         timer = 0
+        worst_time = 0
+        best_time = float('inf')
 
         for _ in range(reps):
             input = generator(n)
@@ -36,11 +40,20 @@ def time_function_with_generator(function_to_time, generator) -> np.ndarray:
                 # profile.disable()
                 et = time.perf_counter()
 
-            timer += et-st
+            exec_time = et - st
+            timer += exec_time
 
-        times[n - min_qubits] = timer/reps
+            if exec_time <= best_time:
+                best_time = exec_time
+            if exec_time >= worst_time:
+                worst_time = exec_time
 
-    return times
+        index = n - min_qubits
+        times[index] = timer/reps
+        best_times[index] = best_time
+        worst_times[index] = worst_time
+
+    return times, best_times, worst_times
 
 
 base_filestring = './python/benchmarking/data'
@@ -63,11 +76,11 @@ def append_benchmarking_data(pre_string='', title='', functions_to_time=[],
 
             print(f'timing {function_string} with {generation_string}')
 
-            times = time_function_with_generator(
+            times, best_times, worst_times = time_function_with_generator(
                 functions_to_time[function_index], generation_types[generation_index])
 
             data = Benchmarking_Data(
-                function_string, generation_string, qubit_numbers, times, title)
+                function_string, generation_string, qubit_numbers, times, title, best_times, worst_times)
 
             with open(filename, 'wb') as fl:
                 pickle.dump(data, fl)

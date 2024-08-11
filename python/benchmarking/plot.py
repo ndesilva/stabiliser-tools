@@ -3,6 +3,7 @@ import numpy as np
 import pickle
 from Benchmarking_Data import Benchmarking_Data
 from benchmarking_config import configs
+from enum import Enum
 
 base_data_path = './python/benchmarking/data/'
 base_output_path = './python/benchmarking/plots/'
@@ -31,26 +32,40 @@ def make_plots(pre_string='', title='', function_strings='', generation_strings=
 
     fig.savefig(f'{base_output_path}{title}.pdf')
 
+class Time_type(Enum):
+    BEST = 0
+    AVERAGE = 1
+    WORST = 0
+
 class Line():
-    def __init__(self, pre_string : str, function_string : str, generation_string : str, label : str):
+    def __init__(self, pre_string : str, function_string : str, generation_string : str, label : str, time_type : Time_type):
         self.pre_string = pre_string
         self.function_string = function_string
         self.generation_string = generation_string
         self.label = label
+        self.time_type = time_type
 
     def get_filename(self):
         return f'{base_data_path}{self.pre_string} {self.function_string} on {self.generation_string}.npy'
     
     def add_data(self, data : Benchmarking_Data):
         self.qubit_numbers = data.number_qubits
-        self.times = data.times
+
+        match self.time_type:
+            case Time_type.WORST:
+                self.times = data.worst_times
+            case Time_type.AVERAGE:
+                self.times = data.times
+            case Time_type.BEST:
+                self.times = data.best_times
 
 def make_alternative_plots():
     lines = [
-        Line("converting S1 to efficient rep", "our method", "best case stab state", "Our algorithm, best case"),
-        Line("converting S1 to efficient rep", "our method", "random stab state without assump", "Our algorithm, average"),
-        Line("converting S1 to efficient rep", "our method", "worst case stab state without assump", "Our algorithm, worst case"),
-        Line("converting S1 to efficient rep", "stim", "random stab state without assump", "Stim, average")
+        Line("converting S1 to efficient rep", "our method", "random stab state without assump", "Our algorithm, best", Time_type.BEST),
+        Line("converting S1 to efficient rep", "our method", "random stab state without assump", "Our algorithm, average", Time_type.AVERAGE),
+        Line("converting S1 to efficient rep", "our method", "random stab state without assump", "Our algorithm, worst", Time_type.WORST),
+        Line("converting S1 to efficient rep", "our method", "best case stab state", "Our algorithm, alt best state", Time_type.BEST),
+        # Line("converting S1 to efficient rep", "stim", "random stab state without assump", "Stim, average", Time_type.AVERAGE)
     ]
 
     fig, ax = plt.subplots()
@@ -69,6 +84,7 @@ def make_alternative_plots():
     ax.set_xticks(lines[0].qubit_numbers)
 
     fig.savefig(f'{base_output_path}Stabiliser.pdf')
+    print(lines[0].times)
 
 
 if __name__ == '__main__':
