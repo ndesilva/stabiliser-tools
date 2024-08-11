@@ -1,5 +1,4 @@
-import benchmarking.generators as gs
-import benchmarking.brute_force.stab_state_check as brute
+import generators as gs
 
 import sys
 PATH_TO_LIBRARY = './build/ninja-multi-vcpkg/cpp/src/Release'
@@ -13,12 +12,10 @@ configs = [
         "pre_string": "converting S1 to efficient rep",
         "title": "Converting a random stabiliser state vector (S1) to an efficient representation",
         "functions_to_time": [
-            # brute.stab_to_xmatr,
             sm.circuit_from_statevector,
             fst.stabiliser_state_from_statevector
         ],
         "function_strings": [
-            # "brute force",
             "stim",
             "our method"
         ],
@@ -37,21 +34,21 @@ configs = [
         "title": "Converting a stabiliser state vector (S1) to an efficient representation, "
                  "extremal cases",
         "functions_to_time": [
-            # brute.stab_to_xmatr,
             sm.circuit_from_statevector,
             fst.stabiliser_state_from_statevector
         ],
         "function_strings": [
-            # "brute force",
             "stim",
             "our method"
         ],
         "generation_types": [
             gs.best_case_stab_state_with_assump,
+            gs.best_case_stab_state,
             gs.worst_case_stab_state
         ],
         "generation_strings": [
             "best case stab state with assump",
+            "best case stab state",
             "worst case stab state without assump"
         ]
     },
@@ -60,12 +57,10 @@ configs = [
         "pre_string": "non-stab reject",
         "title": "Rejecting a non-stabiliser state",
         "functions_to_time": [
-            # brute.stab_to_xmatr,
             sm.circuit_from_statevector,
             fst.is_stabiliser_state
         ],
         "function_strings": [
-            # "brute force",
             "stim",
             "our method"
         ],

@@ -1,7 +1,7 @@
 import numpy as np
 import random
 import sys
-import benchmarking.generator_dependencies.randstab as rs
+import generator_dependencies.randstab as rs
 import scipy.stats as sts
 import qiskit.quantum_info as qi
 

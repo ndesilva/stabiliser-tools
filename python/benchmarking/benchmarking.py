@@ -1,7 +1,7 @@
 import numpy as np
 import time
 import pickle
-from benchmarking.Benchmarking_Data import Benchmarking_Data
+from Benchmarking_Data import Benchmarking_Data
 from benchmarking_config import configs
 import cProfile
 
