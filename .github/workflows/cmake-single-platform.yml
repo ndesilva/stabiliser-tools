@@ -114,5 +114,5 @@ jobs:
       - name: Save compiled python module
         uses: actions/upload-artifact@v4
         with:
-          name: python output
+          name: python output on ${{ matrix.os }}
           path: ./build/ninja-multi-vcpkg/cpp/src/Release
