@@ -53,7 +53,7 @@ configs = [
         ],
         "min_qubit_number" : 3,
         "max_qubit_number" : 11,
-        "reps" : int(1e4)
+        "reps" : int(1e3)
     },
 
     {
@@ -74,9 +74,9 @@ configs = [
             "random stabiliser state",
             "almost stab state"
         ],
-        "min_qubit_number" : 3,
-        "max_qubit_number" : 11,
-        "reps" : int(1e4)
+        "min_qubit_number" : 1,
+        "max_qubit_number" : 9,
+        "reps" : int(1e3)
     },
 
     {
@@ -103,8 +103,8 @@ configs = [
             "identity matrix",
             "Hadamard matrix"
         ],
-        "min_qubit_number" : 2,
-        "max_qubit_number" : 10,
+        "min_qubit_number" : 1,
+        "max_qubit_number" : 9,
         "reps" : int(1e3) 
     },
 
