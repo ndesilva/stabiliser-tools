@@ -2,7 +2,6 @@
 #include <catch2/matchers/catch_matchers_all.hpp>
 
 #include <vector>
-#include <iostream>
 
 #include "util/f2_helper.h"
 #include "clifford/clifford_from_matrix.h"
@@ -73,7 +72,6 @@ namespace
         SECTION("3 qubits, alternative")
         {
             std::vector<std::vector<std::complex<float>>> clifford_matrix = get_alternative_three_qubit_clifford();
-            std::cout << "STARTING TEST" << std::endl;
 
             REQUIRE(is_clifford_matrix(clifford_matrix));
         }
