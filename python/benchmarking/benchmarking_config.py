@@ -53,7 +53,7 @@ configs = [
         ],
         "min_qubit_number" : 3,
         "max_qubit_number" : 11,
-        "reps" : 1
+        "reps" : int(1e4)
     },
 
     {
@@ -76,7 +76,7 @@ configs = [
         ],
         "min_qubit_number" : 3,
         "max_qubit_number" : 11,
-        "reps" : 1
+        "reps" : int(1e4)
     },
 
     {
@@ -105,7 +105,7 @@ configs = [
         ],
         "min_qubit_number" : 2,
         "max_qubit_number" : 10,
-        "reps" : 1 
+        "reps" : int(1e3) 
     },
 
     {
@@ -130,6 +130,6 @@ configs = [
         ],
         "min_qubit_number" : 2,
         "max_qubit_number" : 10,
-        "reps" : 1 
+        "reps" : int(1e3) 
     }
 ]
