@@ -5,12 +5,11 @@ import generator_dependencies.randstab as rs
 import scipy.stats as sts
 import qiskit.quantum_info as qi
 from math import sqrt
+from typing import Tuple
 
 PATH_TO_LIBRARY = './build/ninja-multi-vcpkg/cpp/src/Release'
 sys.path.append(PATH_TO_LIBRARY)
 from fast import Pauli, Stabiliser_State
-
-from typing import Tuple
 
 def random_unitary(n: int) -> np.ndarray:
     return sts.unitary_group.rvs(1 << n)

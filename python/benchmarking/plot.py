@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
-import numpy as np
 import pickle
 from Benchmarking_Data import Benchmarking_Data
 from benchmarking_config import configs
 from math import floor, log10
 from enum import Enum
+from typing import List, Tuple
 
 base_data_path = './python/benchmarking/data/'
 base_output_path = './python/benchmarking/plots/'
@@ -66,7 +66,7 @@ class Line():
         self.plot_average_line(axis)
         axis.fill_between(self.qubit_numbers, low_line.times, high_line.times, alpha = 0.2)
 
-def make_plot(pre_string : str, line_specs : list[tuple[str, str, str, Plot_Type]], title : str, low_percentile : int = 10, high_percentile : int = 90):
+def make_plot(pre_string : str, line_specs : List[Tuple[str, str, str, Plot_Type]], title : str, low_percentile : int = 10, high_percentile : int = 90):
     fig, ax = plt.subplots()
     
     for spec in line_specs:

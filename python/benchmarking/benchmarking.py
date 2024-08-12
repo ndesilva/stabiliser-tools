@@ -1,13 +1,13 @@
-import numpy as np
 import time
 import pickle
 from Benchmarking_Data import Benchmarking_Data
 from benchmarking_config import configs
 import cProfile
+from typing import List
 
 profile = cProfile.Profile()
 
-def time_function_with_generator(function_to_time, generator, qubit_numbers : list[int], reps : int) -> list[list[float]]:
+def time_function_with_generator(function_to_time, generator, qubit_numbers : List[int], reps : int) -> List[List[float]]:
     times = []
 
     for n in qubit_numbers:
