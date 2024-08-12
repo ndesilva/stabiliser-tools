@@ -111,8 +111,8 @@ jobs:
           ctest --preset test-release
 
       # Save the build folder
-      - name: Save build Folder
+      - name: Save compiled python module
         uses: actions/upload-artifact@v4
         with:
-          name: build
-          path: ./build
+          name: python output
+          path: ./build/ninja-multi-vcpkg/cpp/src/Release
