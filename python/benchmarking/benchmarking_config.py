@@ -50,7 +50,10 @@ configs = [
             "random stab state without assump",
             "computational zero",
             "random full support stabiliser state"
-        ]
+        ],
+        "min_qubit_number" : 3,
+        "max_qubit_number" : 11,
+        "reps" : 1
     },
 
     {
@@ -70,7 +73,10 @@ configs = [
         "generation_strings": [
             "random stabiliser state",
             "almost stab state"
-        ]
+        ],
+        "min_qubit_number" : 3,
+        "max_qubit_number" : 11,
+        "reps" : 1
     },
 
     {
@@ -96,7 +102,10 @@ configs = [
             "random clifford with assump",
             "identity matrix",
             "Hadamard matrix"
-        ]  
+        ],
+        "min_qubit_number" : 2,
+        "max_qubit_number" : 10,
+        "reps" : 1 
     },
 
     {
@@ -118,6 +127,9 @@ configs = [
         "generation_strings": [
             "random clifford",
             "almost clifford"
-        ]
+        ],
+        "min_qubit_number" : 2,
+        "max_qubit_number" : 10,
+        "reps" : 1 
     }
 ]

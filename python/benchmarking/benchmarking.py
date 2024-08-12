@@ -5,15 +5,9 @@ from Benchmarking_Data import Benchmarking_Data
 from benchmarking_config import configs
 import cProfile
 
-reps = int(1)
-
-min_qubits = 3
-max_qubits = 11
-qubit_numbers = list(range(min_qubits, max_qubits + 1))
-
 profile = cProfile.Profile()
 
-def time_function_with_generator(function_to_time, generator) -> list[list[float]]:
+def time_function_with_generator(function_to_time, generator, qubit_numbers : list[int], reps : int) -> list[list[float]]:
     times = []
 
     for n in qubit_numbers:
@@ -46,12 +40,14 @@ def time_function_with_generator(function_to_time, generator) -> list[list[float
 base_filestring = './python/benchmarking/data'
 
 def append_benchmarking_data(pre_string='', functions_to_time=[], 
-                             function_strings=[], generation_types=[], generation_strings=[]):
+                             function_strings=[], generation_types=[], generation_strings=[], min_qubit_number = 1, max_qubit_number = 1, reps = 1):
     num_functions = len(functions_to_time)
     num_generators = len(generation_types)
 
     assert num_functions == len(function_strings)
     assert num_generators == len(generation_strings)
+
+    qubit_numbers = list(range(min_qubit_number, max_qubit_number + 1))
 
     for function_index in range(num_functions):
         for generation_index in range(num_generators):
@@ -64,7 +60,9 @@ def append_benchmarking_data(pre_string='', functions_to_time=[],
 
             times = time_function_with_generator(
                 functions_to_time[function_index], 
-                generation_types[generation_index]
+                generation_types[generation_index],
+                qubit_numbers,
+                reps
             )
 
             data = Benchmarking_Data(
