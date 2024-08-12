@@ -2,6 +2,7 @@
 #include <catch2/matchers/catch_matchers_all.hpp>
 
 #include <vector>
+#include <iostream>
 
 #include "util/f2_helper.h"
 #include "clifford/clifford_from_matrix.h"
@@ -15,14 +16,14 @@ namespace
 {
     std::vector<std::vector<std::complex<float>>> get_three_qubit_clifford()
     {
-        return {{0.5f*I, 0.5f*I, .0f, .0f, -0.5f*I, -0.5f*I, .0f, .0f, },
-                {.0f, .0f, 0.5f*I, -0.5f*I, .0f, .0f, -0.5f*I, 0.5f*I, },
-                {.0f, .0f, 0.5f*I, 0.5f*I, .0f, .0f, -0.5f*I, -0.5f*I, },
-                {0.5f*I, -0.5f*I, .0f, .0f, -0.5f*I, 0.5f*I, .0f, .0f, },
-                {.0f, .0f, 0.5f, 0.5f, .0f, .0f, 0.5f, 0.5f, },
-                {0.5f, -0.5f, .0f, .0f, 0.5f, -0.5f, .0f, .0f, },
-                {0.5f, 0.5f, .0f, .0f, 0.5f, 0.5f, .0f, .0f, },
-                {.0f, .0f, 0.5f, -0.5f, .0f, .0f, 0.5f, -0.5f, }};
+        return {{ .0f, -0.5f*I, .0f, 0.5f*I, 0.5f, .0f, -0.5f, .0f },
+                { .0f, -0.5f*I, .0f, 0.5f*I, -0.5f, .0f, 0.5f, .0f },
+                { 0.5f, .0f, -0.5f, .0f, .0f, -0.5f*I, .0f, 0.5f*I },
+                { -0.5f, .0f, 0.5f, .0f, .0f, -0.5f*I, .0f, 0.5f*I },
+                { .0f, 0.5f, .0f, 0.5f, 0.5f*I, .0f, 0.5f*I, .0f },
+                { .0f, -0.5f, .0f, -0.5f, 0.5f*I, .0f, 0.5f*I, .0f },
+                { 0.5f*I, .0f, 0.5f*I, .0f, .0f, 0.5f, .0f, 0.5f },
+                { 0.5f*I, .0f, 0.5f*I, .0f, .0f, -0.5f, .0f, -0.5f }};
     }
 
     std::vector<std::vector<std::complex<float>>> get_three_qubit_clifford_with_phase(const std::complex<float> phase)
@@ -39,6 +40,19 @@ namespace
 
         return matrix;
     }
+
+    std::vector<std::vector<std::complex<float>>> get_alternative_three_qubit_clifford()
+    {
+        return {{.0f, -0.5f*I, .0f, 0.5f*I, 0.5f, .0f, -0.5f, .0f},
+{.0f, -0.5f*I, .0f, 0.5f*I, -0.5f, .0f, 0.5f, .0f},
+{0.5f, .0f, -0.5f, .0f, .0f, -0.5f*I, .0f, 0.5f*I},
+{-0.5f, .0f, 0.5f, .0f, .0f, -0.5f*I, .0f, 0.5f*I},
+{.0f, 0.5f, .0f, 0.5f, 0.5f*I, .0f, 0.5f*I, .0f},
+{.0f, -0.5f, .0f, -0.5f, 0.5f*I, .0f, 0.5f*I, .0f},
+{0.5f*I, .0f, 0.5f*I, .0f, .0f, 0.5f, .0f, 0.5f},
+{0.5f*I, .0f, 0.5f*I, .0f, .0f, -0.5f, .0f, -0.5f}};
+
+    }
     
     TEST_CASE("testing correct cliffords", "[matrix -> clifford]")
     {
@@ -52,6 +66,14 @@ namespace
         SECTION("3 qubits")
         {
             std::vector<std::vector<std::complex<float>>> clifford_matrix = get_three_qubit_clifford();
+
+            REQUIRE(is_clifford_matrix(clifford_matrix));
+        }
+
+        SECTION("3 qubits, alternative")
+        {
+            std::vector<std::vector<std::complex<float>>> clifford_matrix = get_alternative_three_qubit_clifford();
+            std::cout << "STARTING TEST" << std::endl;
 
             REQUIRE(is_clifford_matrix(clifford_matrix));
         }

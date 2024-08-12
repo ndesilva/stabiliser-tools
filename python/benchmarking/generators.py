@@ -98,7 +98,9 @@ def computational_zero(n: int) -> np.ndarray:
 
 
 def random_clifford(n: int) -> np.ndarray:
-    return qi.random_clifford(n).to_matrix()
+    matrix = qi.random_clifford(n).to_matrix()
+    first_col_norm = matrix[0] @ matrix[0].conjugate()
+    return matrix / sqrt(first_col_norm)
 
 
 def random_clifford_with_assumption(n : int) -> Tuple[np.ndarray, bool]:
