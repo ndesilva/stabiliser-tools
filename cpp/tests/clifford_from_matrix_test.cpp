@@ -16,14 +16,14 @@ namespace
 {
     std::vector<std::vector<std::complex<float>>> get_three_qubit_clifford()
     {
-        return {{ .0f, -0.5f*I, .0f, 0.5f*I, 0.5f, .0f, -0.5f, .0f },
-                { .0f, -0.5f*I, .0f, 0.5f*I, -0.5f, .0f, 0.5f, .0f },
-                { 0.5f, .0f, -0.5f, .0f, .0f, -0.5f*I, .0f, 0.5f*I },
-                { -0.5f, .0f, 0.5f, .0f, .0f, -0.5f*I, .0f, 0.5f*I },
-                { .0f, 0.5f, .0f, 0.5f, 0.5f*I, .0f, 0.5f*I, .0f },
-                { .0f, -0.5f, .0f, -0.5f, 0.5f*I, .0f, 0.5f*I, .0f },
-                { 0.5f*I, .0f, 0.5f*I, .0f, .0f, 0.5f, .0f, 0.5f },
-                { 0.5f*I, .0f, 0.5f*I, .0f, .0f, -0.5f, .0f, -0.5f }};
+        return {{0.5f*I, 0.5f*I, .0f, .0f, -0.5f*I, -0.5f*I, .0f, .0f, },
+                {.0f, .0f, 0.5f*I, -0.5f*I, .0f, .0f, -0.5f*I, 0.5f*I, },
+                {.0f, .0f, 0.5f*I, 0.5f*I, .0f, .0f, -0.5f*I, -0.5f*I, },
+                {0.5f*I, -0.5f*I, .0f, .0f, -0.5f*I, 0.5f*I, .0f, .0f, },
+                {.0f, .0f, 0.5f, 0.5f, .0f, .0f, 0.5f, 0.5f, },
+                {0.5f, -0.5f, .0f, .0f, 0.5f, -0.5f, .0f, .0f, },
+                {0.5f, 0.5f, .0f, .0f, 0.5f, 0.5f, .0f, .0f, },
+                {.0f, .0f, 0.5f, -0.5f, .0f, .0f, 0.5f, -0.5f, }};
     }
 
     std::vector<std::vector<std::complex<float>>> get_three_qubit_clifford_with_phase(const std::complex<float> phase)
@@ -44,13 +44,13 @@ namespace
     std::vector<std::vector<std::complex<float>>> get_alternative_three_qubit_clifford()
     {
         return {{.0f, -0.5f*I, .0f, 0.5f*I, 0.5f, .0f, -0.5f, .0f},
-{.0f, -0.5f*I, .0f, 0.5f*I, -0.5f, .0f, 0.5f, .0f},
-{0.5f, .0f, -0.5f, .0f, .0f, -0.5f*I, .0f, 0.5f*I},
-{-0.5f, .0f, 0.5f, .0f, .0f, -0.5f*I, .0f, 0.5f*I},
-{.0f, 0.5f, .0f, 0.5f, 0.5f*I, .0f, 0.5f*I, .0f},
-{.0f, -0.5f, .0f, -0.5f, 0.5f*I, .0f, 0.5f*I, .0f},
-{0.5f*I, .0f, 0.5f*I, .0f, .0f, 0.5f, .0f, 0.5f},
-{0.5f*I, .0f, 0.5f*I, .0f, .0f, -0.5f, .0f, -0.5f}};
+                {.0f, -0.5f*I, .0f, 0.5f*I, -0.5f, .0f, 0.5f, .0f},
+                {0.5f, .0f, -0.5f, .0f, .0f, -0.5f*I, .0f, 0.5f*I},
+                {-0.5f, .0f, 0.5f, .0f, .0f, -0.5f*I, .0f, 0.5f*I},
+                {.0f, 0.5f, .0f, 0.5f, 0.5f*I, .0f, 0.5f*I, .0f},
+                {.0f, -0.5f, .0f, -0.5f, 0.5f*I, .0f, 0.5f*I, .0f},
+                {0.5f*I, .0f, 0.5f*I, .0f, .0f, 0.5f, .0f, 0.5f},
+                {0.5f*I, .0f, 0.5f*I, .0f, .0f, -0.5f, .0f, -0.5f}};
 
     }
     
@@ -190,9 +190,6 @@ namespace
             matrix[6][0] *= -1.0f;
 
             REQUIRE_THROWS_AS(clifford_from_matrix(matrix), std::invalid_argument);
-
-            // Check doesn't throw
-            clifford_from_matrix(matrix, true);
         }
 
         SECTION("incorrect remaining column, 3 qubit")

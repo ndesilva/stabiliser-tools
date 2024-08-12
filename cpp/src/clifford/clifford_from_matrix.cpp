@@ -126,13 +126,10 @@ namespace
 
         for (std::size_t i = 0; i < number_qubits; i++)
         {
-            if constexpr (!assume_valid)
+            if (first_col_effects[i] == 0)
             {
-                if (first_col_effects[i] == 0)
-                {
-                    std::cout << "REJECTING DUE TO DUPLICATE COL" << std::endl;
-                    return {};
-                }
+                std::cout << "REJECTING DUE TO DUPLICATE COL" << std::endl;
+                return {};
             }
 
             std::size_t pivot_index = integral_log_2(first_col_effects[i]);
