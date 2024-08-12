@@ -109,3 +109,10 @@ jobs:
       - name: Test (Release configuration)
         run: |
           ctest --preset test-release
+
+      # Save the build folder
+      - name: Save build Folder
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: ./build
