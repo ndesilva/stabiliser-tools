@@ -115,6 +115,8 @@ def get_Hadamard_matrix(n : int) -> np.ndarray:
 
     return np.array(matrix)
 
+def get_anti_identiy_matrix(n : int) -> np.ndarray:
+    return np.eye(1 << n)[::-1]
 
 def random_almost_clifford(n: int) -> np.ndarray:
     matrix = random_clifford(n)

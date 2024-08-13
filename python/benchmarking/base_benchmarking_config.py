@@ -51,7 +51,7 @@ configs = [
             "computational zero",
             "random full support stabiliser state"
         ],
-        "min_qubit_number" : 3,
+        "min_qubit_number" : 1,
         "max_qubit_number" : 11,
         "reps" : int(1e3)
     },
@@ -75,7 +75,7 @@ configs = [
             "almost stab state"
         ],
         "min_qubit_number" : 1,
-        "max_qubit_number" : 9,
+        "max_qubit_number" : 11,
         "reps" : int(1e3)
     },
 
@@ -96,12 +96,14 @@ configs = [
             gs.random_clifford_with_assumption,
             gs.get_identity_matrix,
             gs.get_Hadamard_matrix,
+            gs.get_anti_identiy_matrix,
         ],
         "generation_strings": [
             "random clifford without assump",
             "random clifford with assump",
             "identity matrix",
-            "Hadamard matrix"
+            "Hadamard matrix",
+            "anti-identity matrix"
         ],
         "min_qubit_number" : 1,
         "max_qubit_number" : 9,
