@@ -56,16 +56,17 @@ class Line():
                 self.plot_average_line(axis)
 
     def plot_average_line(self, axis):
-        axis.plot(self.qubit_numbers, self.times, label = self.label)
+        return axis.plot(self.qubit_numbers, self.times, label = self.label)
 
     def plot_percentile(self, axis, low_percentile : int = 10, high_percentile : int = 90):
-        low_line = Line(self.pre_string, self.function_string, self.generation_string, self.label, numerical_type = Numerical_Type.LOG, percentile = high_percentile)
-        high_line = Line(self.pre_string, self.function_string, self.generation_string, self.label, numerical_type = Numerical_Type.LOG, percentile = low_percentile)
+        low_line = Line(self.pre_string, self.function_string, self.generation_string, self.label, numerical_type = self.numerical_type, percentile = high_percentile)
+        high_line = Line(self.pre_string, self.function_string, self.generation_string, self.label, numerical_type = self.numerical_type, percentile = low_percentile)
 
-        self.plot_average_line(axis)
-        axis.fill_between(self.qubit_numbers, low_line.times, high_line.times, alpha = 0.2)
+        line_list = self.plot_average_line(axis)
+        last_color = line_list[-1].get_color()
+        axis.fill_between(self.qubit_numbers, low_line.times, high_line.times, alpha = 0.2, color = last_color)
 
-def make_plot(pre_string : str, line_specs : List[Tuple[str, str, str, Plot_Type]], title : str, low_percentile : int = 25, high_percentile : int = 75):
+def make_plot(pre_string : str, line_specs : List[Tuple[str, str, str, Plot_Type]], title : str, low_percentile : int = 33, high_percentile : int = 66):
     fig, ax = plt.subplots()
     
     for spec in line_specs:
@@ -131,6 +132,7 @@ if __name__ == '__main__':
             ("our method", "random clifford with assump", "Random Clifford (with assumption)", Plot_Type.PERCENTILE),
             ("our method", "identity matrix", "Identity matrix", Plot_Type.AVERAGE),
             ("our method", "Hadamard matrix", "Hadamard matrix", Plot_Type.AVERAGE),
+            ("our method", "anti-identity matrix", "Anti-identity matrix", Plot_Type.AVERAGE)
         ],
         "(C1) to efficient representation, different inputs"
     )
@@ -140,8 +142,8 @@ if __name__ == '__main__':
         [
             ("our method", "random clifford", "Our method, random Clifford", Plot_Type.PERCENTILE),
             ("our method", "almost clifford", 'Our method, random "almost" Clifford', Plot_Type.PERCENTILE),
-            # ("stim", "random clifford", "stim, random Clifford", Plot_Type.PERCENTILE),
-            # ("stim", "almost clifford", 'stim, random "almost" Clifford', Plot_Type.PERCENTILE),
+            ("stim", "random clifford", "stim, random Clifford", Plot_Type.PERCENTILE),
+            ("stim", "almost clifford", 'stim, random "almost" Clifford', Plot_Type.PERCENTILE),
             ("Qiskit", "random clifford", "Qiskit, random Clifford", Plot_Type.PERCENTILE),
             ("Qiskit", "almost clifford", 'Qiskit, random "almost" Clifford', Plot_Type.PERCENTILE),
         ],

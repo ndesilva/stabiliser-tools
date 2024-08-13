@@ -114,13 +114,9 @@ configs = [
         "pre_string": "testing C1",
         "functions_to_time":[
             fst.is_clifford_matrix,
-            qiskit_C1_test,
-            stim_C1_test
         ],
         "function_strings": [
             "our method",
-            "Qiskit",
-            "stim"
         ],
         "generation_types": [
             gs.random_clifford,
@@ -128,6 +124,27 @@ configs = [
         ],
         "generation_strings": [
             "random clifford",
+            "almost clifford"
+        ],
+        "min_qubit_number" : 1,
+        "max_qubit_number" : 9,
+        "reps" : int(1e3) 
+    },
+
+    {
+        "pre_string": "testing C1",
+        "functions_to_time":[
+            qiskit_C1_test,
+            stim_C1_test
+        ],
+        "function_strings": [
+            "Qiskit",
+            "stim"
+        ],
+        "generation_types": [
+            gs.random_almost_clifford,
+        ],
+        "generation_strings": [
             "almost clifford"
         ],
         "min_qubit_number" : 1,

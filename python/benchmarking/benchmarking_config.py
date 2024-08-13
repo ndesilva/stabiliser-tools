@@ -29,24 +29,4 @@ def stim_C1_test(matrix):
 
 
 configs = [
-    {
-        "pre_string": "testing C1",
-        "functions_to_time":[
-            stim_C1_test
-        ],
-        "function_strings": [
-            "stim"
-        ],
-        "generation_types": [
-            gs.random_clifford,
-            gs.random_almost_clifford,
-        ],
-        "generation_strings": [
-            "random clifford",
-            "almost clifford"
-        ],
-        "min_qubit_number" : 1,
-        "max_qubit_number" : 9,
-        "reps" : int(1e3) 
-    }
 ]
