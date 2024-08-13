@@ -39,6 +39,40 @@ namespace
 
         return matrix;
     }
+
+    std::vector<std::vector<std::complex<float>>> get_alternative_three_qubit_clifford()
+    {
+        return {{.0f, -0.5f*I, .0f, 0.5f*I, 0.5f, .0f, -0.5f, .0f},
+                {.0f, -0.5f*I, .0f, 0.5f*I, -0.5f, .0f, 0.5f, .0f},
+                {0.5f, .0f, -0.5f, .0f, .0f, -0.5f*I, .0f, 0.5f*I},
+                {-0.5f, .0f, 0.5f, .0f, .0f, -0.5f*I, .0f, 0.5f*I},
+                {.0f, 0.5f, .0f, 0.5f, 0.5f*I, .0f, 0.5f*I, .0f},
+                {.0f, -0.5f, .0f, -0.5f, 0.5f*I, .0f, 0.5f*I, .0f},
+                {0.5f*I, .0f, 0.5f*I, .0f, .0f, 0.5f, .0f, 0.5f},
+                {0.5f*I, .0f, 0.5f*I, .0f, .0f, -0.5f, .0f, -0.5f}};
+
+    }
+
+    std::vector<std::vector<std::complex<float>>> get_four_qubit_clifford()
+    {
+        return {{0.35355339f, .0f, 0.35355339f*I, .0f, .0f, 0.35355339f, .0f, 0.35355339f*I, .0f, 0.35355339f*I, .0f, 0.35355339f, 0.35355339f*I, .0f, 0.35355339f, .0f},
+                {.0f, 0.35355339f*I, .0f, 0.35355339f, -0.35355339f*I, .0f, -0.35355339f, .0f, -0.35355339f, .0f, -0.35355339f*I, .0f, .0f, 0.35355339f, .0f, 0.35355339f*I}, 
+                {.0f, -0.35355339f*I, .0f, 0.35355339f, 0.35355339f*I, .0f, -0.35355339f, .0f, 0.35355339f, .0f, -0.35355339f*I, .0f, .0f, -0.35355339f, .0f, 0.35355339f*I}, 
+                {-0.35355339f, .0f, 0.35355339f*I, .0f, .0f, -0.35355339f, .0f, 0.35355339f*I, .0f, -0.35355339f*I, .0f, 0.35355339f, -0.35355339f*I, .0f, 0.35355339f, .0f}, 
+                {.0f, -0.35355339f, .0f, 0.35355339f*I, 0.35355339f, .0f, -0.35355339f*I, .0f, 0.35355339f*I, .0f, -0.35355339f, .0f, .0f, -0.35355339f*I, .0f, 0.35355339f}, 
+                {-0.35355339f*I, .0f, 0.35355339f, .0f, .0f, -0.35355339f*I, .0f, 0.35355339f, .0f, -0.35355339f, .0f, 0.35355339f*I, -0.35355339f, .0f, 0.35355339f*I, .0f}, 
+                {0.35355339f*I, .0f, 0.35355339f, .0f, .0f, 0.35355339f*I, .0f, 0.35355339f, .0f, 0.35355339f, .0f, 0.35355339f*I, 0.35355339f, .0f, 0.35355339f*I, .0f},     
+                {.0f, 0.35355339f, .0f, 0.35355339f*I, -0.35355339f, .0f, -0.35355339f*I, .0f, -0.35355339f*I, .0f, -0.35355339f, .0f, .0f, 0.35355339f*I, .0f, 0.35355339f}, 
+                {-0.35355339f, .0f, 0.35355339f*I, .0f, .0f, 0.35355339f, .0f, -0.35355339f*I, .0f, 0.35355339f*I, .0f, -0.35355339f, -0.35355339f*I, .0f, 0.35355339f, .0f}, 
+                {.0f, -0.35355339f*I, .0f, 0.35355339f, -0.35355339f*I, .0f, 0.35355339f, .0f, -0.35355339f, .0f, 0.35355339f*I, .0f, .0f, -0.35355339f, .0f, 0.35355339f*I}, 
+                {.0f, -0.35355339f*I, .0f, -0.35355339f, -0.35355339f*I, .0f, -0.35355339f, .0f, -0.35355339f, .0f, -0.35355339f*I, .0f, .0f, -0.35355339f, .0f, -0.35355339f*I},
+                {-0.35355339f, .0f, -0.35355339f*I, .0f, .0f, 0.35355339f, .0f, 0.35355339f*I, .0f, 0.35355339f*I, .0f, 0.35355339f, -0.35355339f*I, .0f, -0.35355339f, .0f}, 
+                {.0f, 0.35355339f, .0f, 0.35355339f*I, 0.35355339f, .0f, 0.35355339f*I, .0f, 0.35355339f*I, .0f, 0.35355339f, .0f, .0f, 0.35355339f*I, .0f, 0.35355339f},     
+                {0.35355339f*I, .0f, 0.35355339f, .0f, .0f, -0.35355339f*I, .0f, -0.35355339f, .0f, -0.35355339f, .0f, -0.35355339f*I, 0.35355339f, .0f, 0.35355339f*I, .0f}, 
+                {0.35355339f*I, .0f, -0.35355339f, .0f, .0f, -0.35355339f*I, .0f, 0.35355339f, .0f, -0.35355339f, .0f, 0.35355339f*I, 0.35355339f, .0f, -0.35355339f*I, .0f}, 
+                {.0f, 0.35355339f, .0f, -0.35355339f*I, 0.35355339f, .0f, -0.35355339f*I, .0f, 0.35355339f*I, .0f, -0.35355339f, .0f, .0f, 0.35355339f*I, .0f, -0.35355339f}};
+
+    }
     
     TEST_CASE("testing correct cliffords", "[matrix -> clifford]")
     {
@@ -56,6 +90,13 @@ namespace
             REQUIRE(is_clifford_matrix(clifford_matrix));
         }
 
+        SECTION("3 qubits, alternative")
+        {
+            std::vector<std::vector<std::complex<float>>> clifford_matrix = get_alternative_three_qubit_clifford();
+
+            REQUIRE(is_clifford_matrix(clifford_matrix));
+        }
+
         SECTION("3 qubits, global factor")
         {
             const std::complex<float> global_phase(1 / std::sqrt(2.0f), 1 / std::sqrt(2.0f));
@@ -64,6 +105,14 @@ namespace
 
             REQUIRE(is_clifford_matrix(clifford_matrix));
         }
+
+        SECTION("4 qubits")
+        {
+            std::vector<std::vector<std::complex<float>>> clifford_matrix = get_four_qubit_clifford();
+
+            REQUIRE(is_clifford_matrix(clifford_matrix));
+        }
+        
     }
 
     void multiply_column_by_phase (std::vector<std::vector<std::complex<float>>> &matrix, const std::size_t col_index, const std::complex<float> phase)
@@ -168,9 +217,6 @@ namespace
             matrix[6][0] *= -1.0f;
 
             REQUIRE_THROWS_AS(clifford_from_matrix(matrix), std::invalid_argument);
-
-            // Check doesn't throw
-            clifford_from_matrix(matrix, true);
         }
 
         SECTION("incorrect remaining column, 3 qubit")

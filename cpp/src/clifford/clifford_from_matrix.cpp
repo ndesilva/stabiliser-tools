@@ -35,7 +35,7 @@ namespace
         std::vector<std::vector<std::complex<float>>> transposed_matrix = transpose_matrix(matrix, size);
 
         if (!is_power_of_2(size))
-        {
+        {   
             return {};
         }
 
@@ -46,10 +46,10 @@ namespace
             first_col_state = std::move(stabiliser_from_statevector(transposed_matrix[0], assume_valid));
         }
         catch (...)
-        {
+        {   
             return {};
         }
-        
+
         std::size_t number_qubits = first_col_state.number_qubits;
 
         Check_Matrix first_col_check_matrix (first_col_state);
@@ -116,12 +116,9 @@ namespace
 
         for (std::size_t i = 0; i < number_qubits; i++)
         {
-            if constexpr (!assume_valid)
+            if (first_col_effects[i] == 0)
             {
-                if (first_col_effects[i] == 0)
-                {
-                    return {};
-                }
+                return {};
             }
 
             std::size_t pivot_index = integral_log_2(first_col_effects[i]);
@@ -195,19 +192,16 @@ namespace
 
             for (std::size_t j = 0; j < number_qubits; j++)
             {
-                if (j!=i)
-                {
-                    std::size_t ij_non_zero_index = i_non_zero_index ^ W_paulis[j].x_vector;
-                    std::complex<float> relative_phase = transposed_matrix[integral_pow_2(j)^i_col_index][ij_non_zero_index]/(i_non_zero_entry*sign_f2_dot_product(i_non_zero_index, W_paulis[j].z_vector)*W_paulis[j].get_phase());
+                std::size_t ij_non_zero_index = i_non_zero_index ^ W_paulis[j].x_vector;
+                std::complex<float> relative_phase = transposed_matrix[i_col_index ^ integral_pow_2(j)][ij_non_zero_index]/(i_non_zero_entry*sign_f2_dot_product(i_non_zero_index, W_paulis[j].z_vector)*W_paulis[j].get_phase());
 
-                    if (std::norm(relative_phase + 1.0f) < 0.125)
-                    {
-                        W_paulis[j].multiply_by_pauli_on_right(z_conjugates[i]);
-                    }
-                    else if (std::norm(relative_phase - 1.0f) >= 0.125)
-                    {
-                        return {};
-                    }
+                if (std::norm(relative_phase + 1.0f) < 0.125)
+                {
+                    W_paulis[j].multiply_by_pauli_on_right(z_conjugates[i]);
+                }
+                else if (std::norm(relative_phase - 1.0f) >= 0.125)
+                {
+                    return {};
                 }
             }
         }
@@ -263,8 +257,5 @@ fst::Clifford fst::clifford_from_matrix(const std::vector<std::vector<std::compl
 
 bool fst::is_clifford_matrix(const std::vector<std::vector<std::complex<float>>> &matrix )
 {
-    bool result = clifford_from_matrix_internal<false, false>(matrix);
-    return result;
-
-    // return clifford_from_matrix_internal<false, false>(matrix);
+    return clifford_from_matrix_internal<false, false>(matrix);
 }

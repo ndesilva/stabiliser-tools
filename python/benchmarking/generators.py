@@ -1,15 +1,15 @@
 import numpy as np
 import random
 import sys
-import benchmarking.generator_dependencies.randstab as rs
+import generator_dependencies.randstab as rs
 import scipy.stats as sts
 import qiskit.quantum_info as qi
+from math import sqrt
+from typing import Tuple
 
 PATH_TO_LIBRARY = './build/ninja-multi-vcpkg/cpp/src/Release'
 sys.path.append(PATH_TO_LIBRARY)
 from fast import Pauli, Stabiliser_State
-
-from typing import Tuple
 
 def random_unitary(n: int) -> np.ndarray:
     return sts.unitary_group.rvs(1 << n)
@@ -60,23 +60,23 @@ def random_almost_stab_state(n: int) -> np.ndarray:
     return stab_state
 
 
-def worst_case_stab_state(n: int) -> np.ndarray:
+def random_full_support_stab_state(n: int) -> np.ndarray:
     stab = Stabiliser_State(n)
     stab.basis_vectors = [1 << k for k in range(n)]
     stab.dim = n
-    stab.imaginary_part = 1 << (n+1) - 1
-    stab.real_linear_part = 1 << (n+1) - 1
+    stab.imaginary_part = random.randrange(1 << n)
+    stab.real_linear_part = random.randrange(1 << n)
     quadratic_form = {}
     quadratic_form[0] = 0
     for i in range(n):
         for j in range(i+1, n):
-            quadratic_form[(1 << i) ^ (1 << j)] = 1
+            quadratic_form[(1 << i) ^ (1 << j)] = random.randrange(2)
     stab.quadratic_form = quadratic_form # for now, the quadratic_form is not opaque (see https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html), so this is a workaround
     return np.array(stab.get_state_vector())
 
 
-def worst_case_almost_stab_state(n: int) -> np.ndarray:
-    stab_vector = worst_case_stab_state(n)
+def random_full_support_almost_stab_state(n: int) -> np.ndarray:
+    stab_vector = random_full_support_stab_state(n)
     i = random.randrange(1 << n)
 
     if stab_vector[i]:
@@ -90,19 +90,33 @@ def worst_case_almost_stab_state(n: int) -> np.ndarray:
     return stab_vector
 
 
-def best_case_stab_state(n: int) -> np.ndarray:
+def computational_zero(n: int) -> np.ndarray:
     e_1 = np.zeros(1 << n)
     e_1[0] = 1
     return e_1
 
 
-def best_case_stab_state_with_assump(n: int) -> Tuple[np.ndarray, bool]:
-    return best_case_stab_state(n), True
-
-
 def random_clifford(n: int) -> np.ndarray:
-    return qi.random_clifford(n).to_matrix()
+    matrix = qi.random_clifford(n).to_matrix()
+    first_col_norm = matrix[0] @ matrix[0].conjugate()
+    return matrix / sqrt(first_col_norm)
 
+
+def random_clifford_with_assumption(n : int) -> Tuple[np.ndarray, bool]:
+    return random_clifford(n), True
+
+def get_identity_matrix(n : int) -> np.ndarray:
+    return np.eye( 1<< n )
+
+def get_Hadamard_matrix(n : int) -> np.ndarray:
+    N = 1 << n
+    factor = 1/sqrt(N)
+    matrix = [ [factor * (1 - 2 * ((i & j).bit_count() & 1)) for i in range(N)] for j in range(N)]
+
+    return np.array(matrix)
+
+def get_anti_identiy_matrix(n : int) -> np.ndarray:
+    return np.eye(1 << n)[::-1]
 
 def random_almost_clifford(n: int) -> np.ndarray:
     matrix = random_clifford(n)
