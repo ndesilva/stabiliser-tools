@@ -30,94 +30,11 @@ def stim_C1_test(matrix):
 
 configs = [
     {
-        "pre_string": "converting S1 to efficient rep",
-        "functions_to_time": [
-            sm.circuit_from_statevector,
-            fst.stabiliser_state_from_statevector
-        ],
-        "function_strings": [
-            "stim",
-            "our method"
-        ],
-        "generation_types": [
-            gs.random_stab_state_with_assump,
-            gs.random_stab_state,
-            gs.computational_zero,
-            gs.random_full_support_stab_state,
-        ],
-        "generation_strings": [
-            "random stab state with assump",
-            "random stab state without assump",
-            "computational zero",
-            "random full support stabiliser state"
-        ],
-        "min_qubit_number" : 3,
-        "max_qubit_number" : 11,
-        "reps" : int(1e3)
-    },
-
-    {
-        "pre_string": "testing S1",
-        "functions_to_time": [
-            sm.circuit_from_statevector,
-            fst.is_stabiliser_state
-        ],
-        "function_strings": [
-            "stim",
-            "our method"
-        ],
-        "generation_types": [
-            gs.random_stab_state,
-            gs.random_full_support_almost_stab_state
-        ],
-        "generation_strings": [
-            "random stabiliser state",
-            "almost stab state"
-        ],
-        "min_qubit_number" : 1,
-        "max_qubit_number" : 9,
-        "reps" : int(1e3)
-    },
-
-    {
-        "pre_string": "converting C1 to efficient rep",
-        "functions_to_time": [
-            fst.clifford_from_matrix,
-            qiskit_C1_converter,
-            stim_C1_convertor
-        ],
-        "function_strings": [
-            "our method",
-            "Qiskit",
-            "stim"
-        ],
-        "generation_types": [
-            gs.random_clifford,
-            gs.random_clifford_with_assumption,
-            gs.get_identity_matrix,
-            gs.get_Hadamard_matrix,
-        ],
-        "generation_strings": [
-            "random clifford without assump",
-            "random clifford with assump",
-            "identity matrix",
-            "Hadamard matrix"
-        ],
-        "min_qubit_number" : 1,
-        "max_qubit_number" : 9,
-        "reps" : int(1e3) 
-    },
-
-    {
         "pre_string": "testing C1",
         "functions_to_time":[
-            fst.is_clifford_matrix,
-            qiskit_C1_test,
             stim_C1_test
         ],
         "function_strings": [
-            "our method",
-            "Qiskit",
             "stim"
         ],
         "generation_types": [

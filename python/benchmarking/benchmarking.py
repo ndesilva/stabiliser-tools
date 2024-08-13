@@ -15,6 +15,8 @@ def time_function_with_generator(function_to_time, generator, qubit_numbers : Li
         recorded_times = [.0]*reps
 
         for j in range(reps):
+            if (j % 100 == 0):
+                print(f'iteration {j}')
             input = generator(n)
 
             if type(input) is tuple:

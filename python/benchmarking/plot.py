@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import pickle
 from Benchmarking_Data import Benchmarking_Data
-from benchmarking_config import configs
 from math import floor, log10
 from enum import Enum
 from typing import List, Tuple
@@ -66,7 +65,7 @@ class Line():
         self.plot_average_line(axis)
         axis.fill_between(self.qubit_numbers, low_line.times, high_line.times, alpha = 0.2)
 
-def make_plot(pre_string : str, line_specs : List[Tuple[str, str, str, Plot_Type]], title : str, low_percentile : int = 10, high_percentile : int = 90):
+def make_plot(pre_string : str, line_specs : List[Tuple[str, str, str, Plot_Type]], title : str, low_percentile : int = 25, high_percentile : int = 75):
     fig, ax = plt.subplots()
     
     for spec in line_specs:
@@ -111,7 +110,7 @@ if __name__ == '__main__':
             ("stim", "random stabiliser state", "Stim, random stabiliser state", Plot_Type.PERCENTILE),
             ("stim", "almost stab state", 'Stim, random "almost" stabiliser state', Plot_Type.PERCENTILE)
         ],
-        "Testing (S1), comparison with stim"
+        "Testing (S1), comparison with stim",
     )
 
     make_plot(
@@ -141,8 +140,8 @@ if __name__ == '__main__':
         [
             ("our method", "random clifford", "Our method, random Clifford", Plot_Type.PERCENTILE),
             ("our method", "almost clifford", 'Our method, random "almost" Clifford', Plot_Type.PERCENTILE),
-            ("stim", "random clifford", "stim, random Clifford", Plot_Type.PERCENTILE),
-            ("stim", "almost clifford", 'stim, random "almost" Clifford', Plot_Type.PERCENTILE),
+            # ("stim", "random clifford", "stim, random Clifford", Plot_Type.PERCENTILE),
+            # ("stim", "almost clifford", 'stim, random "almost" Clifford', Plot_Type.PERCENTILE),
             ("Qiskit", "random clifford", "Qiskit, random Clifford", Plot_Type.PERCENTILE),
             ("Qiskit", "almost clifford", 'Qiskit, random "almost" Clifford', Plot_Type.PERCENTILE),
         ],
