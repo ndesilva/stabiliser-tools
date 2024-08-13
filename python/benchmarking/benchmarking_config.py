@@ -128,8 +128,8 @@ configs = [
             "random clifford",
             "almost clifford"
         ],
-        "min_qubit_number" : 2,
-        "max_qubit_number" : 10,
+        "min_qubit_number" : 1,
+        "max_qubit_number" : 9,
         "reps" : int(1e3) 
     }
 ]
