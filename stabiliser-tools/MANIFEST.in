@@ -1,0 +1,2 @@
+include src/stab_tools/*.so
+recursive-include src *.cc *.h

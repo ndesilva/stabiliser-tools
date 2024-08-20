@@ -1,0 +1,10 @@
+Metadata-Version: 2.1
+Name: stabiliser-tools
+Version: 1.0.3
+Summary: Fast algorithms for verifying and converting specifications of stabiliser states and Clifford gates.
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+
+Blah blah blah, there needs to be some text here otherwise I get a warning
