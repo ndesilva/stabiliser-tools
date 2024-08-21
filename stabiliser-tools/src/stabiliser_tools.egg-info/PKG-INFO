@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: stabiliser-tools
-Version: 1.0.3
+Version: 1.0.7
 Summary: Fast algorithms for verifying and converting specifications of stabiliser states and Clifford gates.
 Classifier: Programming Language :: Python
 Classifier: Programming Language :: Python :: 3
