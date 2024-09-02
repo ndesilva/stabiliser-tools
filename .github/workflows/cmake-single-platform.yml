@@ -117,6 +117,9 @@ jobs:
         run: |
           ctest --preset test-release
 
+      - name: Move build files to package directory
+        run: cp build/ninja-multi-vcpkg/cpp/src/Release/* stabiliser-tools/src/stab_tools/
+
       # Save the build folder
       - name: Save compiled python module
         uses: actions/upload-artifact@v4
@@ -141,8 +144,6 @@ jobs:
             triplet: x64-osx
 
     steps:
-    - name: Move build files to package directory
-      run: cp build/ninja-multi-vcpkg/cpp/src/Release/* stabiliser-tools/dist/stab_tools/
     - uses: actions/checkout@v4
     - name: Set up Python
       uses: actions/setup-python@v5
