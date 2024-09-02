@@ -26,6 +26,8 @@ jobs:
             triplet: x64-osx
 
     steps:
+    - name: Move build files to package directory
+      run: cp build/ninja-multi-vcpkg/cpp/src/Release/* stabiliser-tools/dist/stab_tools/
     - uses: actions/checkout@v4
     - name: Set up Python
       uses: actions/setup-python@v5
