@@ -2,6 +2,7 @@ name: Publish Python 🐍 distribution 📦 (to PyPI [later!]) and TestPyPI
 # https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
 
 on:
+  pull_request:
   workflow_run:
     workflows: [hosted-pure-workflow]
     types:
