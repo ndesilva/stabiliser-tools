@@ -146,7 +146,7 @@ jobs:
       - name: Build a binary wheel and a source tarball
         run: python3 -m build stabiliser-tools/
       - name: Change 'linux' to 'manylinux'
-        run: for file in $(find stabiliser-tools/dist/ -name "*linux_x86_64.whl"); do mv $file `echo $file | sed s/linux_x86_64.whl$/manylinux_x86_64.whl/`; done
+        run: for file in $(find stabiliser-tools/dist/ -name "*linux_x86_64.whl"); do mv $file `echo $file | sed s/linux_x86_64.whl$/manylinux2014_x86_64.whl/`; done
       - name: Store the distribution packages
         uses: actions/upload-artifact@v4
         with:
