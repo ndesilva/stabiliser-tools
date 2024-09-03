@@ -118,9 +118,6 @@ jobs:
         run: |
           ctest --preset test-release
 
-      - name: Copy build files to package directory
-        run: cp build/ninja-multi-vcpkg/cpp/src/Release/*.so stabiliser-tools/src/stab_tools/
-
       # Save the build folder
       - name: Save compiled python module
         uses: actions/upload-artifact@v4
@@ -142,12 +139,17 @@ jobs:
           --user
       - name: Check if binary files are there
         run: ls stabiliser-tools/src/stab_tools
+      - name: Download binary files
+        uses: actions/download-artifact@v4
+        with:
+          name: python module, os ${{ matrix.os }}, python ver ${{matrix.python-version}}
+          path: stabiliser-tools/src/stab_tools
       - name: Build a binary wheel and a source tarball
         run: python3 -m build stabiliser-tools/
       - name: Store the distribution packages
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: python-package-distributions
+          name: python-package-distributions, os ${{ matrix.os }}, python ver ${{matrix.python-version}}
           path: stabiliser-tools/dist/
 
   # publish-to-testpypi:
@@ -177,7 +179,7 @@ jobs:
 
   #   steps:
   #   - name: Download all the dists
-  #     uses: actions/download-artifact@v3
+  #     uses: actions/download-artifact@v4
   #     with:
   #       name: python-package-distributions
   #       path: stabiliser-tools/dist/
