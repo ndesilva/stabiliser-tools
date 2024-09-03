@@ -27,15 +27,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest]
         python-version : ["3.8", "3.9", "3.10", "3.11", "3.x"]
         include:
-          - os: windows-latest
-            triplet: x64-windows
+          # - os: windows-latest
+          #   triplet: x64-windows
           - os: ubuntu-latest
             triplet: x64-linux
-          - os: macos-latest
-            triplet: x64-osx
+          # - os: macos-latest
+          #   triplet: x64-osx
     env:
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       # Not using "VCPKG_ROOT" because a variable with the same name is defined in the VS's
@@ -120,6 +121,9 @@ jobs:
       - name: Copy build files to package directory
         run: cp build/ninja-multi-vcpkg/cpp/src/Release/*.so stabiliser-tools/src/stab_tools/
 
+      - name: Check if that actually worked 😅
+        run: ls stabiliser-tools/src/stab_tools
+
       # Save the build folder
       - name: Save compiled python module
         uses: actions/upload-artifact@v4
@@ -139,8 +143,6 @@ jobs:
           pip install
           build
           --user
-      - name: Go to package directory
-        run: cd stabiliser-tools
       - name: Build a binary wheel and a source tarball
         run: python3 -m build stabiliser-tools/
       - name: Store the distribution packages
