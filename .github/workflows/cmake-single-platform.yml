@@ -137,15 +137,13 @@ jobs:
           pip install
           build
           --user
-      - name: Check if binary files are there
-        run: ls stabiliser-tools/src/stab_tools
       - name: Download binary files
         uses: actions/download-artifact@v4
         with:
           name: python module, os ${{ matrix.os }}, python ver ${{matrix.python-version}}
           path: stabiliser-tools/src/stab_tools
       - name: Build a binary wheel and a source tarball
-        run: python3 -m build stabiliser-tools/
+        run: python3 -m build --wheel stabiliser-tools/
       - name: Store the distribution packages
         uses: actions/upload-artifact@v4
         with:
@@ -161,14 +159,15 @@ jobs:
   #     fail-fast: false
   #     matrix:
   #       # os: [ubuntu-latest, macos-latest, windows-latest]
+  #       os: [ubuntu-latest]
   #       python-version : ["3.8", "3.9", "3.10", "3.11", "3.x"]
   #       include:
-  #         - os: windows-latest
-  #           triplet: x64-windows
+  #         # - os: windows-latest
+  #           # triplet: x64-windows
   #         - os: ubuntu-latest
   #           triplet: x64-linux
-  #         - os: macos-latest
-  #           triplet: x64-osx
+  #         # - os: macos-latest
+  #           # triplet: x64-osx
 
   #   environment:
   #     name: testpypi
@@ -181,7 +180,7 @@ jobs:
   #   - name: Download all the dists
   #     uses: actions/download-artifact@v4
   #     with:
-  #       name: python-package-distributions
+  #       name: python-package-distributions, os ${{ matrix.os }}, python ver ${{matrix.python-version}}
   #       path: stabiliser-tools/dist/
   #   - name: Publish distribution 📦 to TestPyPI
   #     uses: pypa/gh-action-pypi-publish@release/v1
