@@ -33,6 +33,7 @@ jobs:
         include:
           # - os: windows-latest
           #   triplet: x64-windows
+          #   platform-tag: win32_x86_64
           - os: ubuntu-latest
             triplet: x64-linux
           # - os: macos-latest
@@ -135,7 +136,7 @@ jobs:
         run: >-
           python3 -m
           pip install
-          build
+          build wheel
           --user
       - name: Download binary files
         uses: actions/download-artifact@v4
@@ -143,7 +144,9 @@ jobs:
           name: python module, os ${{ matrix.os }}, python ver ${{matrix.python-version}}
           path: stabiliser-tools/src/stab_tools
       - name: Build a binary wheel and a source tarball
-        run: python3 -m build --wheel stabiliser-tools/
+        run: python3 -m build stabiliser-tools/
+      - name: Rename stabiliser_tools-
+        run: 
       - name: Store the distribution packages
         uses: actions/upload-artifact@v4
         with:
