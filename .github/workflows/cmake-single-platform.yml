@@ -21,7 +21,7 @@ on:
   - cron: '0 1 * * *'
 
 jobs:
-  job:
+  cmake_and_build:
     name: ${{ matrix.os }}-python-${{matrix.python-version}}-${{ github.workflow }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -117,8 +117,8 @@ jobs:
         run: |
           ctest --preset test-release
 
-      - name: Move build files to package directory
-        run: cp build/ninja-multi-vcpkg/cpp/src/Release/* stabiliser-tools/src/stab_tools/
+      - name: Copy build files to package directory
+        run: cp build/ninja-multi-vcpkg/cpp/src/Release/*.so stabiliser-tools/src/stab_tools/
 
       # Save the build folder
       - name: Save compiled python module
@@ -127,48 +127,32 @@ jobs:
           name: python module, os ${{ matrix.os }}, python ver ${{matrix.python-version}}
           path: ./build/ninja-multi-vcpkg/cpp/src/Release
 
-  build:
-    name: Build distribution 📦
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version : ["3.8", "3.9", "3.10", "3.11", "3.x"]
-        include:
-          - os: windows-latest
-            triplet: x64-windows
-          - os: ubuntu-latest
-            triplet: x64-linux
-          - os: macos-latest
-            triplet: x64-osx
-
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{matrix.python-version}}
-    - name: Install pypa/build
-      run: >-
-        python3 -m
-        pip install
-        build
-        --user
-    - name: Go to package directory
-      run: cd stabiliser-tools
-    - name: Build a binary wheel and a source tarball
-      run: python3 -m build stabiliser-tools/
-    - name: Store the distribution packages
-      uses: actions/upload-artifact@v3
-      with:
-        name: python-package-distributions
-        path: stabiliser-tools/dist/
+      # Build distribution 📦
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{matrix.python-version}}
+      - name: Install pypa/build
+        run: >-
+          python3 -m
+          pip install
+          build
+          --user
+      - name: Go to package directory
+        run: cd stabiliser-tools
+      - name: Build a binary wheel and a source tarball
+        run: python3 -m build stabiliser-tools/
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-package-distributions
+          path: stabiliser-tools/dist/
 
   publish-to-testpypi:
     name: Publish Python 🐍 distribution 📦 to TestPyPI
     needs:
-    - build
+    - cmake_and_build
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
