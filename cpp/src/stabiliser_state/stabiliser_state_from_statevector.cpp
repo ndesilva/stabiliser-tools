@@ -41,7 +41,7 @@ namespace
 
 		for (std::size_t index = shift + 1; index < state_vector_size; index++)
 		{
-			if (statevector[index] != float(0))
+			if (statevector[index] != .0f)
 			{
 				vector_space_indices.push_back(shift ^ index);
 			}
@@ -55,7 +55,7 @@ namespace
 		}
 
 		const std::size_t dimension = integral_log_2(support_size);
-		const float normalisation_factor = static_cast<float>(std::sqrt(support_size));
+		const float normalisation_factor = (float) std::sqrt(support_size);
 		const std::complex<float> first_entry = statevector[shift];
 		const std::complex<float> global_phase = normalisation_factor * first_entry;
 
