@@ -2,13 +2,20 @@
 #include "stabiliser_state.h"
 #include "util/f2_helper.h"
 
+#include <stdexcept>
+
 namespace fst
 {
     Check_Matrix::Check_Matrix(const std::vector<Pauli> paulis, const bool row_reduced)
-        : row_reduced(row_reduced)
+        : row_reduced(row_reduced), paulis(paulis)
     {
         number_qubits = paulis.size();
-        set_paulis(paulis);
+        categorise_paulis();
+
+        if (row_reduced)
+        {
+            set_z_only_pivots();
+        }
     }
 
     const std::vector<Pauli>& Check_Matrix::get_paulis() const
@@ -18,6 +25,7 @@ namespace fst
 
     void Check_Matrix::set_paulis(std::vector<Pauli> paulis_)
     {
+        row_reduced = false;
         paulis = std::move(paulis_);
         categorise_paulis();
     }
@@ -30,6 +38,16 @@ namespace fst
     const std::vector<Pauli *>& Check_Matrix::get_x_stabilisers() const
     {
         return x_stabilisers;
+    }
+
+    const std::vector<int> & Check_Matrix::get_z_only_pivots() const
+    {
+        if (row_reduced)
+        {
+            return z_only_pivots;
+        }
+
+        throw std::domain_error("Tried to access z_only pivots of a non-row reduced check matrix. Try row reducing first");
     }
 
     void Check_Matrix::categorise_paulis()
@@ -127,6 +145,8 @@ namespace fst
 
         row_reduce_x_stabilisers();
         row_reduce_z_only_stabilisers();
+        
+        set_z_only_pivots();
 
         row_reduced = true;
     }
@@ -173,6 +193,28 @@ namespace fst
                     other_pauli->multiply_by_pauli_on_right(*pauli);
                 }
             }
+        }
+    }
+
+    void Check_Matrix::set_z_only_pivots()
+    {
+        // Create a vector with 1s in all the (x_stabiliser) pivot indicies, and zeros elsewhere
+        std::size_t pivot_marker;
+
+        for (const auto & pauli : x_stabilisers)
+        {
+            pivot_marker ^= integral_pow_2((std::size_t) integral_log_2(pauli->x_vector));
+        }
+
+        // Flip all of the bits in the pivot marker
+        pivot_marker ^= (integral_pow_2(number_qubits) - 1);
+
+        z_only_pivots.reserve(z_only_stabilisers.size());
+
+        for (const auto & pauli : z_only_stabilisers)
+        {
+            // Anding with the pivot marker sets all x-stabiliser pivot columns to zero, leaving just the z part
+            z_only_pivots.push_back( integral_log_2( pauli->z_vector & pivot_marker) );
         }
     }
 }
