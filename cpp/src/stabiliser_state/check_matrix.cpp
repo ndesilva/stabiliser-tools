@@ -40,7 +40,7 @@ namespace fst
         return x_stabilisers;
     }
 
-    const std::vector<int> & Check_Matrix::get_z_only_pivots() const
+    const std::vector<std::size_t> & Check_Matrix::get_z_only_pivots() const
     {
         if (row_reduced)
         {

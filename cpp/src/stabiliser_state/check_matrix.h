@@ -32,7 +32,7 @@ namespace fst
         /// stabilisers (correspdonding to the order of the z_only_stabiliser list). The pivot column of a "z_only"
         /// stabiliser should contain a 1, where all other "z_only" stabiliers have a zero there. Moreover, it should *not*
         /// be a pivot_column for the "x_stabilisers".
-        const std::vector<int> & get_z_only_pivots() const;
+        const std::vector<size_t> & get_z_only_pivots() const;
         
         bool row_reduced;
 
@@ -54,7 +54,7 @@ namespace fst
         std::vector<Pauli *> z_only_stabilisers;
         std::vector<Pauli *> x_stabilisers;
         
-        std::vector<int> z_only_pivots;
+        std::vector<size_t> z_only_pivots;
                 
         void categorise_paulis();
         
