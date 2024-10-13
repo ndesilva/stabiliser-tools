@@ -39,7 +39,7 @@ namespace fst
         void row_reduce();
 
         private:
-        
+                
         void categorise_paulis();
         
         void add_z_only_stabilisers(const std::vector<std::size_t> &pivot_vectors, const std::unordered_set<std::size_t> &pivot_indices_set, const Stabiliser_State &state);

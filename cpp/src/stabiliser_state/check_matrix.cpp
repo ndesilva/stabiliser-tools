@@ -115,7 +115,7 @@ namespace fst
         for (std::size_t i = 0; i < x_stabilisers.size(); i++)
         {
             Pauli *pauli = x_stabilisers[i];
-            int pivot_index = integral_log_2((*pauli).x_vector);
+            int pivot_index = integral_log_2(pauli->x_vector);
 
             if (pivot_index == -1)
             {
@@ -128,9 +128,9 @@ namespace fst
                 auto u_pivot_index = (std::size_t) pivot_index;
                 for (auto &other_pauli : x_stabilisers)
                 {
-                    if (other_pauli != pauli && bit_set_at((*other_pauli).x_vector, u_pivot_index))
+                    if (other_pauli != pauli && bit_set_at(other_pauli->x_vector, u_pivot_index))
                     {
-                        (*other_pauli).multiply_by_pauli_on_right(*pauli);
+                        other_pauli->multiply_by_pauli_on_right(*pauli);
                     }
                 }
             }
@@ -143,13 +143,13 @@ namespace fst
         for (std::size_t i = 0; i < z_only_stabilisers.size(); i++)
         {
             Pauli *pauli = z_only_stabilisers[i];
-            std::size_t pivot_index = integral_log_2((*pauli).z_vector);
+            std::size_t pivot_index = integral_log_2(pauli->z_vector);
 
             for (auto &other_pauli : z_only_stabilisers)
             {
-                if (other_pauli != pauli && bit_set_at((*other_pauli).z_vector, pivot_index))
+                if (other_pauli != pauli && bit_set_at(other_pauli->z_vector, pivot_index))
                 {
-                    (*other_pauli).multiply_by_pauli_on_right(*pauli);
+                    other_pauli->multiply_by_pauli_on_right(*pauli);
                 }
             }
         }
