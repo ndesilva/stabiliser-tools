@@ -48,7 +48,7 @@ namespace fst
         /// echelon form.
         void row_reduce();
 
-        // private:
+        private:
 
         std::vector<Pauli> paulis;
         std::vector<Pauli *> z_only_stabilisers;
