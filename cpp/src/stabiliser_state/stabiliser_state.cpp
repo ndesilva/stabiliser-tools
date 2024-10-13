@@ -39,11 +39,12 @@ namespace fst
             basis_vectors.push_back(pauli->x_vector);
         }
 
-		for (const auto &pauli : check_matrix.get_z_only_stabilisers())
-        {
-            std::size_t pivot_index = integral_log_2(pauli->z_vector);
-            shift |= (integral_pow_2(pivot_index) * pauli->sign_bit);
-        }
+		shift = 0;
+
+		for (std::size_t i = 0; i < number_qubits - dim; i++)
+		{
+			shift |= integral_pow_2( check_matrix.get_z_only_pivots()[i] ) * (check_matrix.get_z_only_stabilisers()[i]->sign_bit);
+		}
 	}
 
 	void Stabiliser_State::set_linear_and_quadratic_forms_from_cm(const Check_Matrix &check_matrix)

@@ -27,6 +27,12 @@ namespace fst
         /// which may have both an x and z component
         const std::vector<Pauli *>& get_z_only_stabilisers() const;
         const std::vector<Pauli *>& get_x_stabilisers() const;
+
+        /// IF THE CHECK MATRIX IS ROW REDUCED, then this returns a list of the pivot columns of the "z_only"
+        /// stabilisers (correspdonding to the order of the z_only_stabiliser list). The pivot column of a "z_only"
+        /// stabiliser should contain a 1, where all other "z_only" stabiliers have a zero there. Moreover, it should *not*
+        /// be a pivot_column for the "x_stabilisers".
+        const std::vector<size_t> & get_z_only_pivots() const;
         
         bool row_reduced;
 
@@ -47,6 +53,8 @@ namespace fst
         std::vector<Pauli> paulis;
         std::vector<Pauli *> z_only_stabilisers;
         std::vector<Pauli *> x_stabilisers;
+        
+        std::vector<size_t> z_only_pivots;
                 
         void categorise_paulis();
         
@@ -55,6 +63,8 @@ namespace fst
 
         void row_reduce_x_stabilisers();
         void row_reduce_z_only_stabilisers();
+
+        void set_z_only_pivots();
     };
 }
 
