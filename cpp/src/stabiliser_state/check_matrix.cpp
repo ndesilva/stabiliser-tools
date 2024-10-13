@@ -85,6 +85,7 @@ namespace fst
         add_x_stabilisers(pivot_vectors, stabiliser_state);
         add_z_only_stabilisers(pivot_vectors, pivot_indices_set, stabiliser_state);
 
+        set_z_only_pivots();
         row_reduced = true;
     }
 

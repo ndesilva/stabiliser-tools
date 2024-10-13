@@ -2,6 +2,7 @@
 #include <catch2/matchers/catch_matchers_all.hpp>
 
 #include <unordered_set>
+#include <stdexcept>
 
 #include "stabiliser_state/check_matrix.h"
 #include "stabiliser_state/stabiliser_state.h"
@@ -79,12 +80,32 @@ namespace
     TEST_CASE("check matrix from list of paulis", "[check_matrix]")
     {
         std::vector<Pauli> paulis = get_pauli_list();
+        std::vector<std::size_t> expected_z_pivots {0};
 
         Check_Matrix check_matrix(paulis);
 
         REQUIRE_FALSE(check_matrix.row_reduced);
         REQUIRE(paulis_sorted_correctly(check_matrix));
         REQUIRE_THAT(check_matrix.get_paulis(), RangeEquals(paulis));
+        REQUIRE_THROWS_AS(check_matrix.get_z_only_pivots(), std::domain_error);
+    }
+
+    TEST_CASE("row reduced check matrix from list of paulis", "[check_matrix]")
+    {
+        std::vector<Pauli> paulis 
+        {
+            Pauli(3, 0b111, 0b000, 0, 0),
+            Pauli(3, 0b000, 0b101, 1, 0),
+            Pauli(3, 0b000, 0b110, 0, 0)
+        };
+        std::vector<std::size_t> expected_z_pivots {0, 1};
+
+        Check_Matrix check_matrix(paulis, true);
+
+        REQUIRE(check_matrix.row_reduced);
+        REQUIRE(paulis_sorted_correctly(check_matrix));
+        REQUIRE_THAT(check_matrix.get_paulis(), RangeEquals(paulis));
+        REQUIRE_THAT(check_matrix.get_z_only_pivots(), RangeEquals(expected_z_pivots));
     }
 
     Stabiliser_State get_stabiliser_state()
