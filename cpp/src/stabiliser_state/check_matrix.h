@@ -17,12 +17,16 @@ namespace fst
     {
         std::size_t number_qubits = 0;
         
-        std::vector<Pauli> paulis;
+        // Get the list of Stabilisers
+        const std::vector<Pauli>& get_paulis() const;
+        // Set the list of Stabilisers
+        // TODO : use std::forward to reduce overhead?
+        void set_paulis(std::vector<Pauli> paulis_);
         
         /// Paulis are sorted into 2 types: "z_only", which have no X component, and "x_stabilisers",
         /// which may have both an x and z component
-        std::vector<Pauli *> z_only_stabilisers;
-        std::vector<Pauli *> x_stabilisers;
+        const std::vector<Pauli *>& get_z_only_stabilisers() const;
+        const std::vector<Pauli *>& get_x_stabilisers() const;
         
         bool row_reduced;
 
@@ -39,6 +43,10 @@ namespace fst
         void row_reduce();
 
         private:
+
+        std::vector<Pauli> paulis;
+        std::vector<Pauli *> z_only_stabilisers;
+        std::vector<Pauli *> x_stabilisers;
                 
         void categorise_paulis();
         

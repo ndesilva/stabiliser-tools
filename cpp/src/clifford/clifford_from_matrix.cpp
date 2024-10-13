@@ -61,7 +61,7 @@ namespace
         std::unordered_set<std::size_t> pivot_indices;
         pivot_indices.reserve(number_qubits);
 
-        for (auto pauli_p : first_col_check_matrix.x_stabilisers)
+        for (auto pauli_p : first_col_check_matrix.get_x_stabilisers())
         {
             std::size_t pivot_index = integral_log_2(pauli_p->x_vector);
             pivot_indices.insert(pivot_index);            
@@ -76,6 +76,7 @@ namespace
             }
         }
 
+        std::vector<Pauli> first_col_paulis = first_col_check_matrix.get_paulis();
         std::vector<std::size_t> first_col_effects (number_qubits, 0);
 
         for (std::size_t i = 0; i < number_qubits; i++)
@@ -98,7 +99,7 @@ namespace
             for (std::size_t j = 0; j < number_qubits; j++)
             {
                 //TODO make pointer?
-                Pauli pauli = first_col_check_matrix.paulis[j];
+                Pauli pauli = first_col_paulis[j];
                 std::complex<float> phase = transposed_matrix[col_index][row_index ^ pauli.x_vector]/(non_zero_entry * sign_f2_dot_product(row_index, pauli.z_vector) * pauli.get_phase());
 
                 if (std::norm(phase + 1.0f) < 0.125)
@@ -129,7 +130,7 @@ namespace
                 if ( i != j && bit_set_at(first_col_effects[j], pivot_index))
                 {
                     first_col_effects[j] ^= first_col_effects[i];
-                    first_col_check_matrix.paulis[j].multiply_by_pauli_on_right(first_col_check_matrix.paulis[i]);
+                    first_col_paulis[j].multiply_by_pauli_on_right(first_col_paulis[i]);
                     uncorrected_W_paulis[i].multiply_by_pauli_on_right(uncorrected_W_paulis[j]);
                 }
             }
@@ -140,7 +141,7 @@ namespace
 
         for (std::size_t i = 0; i < number_qubits; i++)
         {
-            z_conjugates[i] = std::move(first_col_check_matrix.paulis[pauli_ordering[i]]);
+            z_conjugates[i] = std::move(first_col_paulis[pauli_ordering[i]]);
             W_paulis[i] = std::move(uncorrected_W_paulis[pauli_ordering[i]]);
         }
 

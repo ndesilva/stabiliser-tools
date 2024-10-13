@@ -22,7 +22,7 @@ namespace fst
 		number_qubits = check_matrix.number_qubits;
 
 		check_matrix.row_reduce();
-		dim = check_matrix.x_stabilisers.size();
+		dim = check_matrix.get_x_stabilisers().size();
 
 		set_support_from_cm(check_matrix);
 		set_linear_and_quadratic_forms_from_cm(check_matrix);
@@ -34,12 +34,12 @@ namespace fst
 	{
 		basis_vectors.reserve(dim);
 
-		for (const auto &pauli : check_matrix.x_stabilisers)
+		for (const auto &pauli : check_matrix.get_x_stabilisers())
         {
             basis_vectors.push_back(pauli->x_vector);
         }
 
-		for (const auto &pauli : check_matrix.z_only_stabilisers)
+		for (const auto &pauli : check_matrix.get_z_only_stabilisers())
         {
             std::size_t pivot_index = integral_log_2(pauli->z_vector);
             shift |= (integral_pow_2(pivot_index) * pauli->sign_bit);
@@ -54,7 +54,7 @@ namespace fst
 		for (std::size_t j = 0; j < dim; j++)
         {
             std::size_t v_j = basis_vectors[j];
-            Pauli *p_j = check_matrix.x_stabilisers[j];
+            Pauli *p_j = check_matrix.get_x_stabilisers()[j];
             std::size_t beta_j = p_j->z_vector;
             std::size_t imag_bit = p_j->imag_bit;
 
@@ -64,7 +64,7 @@ namespace fst
             for (std::size_t i = 0; i < j; i++)
             {
                 std::size_t v_i = basis_vectors[i];
-                std::size_t other_imag_bit = check_matrix.x_stabilisers[i]->imag_bit; // TODO we are accessing the imag_bits alot, optimise?
+                std::size_t other_imag_bit = check_matrix.get_x_stabilisers()[i]->imag_bit; // TODO we are accessing the imag_bits alot, optimise?
 
 				quadratic_form[integral_pow_2(i) | integral_pow_2(j)] = f2_dot_product(beta_j, v_i) ^ imag_bit*other_imag_bit;
             }

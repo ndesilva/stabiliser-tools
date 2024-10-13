@@ -5,10 +5,31 @@
 namespace fst
 {
     Check_Matrix::Check_Matrix(const std::vector<Pauli> paulis, const bool row_reduced)
-        : paulis(paulis), row_reduced(row_reduced)
+        : row_reduced(row_reduced)
     {
         number_qubits = paulis.size();
+        set_paulis(paulis);
+    }
+
+    const std::vector<Pauli>& Check_Matrix::get_paulis() const
+    {
+        return paulis;
+    }
+
+    void Check_Matrix::set_paulis(std::vector<Pauli> paulis_)
+    {
+        paulis = std::move(paulis_);
         categorise_paulis();
+    }
+
+    const std::vector<Pauli *>& Check_Matrix::get_z_only_stabilisers() const
+    {
+        return z_only_stabilisers;
+    }
+
+    const std::vector<Pauli *>& Check_Matrix::get_x_stabilisers() const
+    {
+        return x_stabilisers;
     }
 
     void Check_Matrix::categorise_paulis()

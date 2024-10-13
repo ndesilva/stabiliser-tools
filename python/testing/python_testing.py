@@ -51,9 +51,19 @@ class TestStabiliserStateMethods(unittest.TestCase):
         with self.assertRaises(ValueError):
             fst.stabiliser_state_from_statevector(almost_stabiliser_statevector)
 
-        # Check doesn't Raise and exception
+        # Check doesn't raise an exception
         fst.stabiliser_state_from_statevector(almost_stabiliser_statevector, assume_valid = True)
 
+    def test_consistency_again(self):
+        stabiliser_statevector = np.array([0, 1, 0, 0, 0, 0, 1, 0]) / np.sqrt(2)
+        self.assertTrue(fst.is_stabiliser_state(stabiliser_statevector))
+        
+        check_matrix = fst.Check_Matrix( fst.stabiliser_state_from_statevector(stabiliser_statevector) )
+
+        intermediate_stab_state = fst.Stabiliser_State( check_matrix )
+        output_statevector = np.array( check_matrix.get_state_vector() )
+        
+        self.assertTrue( np.linalg.norm(stabiliser_statevector - output_statevector) <= 1e-7 )
         
     def get_uniform_stabiliser_state(self, number_qubits : int):
         support_size = 1 << number_qubits
@@ -99,7 +109,7 @@ class TestCliffordMethods(unittest.TestCase):
         with self.assertRaises(ValueError):
             fst.clifford_from_matrix(almost_hadamard)
 
-        # Check doesn't Raise and exception
+        # Check doesn't Raise an exception
         fst.clifford_from_matrix(almost_hadamard, assume_valid = True)
 
     def get_hadamard_tensor_hadamard(self):
@@ -110,5 +120,3 @@ class TestCliffordMethods(unittest.TestCase):
         matrix[3][3] *= -1
 
         return matrix
-
-unittest.main()

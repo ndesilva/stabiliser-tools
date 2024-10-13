@@ -16,19 +16,19 @@ namespace
 {
     bool paulis_sorted_correctly(const Check_Matrix &check_matrix)
     {   
-        if (check_matrix.number_qubits != check_matrix.paulis.size())
+        if (check_matrix.number_qubits != check_matrix.get_paulis().size())
         {
             return false;
         }
         
-        if (check_matrix.paulis.size() != check_matrix.x_stabilisers.size() + check_matrix.z_only_stabilisers.size())
+        if (check_matrix.get_paulis().size() != check_matrix.get_x_stabilisers().size() + check_matrix.get_z_only_stabilisers().size())
         {
             return false;
         }
 
-        std::unordered_set<Pauli, Pauli_Hasher> pauli_set (check_matrix.paulis.begin(), check_matrix.paulis.end());
+        std::unordered_set<Pauli, Pauli_Hasher> pauli_set (check_matrix.get_paulis().begin(), check_matrix.get_paulis().end());
 
-        for (const auto pauli_pointer : check_matrix.x_stabilisers)
+        for (const auto pauli_pointer : check_matrix.get_x_stabilisers())
         {
             Pauli pauli = *pauli_pointer;
             if (!pauli_set.contains(pauli) || pauli.x_vector == 0)
@@ -37,7 +37,7 @@ namespace
             }
         }
 
-        for (const auto pauli_pointer : check_matrix.z_only_stabilisers)
+        for (const auto pauli_pointer : check_matrix.get_z_only_stabilisers())
         {
             Pauli pauli = *pauli_pointer;
             if (!pauli_set.contains(pauli) || pauli.x_vector != 0)
@@ -54,7 +54,7 @@ namespace
         std::vector<std::size_t> x_vectors;
         std::vector<std::size_t> z_vectors;
         
-        for(const auto pauli : check_matrix.paulis)
+        for(const auto pauli : check_matrix.get_paulis())
         {
             if(pauli.x_vector == 0)
             {
@@ -84,7 +84,7 @@ namespace
 
         REQUIRE_FALSE(check_matrix.row_reduced);
         REQUIRE(paulis_sorted_correctly(check_matrix));
-        REQUIRE_THAT(check_matrix.paulis, RangeEquals(paulis));
+        REQUIRE_THAT(check_matrix.get_paulis(), RangeEquals(paulis));
     }
 
     Stabiliser_State get_stabiliser_state()
@@ -112,7 +112,7 @@ namespace
         REQUIRE(paulis_sorted_correctly(check_matrix));
         REQUIRE(is_row_reduced(check_matrix));
 
-        for (const auto pauli : check_matrix.paulis)
+        for (const auto pauli : check_matrix.get_paulis())
         {
             REQUIRE_THAT(matrix_vector_mult(pauli.get_matrix(), statevector), RangeEquals(statevector));
         }

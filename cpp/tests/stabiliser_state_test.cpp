@@ -34,7 +34,7 @@ namespace
 
 		std::vector<std::complex<float>> statevector = stabiliser_state.get_state_vector();
 
-		for (const auto pauli : check_matrix.paulis)
+		for (const auto pauli : check_matrix.get_paulis())
         {
             REQUIRE_THAT(matrix_vector_mult(pauli.get_matrix(), statevector), RangeEquals(statevector));
         }
