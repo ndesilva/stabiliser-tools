@@ -36,13 +36,13 @@ namespace fst
 
 		for (const auto &pauli : check_matrix.x_stabilisers)
         {
-            basis_vectors.push_back((*pauli).x_vector);
+            basis_vectors.push_back(pauli->x_vector);
         }
 
 		for (const auto &pauli : check_matrix.z_only_stabilisers)
         {
-            std::size_t pivot_index = integral_log_2((*pauli).z_vector);
-            shift |= (integral_pow_2(pivot_index) * (*pauli).sign_bit);
+            std::size_t pivot_index = integral_log_2(pauli->z_vector);
+            shift |= (integral_pow_2(pivot_index) * pauli->sign_bit);
         }
 	}
 
@@ -55,16 +55,16 @@ namespace fst
         {
             std::size_t v_j = basis_vectors[j];
             Pauli *p_j = check_matrix.x_stabilisers[j];
-            std::size_t beta_j = (*p_j).z_vector;
-            std::size_t imag_bit = (*p_j).imag_bit;
+            std::size_t beta_j = p_j->z_vector;
+            std::size_t imag_bit = p_j->imag_bit;
 
             imaginary_part |= integral_pow_2(j) * imag_bit;
-            real_linear_part |= integral_pow_2(j) * ((*p_j).sign_bit ^ f2_dot_product(beta_j, v_j ^ shift));
+            real_linear_part |= integral_pow_2(j) * (p_j->sign_bit ^ f2_dot_product(beta_j, v_j ^ shift));
 
             for (std::size_t i = 0; i < j; i++)
             {
                 std::size_t v_i = basis_vectors[i];
-                std::size_t other_imag_bit = (*check_matrix.x_stabilisers[i]).imag_bit; // TODO we are accessing the imag_bits alot, optimise?
+                std::size_t other_imag_bit = check_matrix.x_stabilisers[i]->imag_bit; // TODO we are accessing the imag_bits alot, optimise?
 
 				quadratic_form[integral_pow_2(i) | integral_pow_2(j)] = f2_dot_product(beta_j, v_i) ^ imag_bit*other_imag_bit;
             }
