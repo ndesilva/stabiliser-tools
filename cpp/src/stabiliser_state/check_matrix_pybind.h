@@ -18,6 +18,7 @@ namespace fst_pybind
         py::class_<Check_Matrix>(m, "Check_Matrix")
             .def_readwrite("number_qubits", &Check_Matrix::number_qubits)
             .def_readwrite("row_reduced", &Check_Matrix::row_reduced)
+            .def_readwrite("z_only_pivots", &Check_Matrix::z_only_pivots)
             .def("set_paulis", &Check_Matrix::set_paulis)
             .def("get_paulis", &Check_Matrix::get_paulis)
             .def(py::init<const std::vector<Pauli>, const bool>(), py::arg("paulis"), py::arg("row_reduced") = false)

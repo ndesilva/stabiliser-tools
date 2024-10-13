@@ -98,6 +98,7 @@ namespace
             Pauli(3, 0b000, 0b101, 1, 0),
             Pauli(3, 0b000, 0b110, 0, 0)
         };
+        
         std::vector<std::size_t> expected_z_pivots {0, 1};
 
         Check_Matrix check_matrix(paulis, true);
