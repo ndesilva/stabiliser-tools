@@ -2,7 +2,7 @@ import os
 import sys
 
 PATH_TO_LIBRARY = os.path.abspath(os.path.dirname(__file__))
-print(f'Adding {PATH_TO_LIBRARY} to path if necessary')
+# print(f'Adding {PATH_TO_LIBRARY} to path if necessary')
 if PATH_TO_LIBRARY not in sys.path:
     sys.path.extend([PATH_TO_LIBRARY])
 
