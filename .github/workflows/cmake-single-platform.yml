@@ -149,7 +149,7 @@ jobs:
           cp cpp/src/clifford/*.{h,cpp} stabiliser-tools/src/clifford/;
           cp cpp/src/pauli/*.{h,cpp} stabiliser-tools/src/pauli/;
           cp cpp/src/stabiliser_state/*.{h,cpp} stabiliser-tools/src/stabiliser_state/;
-          cp cpp/src/util/*.{h,cpp} stabiliser-tools/src/util/;
+          cp cpp/src/util/*.h stabiliser-tools/src/util/;
           python3 -m build stabiliser-tools/
         if: ${{matrix.os == 'ubuntu-latest' && matrix.python-version == '3.x'}}
       - name: Build a binary wheel only
