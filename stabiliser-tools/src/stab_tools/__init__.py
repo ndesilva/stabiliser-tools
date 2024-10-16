@@ -1,5 +1,4 @@
-"""
-Fast checks and conversions for stabiliser states, Cliffords and Paulis.
+"""Fast checks and conversions for stabiliser states, Cliffords and Paulis.
 
 Available classes (type 'help(stab_tools.<class>)' to see accessible functions and variables):
     Clifford

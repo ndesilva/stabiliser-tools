@@ -18,8 +18,8 @@ target_include_directories( fast_stabiliser PRIVATE
 #     "${PROJECT_SOURCE_DIR}/cpp/src"
 # )
 
-pybind11_add_module(fast pybind.cpp)
-target_include_directories( fast PRIVATE
+pybind11_add_module(stab_tools pybind.cpp)
+target_include_directories( stab_tools PRIVATE
     "${PROJECT_SOURCE_DIR}/cpp/src"
 )
-target_link_libraries(fast PRIVATE fast_stabiliser)
+target_link_libraries(stab_tools PRIVATE fast_stabiliser)
