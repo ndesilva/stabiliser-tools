@@ -1,4 +1,12 @@
-# TODO Add documentation here?
+"""
+Fast checks and conversions for stabiliser states, Cliffords and Paulis.
+
+Available classes (type 'help(stab_tools.<class>)' to see accessible functions and variables):
+    Clifford
+    Pauli
+    Check_Matrix
+    Stabiliser_State
+"""
 
 import os
 import sys
@@ -8,7 +16,7 @@ PATH_TO_LIBRARY = os.path.abspath(os.path.dirname(__file__))
 if PATH_TO_LIBRARY not in sys.path:
     sys.path.extend([PATH_TO_LIBRARY])
 
-if sys.platform == 'linux':
+if sys.platform in ['linux', 'macos']:  # TODO Check
     try:
         if PATH_TO_LIBRARY not in os.environ['LD_LIBRARY_PATH']:
             raise ImportError

@@ -28,4 +28,15 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<path-to-python-environment>/lib/python3
 ```
 This is due to the way shared libraries are linked in Linux/UNIX. In order to stop this error from occurring in every new terminal session, consider updating `LD_LIBRARY_PATH` in your `.bashrc` or `.bashprofile` file.
 
+## Functions and classes
 After successfully importing `stab_tools`, run `help(stab_tools)` to view the list of functions and classes.
+
+Available classes:
+```
+Clifford
+Pauli
+Check_Matrix
+Stabiliser_State
+```
+
+Example code:
