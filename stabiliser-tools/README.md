@@ -1,4 +1,4 @@
-# `stabiliser-tools`: Fast checks and conversions for stabiliser states, Cliffords and Paulis
+# stabiliser-tools: Fast checks and conversions for stabiliser states, Cliffords and Paulis
 **[GitHub project page](https://github.com/ndesilva/stabiliser-tools)**
 
 **[Paper](https://arxiv.org/abs/2311.10357)**
