@@ -144,12 +144,12 @@ jobs:
           path: stabiliser-tools/src/stab_tools
       - name: Copy source files, then build a binary wheel and a source tarball
         run: >-
-          mkdir stabiliser-tools/src/clifford stabiliser-tools/src/pauli stabiliser-tools/src/stabiliser_state stabiliser-tools/src/util
-          cp cpp/src/*.{h,cpp} stabiliser-tools/src/
-          cp cpp/src/clifford/*.{h,cpp} stabiliser-tools/src/clifford/
-          cp cpp/src/pauli/*.{h,cpp} stabiliser-tools/src/pauli/
-          cp cpp/src/stabiliser_state/*.{h,cpp} stabiliser-tools/src/stabiliser_state/
-          cp cpp/src/util/*.{h,cpp} stabiliser-tools/src/util/
+          mkdir stabiliser-tools/src/clifford stabiliser-tools/src/pauli stabiliser-tools/src/stabiliser_state stabiliser-tools/src/util;
+          cp cpp/src/*.{h,cpp} stabiliser-tools/src/;
+          cp cpp/src/clifford/*.{h,cpp} stabiliser-tools/src/clifford/;
+          cp cpp/src/pauli/*.{h,cpp} stabiliser-tools/src/pauli/;
+          cp cpp/src/stabiliser_state/*.{h,cpp} stabiliser-tools/src/stabiliser_state/;
+          cp cpp/src/util/*.{h,cpp} stabiliser-tools/src/util/;
           python3 -m build stabiliser-tools/
         if: ${{matrix.os == 'ubuntu-latest' && matrix.python-version == '3.x'}}
       - name: Build a binary wheel only
