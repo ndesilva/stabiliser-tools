@@ -1,4 +1,17 @@
-# `stabiliser-tools`: Fast checks for stabiliser states, Cliffords and Paulis
+# `stabiliser-tools`: Fast checks and conversions for stabiliser states, Cliffords and Paulis
+
+**[Paper](https://arxiv.org/abs/2311.10357)**
+
+This is a Python wrapper for our C++ library of fast algorithms for converting between classical specifications of stabiliser states and Clifford gates.
+
+`stabiliser-tools` supports the following specifications:
+- **Stabiliser states:**
+    - **[S<sub>V</sub>]**: a complex vector of amplitudes;
+    - **[S<sub>P</sub>]**: a quadratic form, a linear map, and an affine subspace of $\mathbb{Z}_2^n$;
+    - **[S<sub>Q</sub>]**: a check matrix, i.e. a compact list of Pauli gate generators for the stabiliser group.
+- **Cliffords:**
+    - **[C<sub>U</sub>]**: a unitary matrix;
+    - **[C<sub>T</sub>]**: a list of $2n$ Pauli gates representing the images of basic Pauli gates under conjugation, i.e. a *tableau*.
 
 ## Installing `stabiliser-tools`
 [...]
