@@ -24,5 +24,5 @@ if sys.platform in ['linux', 'macos']:  # TODO Check
             'To resolve this, try running the following command in your terminal:\n'
             f'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{PATH_TO_LIBRARY}\n', file=sys.stderr)
 
-from fast import *
+from stab_tools import *
 del os, sys, PATH_TO_LIBRARY
