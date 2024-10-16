@@ -11,12 +11,12 @@ namespace py = pybind11;
 using namespace fst;
 
 // Eliminate copying by making types opaque, accept np arrays?
-namespace fst_pybind 
+namespace fst_pybind
 {
     void init_stabiliser_state_from_statevector(py::module_ &m)
     {
-        m.def("stabiliser_state_from_statevector", &stabiliser_from_statevector, py::arg("statevector"), py::arg("assume_valid") = false);
-        m.def("is_stabiliser_state", &is_stabiliser_state);
+        m.def("stabiliser_state_from_statevector", &stabiliser_from_statevector, py::arg("statevector"), py::arg("assume_valid") = false, "Convert a state vector of complex amplitudes into a stabiliser state object. Assuming valid is faster, but will result in undefined behaviour if the state vector is not in fact a valid stabiliser state.");
+        m.def("is_stabiliser_state", &is_stabiliser_state, py::arg("statevector"), "Test whether a state vector of complex amplitudes corresponds to a stabiliser state.");
     }
 }
 
