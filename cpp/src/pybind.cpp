@@ -19,7 +19,7 @@ namespace fst_pybind {
     void init_clifford(py::module_ &);
     void init_clifford_from_matrix(py::module_ &);
     
-    PYBIND11_MODULE(fast, m)
+    PYBIND11_MODULE(stab_tools, m)
     {
         init_pauli(m);
         init_check_matrix(m);
