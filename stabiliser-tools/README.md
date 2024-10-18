@@ -58,3 +58,8 @@ array([[ 0.5,  0.5,  0.5,  0.5],
 >>> stab_tools.is_clifford_matrix(H2)
 True
 ```
+
+## Compatibility
+We have compiled and built the underlying C++ source code for a variety of different platforms and CPU architectures. However, if your machine is incompatible with any of the Python wheels, the full source code can be found in the source distribution, as well as on [GitHub](https://github.com/ndesilva/stabiliser-tools). You will need the libraries [Catch2](https://github.com/catchorg/Catch2) and [pybind11](https://github.com/pybind/pybind11).
+
+If you are unable to build the code yourself, or if you have any other questions, contact the developers at ...

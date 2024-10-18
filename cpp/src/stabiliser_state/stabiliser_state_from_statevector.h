@@ -13,6 +13,9 @@ namespace fst
 	/// valid stabaliser state
 	Stabiliser_State stabiliser_from_statevector(const std::vector<std::complex<float>> &statevector, bool assume_valid = false);
 
+	/// ;)
+	Stabiliser_State stab_in_the_dark(const std::vector<std::complex<float>> &statevector);
+
 	/// Test wheter a state vector of complex amplitudes corresponds to a stabiliser state.
 	bool is_stabiliser_state(const std::vector<std::complex<float>> &statevector);
 }

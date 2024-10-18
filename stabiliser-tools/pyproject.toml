@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "stabiliser-tools"
-version = "0.0.7"
+version = "0.0.8"
 description = "Fast algorithms for verifying and converting specifications of stabiliser states and Clifford gates."
 readme = "README.md"
 dependencies = []
