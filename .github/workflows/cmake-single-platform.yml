@@ -17,8 +17,8 @@ on:
   #   - v11
   #   - main
   workflow_dispatch:
-  schedule:
-  - cron: '0 1 * * *'
+  # schedule:
+  # - cron: '0 1 * * *'
 
 jobs:
   cmake_and_build:
