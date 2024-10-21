@@ -9,7 +9,7 @@ from typing import Tuple
 
 PATH_TO_LIBRARY = './build/ninja-multi-vcpkg/cpp/src/Release'
 sys.path.append(PATH_TO_LIBRARY)
-from fast import Pauli, Stabiliser_State
+from fast import Pauli, Stabiliser_State # type: ignore
 
 def random_unitary(n: int) -> np.ndarray:
     return sts.unitary_group.rvs(1 << n)
@@ -145,3 +145,14 @@ def modify_random_matrix_entry(n: int, matrix: np.ndarray) -> None:
 def modify_random_column(n: int, matrix: np.ndarray) -> None:
     j = random.randrange(1 << n)
     matrix[:, j] *= 1j
+
+
+def rand_s_v_function():
+    return random.sample(
+        [random_stab_state, random_full_support_almost_stab_state], 1)
+
+
+def rand_s_v_to_succinct_function():
+    return random.sample(
+        [random_stab_state_with_assump, random_stab_state, 
+         computational_zero, random_full_support_stab_state], 1)
