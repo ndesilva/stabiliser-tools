@@ -15,6 +15,7 @@
 
 import generators as gs
 import qiskit.quantum_info as qi
+import pickle
 import stim
 
 import sys
@@ -24,35 +25,41 @@ sys.path.extend([PATH_TO_LIBRARY])
 import fast as fst # type: ignore
 # import stim_mock as sm
 
-def stim_S_V_test(matrix):
+def stim_S_V_test(statevector):
     try:
-        stim.Tableau.from_state_vector(matrix, endian='big')
+        stim.Tableau.from_state_vector(statevector, endian='big')
     except:
         pass
 
-def our_check_matrix_to_succinct():
-    pass
+def stim_S_V_to_succinct(statevector):
+    stim.Tableau.from_state_vector(statevector, endian='big')
 
-def stim_check_matrix_to_succinct():
-    pass
+def our_S_V_to_succinct(statevector):
+    fst.stabiliser_state_from_statevector(statevector)
 
-def our_succinct_to_check_matrix():
-    pass
+def stim_succinct_to_S_V(our_succinct: fst.Stabiliser_State, stim_succinct: stim.Tableau):
+    stim_succinct.to_state_vector()
 
-def stim_succinct_to_check_matrix():
-    pass
+def our_succinct_to_S_V(our_succinct: fst.Stabiliser_State, stim_succinct: stim.Tableau):
+    our_succinct.get_state_vector()
 
-def our_statevector_to_check_matrix():
-    pass
+def our_check_matrix_to_succinct(check_matrix: fst.Check_Matrix):
+    fst.Stabiliser_State(check_matrix)
 
-def stim_statevector_to_check_matrix():
-    pass
+def our_succinct_to_check_matrix(our_succinct: fst.Stabiliser_State):
+    fst.Check_Matrix(our_succinct)
 
-def our_check_matrix_to_statevector():
-    pass
+def stim_S_V_to_check_matrix(statevector):
+    stim.Tableau.from_state_vector(statevector, endian='big').to_stabilizers()
 
-def stim_check_matrix_to_statevector():
-    pass
+def our_S_V_to_check_matrix(statevector):
+    fst.Check_Matrix(fst.stabiliser_from_statevector(statevector))
+
+def stim_check_matrix_to_statevector(our_check_matrix: fst.Check_Matrix, stim_check_matrix: stim.Tableau):
+    stim_check_matrix.to_state_vector()
+
+def our_check_matrix_to_statevector(our_check_matrix: fst.Check_Matrix, stim_check_matrix: stim.Tableau):
+    fst.Stabiliser_State(our_check_matrix)
 
 def qiskit_C1_converter(matrix, assume_valid = True):
     return qi.Clifford.from_matrix(matrix)
@@ -72,6 +79,15 @@ def stim_C1_test(matrix):
     except:
         pass
 
+def our_succinct_to_C_U(our_clifford: fst.Clifford, qiskit_clifford: qi.Clifford, stim_clifford: stim.Tableau):
+    our_clifford.get_matrix()
+
+def qiskit_succinct_to_C_U(our_clifford: fst.Clifford, qiskit_clifford: qi.Clifford, stim_clifford: stim.Tableau):
+    qiskit_clifford.to_matrix()
+
+def stim_succinct_to_C_U(our_clifford: fst.Clifford, qiskit_clifford: qi.Clifford, stim_clifford: stim.Tableau):
+    stim_clifford.to_unitary_matrix()
+
 
 configs = [
     {
@@ -85,7 +101,7 @@ configs = [
             "our method"
         ],
         "generation_types": [
-            gs.rand_s_v_function
+            gs.rand_s_v
         ],
         "generation_strings": [
             "random stabiliser state or almost stab state"
@@ -98,18 +114,18 @@ configs = [
     {
         "pre_string": "S_V -> succinct representation",
         "functions_to_time": [
-            stim_S_V_test,
-            fst.stabiliser_state_from_statevector
+            stim_S_V_to_succinct,
+            our_S_V_to_succinct
         ],
         "function_strings": [
             "stim",
             "our method"
         ],
         "generation_types": [
-            gs.rand_s_v_to_succinct_function
+            gs.rand_s_v_to_succinct
         ],
         "generation_strings": [
-            "rand_s_v_to_succinct_function"
+            "rand_s_v_to_succinct"
         ],
         "min_qubit_number" : 1,
         "max_qubit_number" : 12,
@@ -119,24 +135,18 @@ configs = [
     {
         "pre_string": "Succinct representation -> S_V",
         "functions_to_time": [
-            stim_S_V_test,
-            fst.stabiliser_state_from_statevector
+            stim_succinct_to_S_V,
+            our_succinct_to_S_V
         ],
         "function_strings": [
             "stim",
             "our method"
         ],
-        "generation_types": [ # TODO
-            gs.random_stab_state_with_assump,
-            gs.random_stab_state,
-            gs.computational_zero,
-            gs.random_full_support_stab_state,
+        "generation_types": [
+            gs.rand_succinct
         ],
         "generation_strings": [
-            "random stab state with assump",
-            "random stab state without assump",
-            "computational zero",
-            "random full support stabiliser state"
+            "rand_succinct"
         ],
         "min_qubit_number" : 1,
         "max_qubit_number" : 12,
@@ -146,24 +156,16 @@ configs = [
     {
         "pre_string": "S_P -> succinct representation",
         "functions_to_time": [
-            stim_check_matrix_to_succinct,
             our_check_matrix_to_succinct
         ],
         "function_strings": [
-            "stim",
             "our method"
         ],
-        "generation_types": [ # TODO
-            gs.random_stab_state_with_assump,
-            gs.random_stab_state,
-            gs.computational_zero,
-            gs.random_full_support_stab_state,
+        "generation_types": [
+            gs.rand_our_check_matrix
         ],
         "generation_strings": [
-            "random stab state with assump",
-            "random stab state without assump",
-            "computational zero",
-            "random full support stabiliser state"
+            "rand_our_check_matrix"
         ],
         "min_qubit_number" : 1,
         "max_qubit_number" : 12,
@@ -173,24 +175,16 @@ configs = [
     {
         "pre_string": "Succinct representation -> S_P",
         "functions_to_time": [
-            stim_succinct_to_check_matrix,
             our_succinct_to_check_matrix
         ],
         "function_strings": [
-            "stim",
             "our method"
         ],
-        "generation_types": [ # TODO
-            gs.random_stab_state_with_assump,
-            gs.random_stab_state,
-            gs.computational_zero,
-            gs.random_full_support_stab_state,
+        "generation_types": [
+            gs.rand_our_succinct
         ],
         "generation_strings": [
-            "random stab state with assump",
-            "random stab state without assump",
-            "computational zero",
-            "random full support stabiliser state"
+            "rand_our_succinct"
         ],
         "min_qubit_number" : 1,
         "max_qubit_number" : 12,
@@ -200,24 +194,18 @@ configs = [
     {
         "pre_string": "S_V -> S_P",
         "functions_to_time": [
-            stim_statevector_to_check_matrix,
-            our_statevector_to_check_matrix
+            stim_S_V_to_check_matrix,
+            our_S_V_to_check_matrix
         ],
         "function_strings": [
             "stim",
             "our method"
         ],
-        "generation_types": [ # TODO
-            gs.random_stab_state_with_assump,
-            gs.random_stab_state,
-            gs.computational_zero,
-            gs.random_full_support_stab_state,
+        "generation_types": [
+            gs.random_stab_state
         ],
         "generation_strings": [
-            "random stab state with assump",
-            "random stab state without assump",
-            "computational zero",
-            "random full support stabiliser state"
+            "random_stab_state"
         ],
         "min_qubit_number" : 1,
         "max_qubit_number" : 12,
@@ -234,17 +222,11 @@ configs = [
             "stim",
             "our method"
         ],
-        "generation_types": [ # TODO
-            gs.random_stab_state_with_assump,
-            gs.random_stab_state,
-            gs.computational_zero,
-            gs.random_full_support_stab_state,
+        "generation_types": [
+            gs.rand_check_matrix
         ],
         "generation_strings": [
-            "random stab state with assump",
-            "random stab state without assump",
-            "computational zero",
-            "random full support stabiliser state"
+            "rand_check_matrix"
         ],
         "min_qubit_number" : 1,
         "max_qubit_number" : 12,
@@ -260,12 +242,10 @@ configs = [
             "our method",
         ],
         "generation_types": [
-            gs.random_clifford,
-            gs.random_almost_clifford,
+            gs.rand_clifford_test
         ],
         "generation_strings": [
-            "random clifford",
-            "almost clifford"
+            "rand_clifford_test"
         ],
         "min_qubit_number" : 1,
         "max_qubit_number" : 9,
@@ -285,18 +265,10 @@ configs = [
             "stim"
         ],
         "generation_types": [
-            gs.random_clifford,
-            gs.random_clifford_with_assumption,
-            gs.get_identity_matrix,
-            gs.get_Hadamard_matrix,
-            gs.get_anti_identiy_matrix,
+            gs.rand_clifford_matrix
         ],
         "generation_strings": [
-            "random clifford without assump",
-            "random clifford with assump",
-            "identity matrix",
-            "Hadamard matrix",
-            "anti-identity matrix"
+            "rand_clifford_matrix"
         ],
         "min_qubit_number" : 1,
         "max_qubit_number" : 9,
@@ -306,31 +278,25 @@ configs = [
     {
         "pre_string": "Succinct representation -> C_U",
         "functions_to_time": [
-            fst.clifford_from_matrix,
-            qiskit_C1_converter,
-            stim_C1_convertor
+            our_succinct_to_C_U,
+            qiskit_succinct_to_C_U,
+            stim_succinct_to_C_U
         ],
         "function_strings": [
             "our method",
             "Qiskit",
             "stim"
         ],
-        "generation_types": [ # TODO
-            gs.random_clifford,
-            gs.random_clifford_with_assumption,
-            gs.get_identity_matrix,
-            gs.get_Hadamard_matrix,
-            gs.get_anti_identiy_matrix,
+        "generation_types": [
+            gs.rand_clifford_succinct
         ],
         "generation_strings": [
-            "random clifford without assump",
-            "random clifford with assump",
-            "identity matrix",
-            "Hadamard matrix",
-            "anti-identity matrix"
+            "rand_clifford_succinct"
         ],
         "min_qubit_number" : 1,
         "max_qubit_number" : 9,
         "reps" : int(1e3) 
     },
 ]
+
+# configs = configs[:1]
