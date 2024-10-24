@@ -299,4 +299,4 @@ configs = [
     },
 ]
 
-configs = configs[-1:]
+# configs = configs[-1:]
