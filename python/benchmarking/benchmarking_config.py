@@ -31,11 +31,11 @@ def stim_S_V_test(statevector):
     except:
         pass
 
-def stim_S_V_to_succinct(statevector):
+def stim_S_V_to_succinct(statevector, assume_valid=True):
     stim.Tableau.from_state_vector(statevector, endian='big')
 
-def our_S_V_to_succinct(statevector):
-    fst.stabiliser_state_from_statevector(statevector)
+def our_S_V_to_succinct(statevector, assume_valid=True):
+    fst.stabiliser_state_from_statevector(statevector, assume_valid)
 
 def stim_succinct_to_S_V(our_succinct: fst.Stabiliser_State, stim_succinct: stim.Tableau):
     stim_succinct.to_state_vector()
@@ -53,7 +53,7 @@ def stim_S_V_to_check_matrix(statevector):
     stim.Tableau.from_state_vector(statevector, endian='big').to_stabilizers()
 
 def our_S_V_to_check_matrix(statevector):
-    fst.Check_Matrix(fst.stabiliser_from_statevector(statevector))
+    fst.Check_Matrix(fst.stabiliser_state_from_statevector(statevector))
 
 def stim_check_matrix_to_statevector(our_check_matrix: fst.Check_Matrix, stim_check_matrix: stim.Tableau):
     stim_check_matrix.to_state_vector()
@@ -86,7 +86,7 @@ def qiskit_succinct_to_C_U(our_clifford: fst.Clifford, qiskit_clifford: qi.Cliff
     qiskit_clifford.to_matrix()
 
 def stim_succinct_to_C_U(our_clifford: fst.Clifford, qiskit_clifford: qi.Clifford, stim_clifford: stim.Tableau):
-    stim_clifford.to_unitary_matrix()
+    stim_clifford.to_unitary_matrix(endian='big')
 
 
 configs = [
@@ -299,4 +299,4 @@ configs = [
     },
 ]
 
-# configs = configs[:1]
+configs = configs[-1:]

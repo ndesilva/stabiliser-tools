@@ -167,7 +167,7 @@ def rand_succinct(n: int) -> Tuple[fst.Stabiliser_State, stim.Tableau]:
     else:
         statevector = var
     our_succinct = fst.stabiliser_state_from_statevector(statevector)
-    stim_succinct = stim.Tableau.from_state_vector(statevector)
+    stim_succinct = stim.Tableau.from_state_vector(statevector, endian='big')
     return our_succinct, stim_succinct
 
 
@@ -184,7 +184,7 @@ def rand_our_succinct(n: int) -> fst.Stabiliser_State:
 def rand_check_matrix(n: int) -> Tuple[fst.Check_Matrix, stim.Tableau]:
     statevector = random_stab_state(n)
     our_check_matrix = fst.Check_Matrix(fst.stabiliser_state_from_statevector(statevector))
-    stim_check_matrix = stim.Tableau.from_state_vector(statevector)
+    stim_check_matrix = stim.Tableau.from_state_vector(statevector, endian='big')
     return our_check_matrix, stim_check_matrix
 
 
@@ -210,5 +210,5 @@ def rand_clifford_succinct(n: int) -> Tuple[fst.Clifford, qi.Clifford, stim.Tabl
     qiskit_clifford = qi.random_clifford(n)
     mat = qiskit_clifford.to_matrix()
     our_clifford = fst.clifford_from_matrix(mat)
-    stim_clifford = stim.Tableau.from_unitary_matrix(mat)
+    stim_clifford = stim.Tableau.from_unitary_matrix(mat, endian='big')
     return our_clifford, qiskit_clifford, stim_clifford
