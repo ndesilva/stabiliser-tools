@@ -237,9 +237,13 @@ configs = [
         "pre_string": "Testing C_U",
         "functions_to_time":[
             fst.is_clifford_matrix,
+            qiskit_C1_test,
+            stim_C1_test
         ],
         "function_strings": [
             "our method",
+            "Qiskit",
+            "stim"
         ],
         "generation_types": [
             gs.rand_clifford_test
