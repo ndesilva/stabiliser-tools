@@ -150,13 +150,14 @@ def modify_random_column(n: int, matrix: np.ndarray) -> None:
 
 def rand_s_v(n: int) -> np.ndarray:
     func = random.sample(
-        [random_stab_state, random_full_support_almost_stab_state], 1)[0]
+        [random_stab_state, random_almost_stab_state], 1)[0]
     return func(n)
 
 
 def rand_s_v_to_succinct(n: int) -> np.ndarray | Tuple[np.ndarray, bool]:
-    func = random.sample(
-        [random_stab_state_with_assump, computational_zero, random_full_support_stab_state], 1)[0]
+    # func = random.sample(
+    #     [random_stab_state_with_assump, computational_zero, random_full_support_stab_state], 1)[0]
+    func = random_stab_state_with_assump
     return func(n)
 
 
@@ -166,7 +167,7 @@ def rand_succinct(n: int) -> Tuple[fst.Stabiliser_State, stim.Tableau]:
         statevector = var[0]
     else:
         statevector = var
-    our_succinct = fst.stabiliser_state_from_statevector(statevector)
+    our_succinct = fst.stabiliser_state_from_statevector(statevector, assume_valid=True)
     stim_succinct = stim.Tableau.from_state_vector(statevector, endian='big')
     return our_succinct, stim_succinct
 
@@ -177,20 +178,20 @@ def rand_our_succinct(n: int) -> fst.Stabiliser_State:
         statevector = var[0]
     else:
         statevector = var
-    our_succinct = fst.stabiliser_state_from_statevector(statevector)
+    our_succinct = fst.stabiliser_state_from_statevector(statevector, assume_valid=True)
     return our_succinct
 
 
 def rand_check_matrix(n: int) -> Tuple[fst.Check_Matrix, stim.Tableau]:
-    statevector = random_stab_state(n)
-    our_check_matrix = fst.Check_Matrix(fst.stabiliser_state_from_statevector(statevector))
+    statevector = random_stab_state_with_assump(n)[0]
+    our_check_matrix = fst.Check_Matrix(fst.stabiliser_state_from_statevector(statevector, assume_valid=True))
     stim_check_matrix = stim.Tableau.from_state_vector(statevector, endian='big')
     return our_check_matrix, stim_check_matrix
 
 
 def rand_our_check_matrix(n: int) -> fst.Check_Matrix:
     statevector = random_stab_state(n)
-    return fst.Check_Matrix(fst.stabiliser_state_from_statevector(statevector))
+    return fst.Check_Matrix(fst.stabiliser_state_from_statevector(statevector, assume_valid=True))
 
 
 def rand_clifford_test(n: int) -> np.ndarray:
@@ -200,9 +201,10 @@ def rand_clifford_test(n: int) -> np.ndarray:
 
 
 def rand_clifford_matrix(n: int) -> np.ndarray | Tuple[np.ndarray, bool]:
-    func = random.sample(
-        [random_clifford_with_assumption, get_identity_matrix, 
-         get_Hadamard_matrix, get_anti_identiy_matrix], 1)[0]
+    # func = random.sample(
+    #     [random_clifford_with_assumption, get_identity_matrix, 
+    #      get_Hadamard_matrix, get_anti_identiy_matrix], 1)[0]
+    func = random_clifford_with_assumption
     return func(n)
 
 

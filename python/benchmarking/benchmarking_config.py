@@ -17,6 +17,7 @@ import generators as gs
 import qiskit.quantum_info as qi
 import pickle
 import stim
+# import stab_tools as fst
 
 import sys
 PATH_TO_LIBRARY = './build/ninja-multi-vcpkg/cpp/src/Release'
@@ -53,7 +54,7 @@ def stim_S_V_to_check_matrix(statevector):
     stim.Tableau.from_state_vector(statevector, endian='big').to_stabilizers()
 
 def our_S_V_to_check_matrix(statevector):
-    fst.Check_Matrix(fst.stabiliser_state_from_statevector(statevector))
+    fst.Check_Matrix(fst.stabiliser_state_from_statevector(statevector, assume_valid=True))
 
 def stim_check_matrix_to_statevector(our_check_matrix: fst.Check_Matrix, stim_check_matrix: stim.Tableau):
     stim_check_matrix.to_state_vector()
@@ -61,10 +62,13 @@ def stim_check_matrix_to_statevector(our_check_matrix: fst.Check_Matrix, stim_ch
 def our_check_matrix_to_statevector(our_check_matrix: fst.Check_Matrix, stim_check_matrix: stim.Tableau):
     fst.Stabiliser_State(our_check_matrix)
 
-def qiskit_C1_converter(matrix, assume_valid = True):
+def our_C_U_converter(matrix, assume_valid=True):
+    return fst.clifford_from_matrix(matrix, assume_valid)
+
+def qiskit_C_U_converter(matrix, assume_valid = True):
     return qi.Clifford.from_matrix(matrix)
 
-def stim_C1_convertor(matrix, assume_valid = True):
+def stim_C_U_converter(matrix, assume_valid = True):
     return stim.Tableau.from_unitary_matrix(matrix, endian = "big")
 
 def qiskit_C1_test(matrix):
@@ -127,7 +131,7 @@ configs = [
         "generation_strings": [
             "rand_s_v_to_succinct"
         ],
-        "min_qubit_number" : 1,
+        "min_qubit_number" : 3,
         "max_qubit_number" : 12,
         "reps" : int(1e3)
     },
@@ -148,7 +152,7 @@ configs = [
         "generation_strings": [
             "rand_succinct"
         ],
-        "min_qubit_number" : 1,
+        "min_qubit_number" : 3,
         "max_qubit_number" : 12,
         "reps" : int(1e3)
     },
@@ -207,7 +211,7 @@ configs = [
         "generation_strings": [
             "random_stab_state"
         ],
-        "min_qubit_number" : 1,
+        "min_qubit_number" : 3,
         "max_qubit_number" : 12,
         "reps" : int(1e3)
     },
@@ -252,16 +256,16 @@ configs = [
             "rand_clifford_test"
         ],
         "min_qubit_number" : 1,
-        "max_qubit_number" : 9,
+        "max_qubit_number" : 10,
         "reps" : int(1e3) 
     },
 
     {
         "pre_string": "C_U -> succinct representation",
         "functions_to_time": [
-            fst.clifford_from_matrix,
-            qiskit_C1_converter,
-            stim_C1_convertor
+            our_C_U_converter,
+            qiskit_C_U_converter,
+            stim_C_U_converter
         ],
         "function_strings": [
             "our method",
@@ -274,8 +278,8 @@ configs = [
         "generation_strings": [
             "rand_clifford_matrix"
         ],
-        "min_qubit_number" : 1,
-        "max_qubit_number" : 9,
+        "min_qubit_number" : 3,
+        "max_qubit_number" : 10,
         "reps" : int(1e3) 
     },
 
@@ -298,7 +302,7 @@ configs = [
             "rand_clifford_succinct"
         ],
         "min_qubit_number" : 1,
-        "max_qubit_number" : 9,
+        "max_qubit_number" : 10,
         "reps" : int(1e3) 
     },
 ]
