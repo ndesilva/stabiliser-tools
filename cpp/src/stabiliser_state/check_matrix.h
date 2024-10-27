@@ -44,7 +44,7 @@ namespace fst
         
         /// Row reduce the check_matrix, giving a new set of paulis that generate the same stabiliser group.
         /// The new paulis have the x_vectors of the "x_stabiliser" paulis, and z_vectors of the "z_only" stabilisers
-        /// in reduced row_echelon form. Note that the collection of all the pauli's z_vectors may NOT be in reduced row
+        /// in reduced row echelon form. Note that the collection of all the paulis' z_vectors may NOT be in reduced row
         /// echelon form.
         void row_reduce();
 
