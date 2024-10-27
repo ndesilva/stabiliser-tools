@@ -96,13 +96,14 @@ def stim_succinct_to_C_U(our_clifford: fst.Clifford, qiskit_clifford: qi.Cliffor
 configs = [
     {
         "pre_string": "Testing S_V",
+        "title": r"Testing $[S_V]$",
         "functions_to_time": [
-            stim_S_V_test,
-            fst.is_stabiliser_state
+            fst.is_stabiliser_state,
+            stim_S_V_test
         ],
         "function_strings": [
-            "stim",
-            "our method"
+            "our method",
+            "stim"
         ],
         "generation_types": [
             gs.rand_s_v
@@ -117,13 +118,14 @@ configs = [
     
     {
         "pre_string": "S_V -> succinct representation",
+        "title": r"$[S_V]$ to succinct rep",
         "functions_to_time": [
-            stim_S_V_to_succinct,
-            our_S_V_to_succinct
+            our_S_V_to_succinct,
+            stim_S_V_to_succinct
         ],
         "function_strings": [
-            "stim",
-            "our method"
+            "our method",
+            "stim"
         ],
         "generation_types": [
             gs.rand_s_v_to_succinct
@@ -138,13 +140,14 @@ configs = [
 
     {
         "pre_string": "Succinct representation -> S_V",
+        "title": r"Succinct rep to $[S_V]$",
         "functions_to_time": [
-            stim_succinct_to_S_V,
-            our_succinct_to_S_V
+            our_succinct_to_S_V,
+            stim_succinct_to_S_V
         ],
         "function_strings": [
-            "stim",
-            "our method"
+            "our method",
+            "stim"
         ],
         "generation_types": [
             gs.rand_succinct
@@ -159,6 +162,7 @@ configs = [
 
     {
         "pre_string": "S_P -> succinct representation",
+        "title": r"$[S_P]$ to succinct rep",
         "functions_to_time": [
             our_check_matrix_to_succinct
         ],
@@ -178,6 +182,7 @@ configs = [
 
     {
         "pre_string": "Succinct representation -> S_P",
+        "title": r"Succinct rep to $[S_P]$",
         "functions_to_time": [
             our_succinct_to_check_matrix
         ],
@@ -197,13 +202,14 @@ configs = [
 
     {
         "pre_string": "S_V -> S_P",
+        "title": r"$[S_V]$ to $[S_P]$",
         "functions_to_time": [
-            stim_S_V_to_check_matrix,
-            our_S_V_to_check_matrix
+            our_S_V_to_check_matrix,
+            stim_S_V_to_check_matrix
         ],
         "function_strings": [
-            "stim",
-            "our method"
+            "our method",
+            "stim"
         ],
         "generation_types": [
             gs.random_stab_state
@@ -218,13 +224,14 @@ configs = [
 
     {
         "pre_string": "S_P -> S_V",
+        "title": r"$[S_P]$ to $[S_V]$",
         "functions_to_time": [
-            stim_check_matrix_to_statevector,
-            our_check_matrix_to_statevector
+            our_check_matrix_to_statevector,
+            stim_check_matrix_to_statevector
         ],
         "function_strings": [
-            "stim",
-            "our method"
+            "our method",
+            "stim"
         ],
         "generation_types": [
             gs.rand_check_matrix
@@ -239,6 +246,7 @@ configs = [
 
     {
         "pre_string": "Testing C_U",
+        "title": r"Testing $[C_U]$",
         "functions_to_time":[
             fst.is_clifford_matrix,
             qiskit_C1_test,
@@ -262,6 +270,7 @@ configs = [
 
     {
         "pre_string": "C_U -> succinct representation",
+        "title": r"$[C_U]$ to succinct rep",
         "functions_to_time": [
             our_C_U_converter,
             qiskit_C_U_converter,
@@ -285,6 +294,7 @@ configs = [
 
     {
         "pre_string": "Succinct representation -> C_U",
+        "title": r"Succinct rep to $[C_U]$",
         "functions_to_time": [
             our_succinct_to_C_U,
             qiskit_succinct_to_C_U,
@@ -307,4 +317,4 @@ configs = [
     },
 ]
 
-# configs = configs[-1:]
+# configs = configs[0:3]
