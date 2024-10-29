@@ -4,13 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "stabiliser-tools"
-version = "0.0.9"
+version = "0.0.10"
 description = "Fast algorithms for verifying and converting specifications of stabiliser states and Clifford gates."
 readme = "README.md"
 dependencies = []
-authors = [{ name = "Wilfred Salmon" },
+authors = [{ name = "Wilfred Salmon", email = "" },
            { name = "Nadish de Silva", email = "nadish_de_silva@sfu.ca" },
            { name = "Ming Yin", email = "ming_yin_2@sfu.ca" }]
+# maintainers = [{ name = "Ming Yin", email = "ming_yin_2@sfu.ca" }]
 classifiers = [
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python",
