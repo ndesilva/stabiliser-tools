@@ -208,6 +208,18 @@ jobs:
   #     with:
   #       repository-url: https://test.pypi.org/legacy/
   #       packages-dir: stabiliser-tools/dist/
+  
+  #  create-new-github-release:
+  #    name: Create new tag for GitHub Release
+  #    steps:
+  #    - name: Create GitHub Release
+  #      env:
+  #        GITHUB_TOKEN: ${{ github.token }}
+  #      run: >-
+  #        gh release create
+  #        'stabiliser-tools-1.0.2'
+  #        --repo '${{ github.repository }}'
+  #        --notes ""
 
   publish-to-pypi:
     name: >-
@@ -253,14 +265,6 @@ jobs:
       with:
         inputs: ./stabiliser-tools/dist/*.whl
       if: ${{!(matrix.os == 'ubuntu-latest' && matrix.python-version == '3.x')}}
-    - name: Create GitHub Release
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-      run: >-
-        gh release create
-        'stabiliser-tools-1.0.2'
-        --repo '${{ github.repository }}'
-        --notes ""
     - name: Upload artifact signatures to GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
