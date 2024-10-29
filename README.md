@@ -1,6 +1,7 @@
 # `stabiliser-tools`: Fast checks and conversions for stabiliser states, Cliffords and Paulis
 
 **[Paper](https://arxiv.org/abs/2311.10357)**
+**[PyPI project paper](https://pypi.org/project/stabiliser-tools/)**
 
 This is a Python wrapper for our C++ library of fast algorithms for converting between classical specifications of stabiliser states and Clifford gates.
 
@@ -14,7 +15,10 @@ This is a Python wrapper for our C++ library of fast algorithms for converting b
     - **[C<sub>T</sub>]**: a list of $2n$ Pauli gates representing the images of basic Pauli gates under conjugation, i.e. a *tableau*.
 
 ## Installing `stabiliser-tools`
-[...]
+The PyPI page for this project is [here](https://pypi.org/project/stabiliser-tools/).
+```
+pip install stabiliser-tools
+```
 
 After installing the package, its classes and functions can be accessed via
 ```
@@ -65,6 +69,6 @@ True
 ```
 
 ## Compatibility
-We have compiled and built the underlying C++ source code for a variety of different platforms and CPU architectures. However, if your machine is incompatible with any of the Python wheels, the full source code can be found in the source distribution, as well as in this GitHub repo. You will need the libraries [Catch2](https://github.com/catchorg/Catch2) and [pybind11](https://github.com/pybind/pybind11).
+We have compiled and built the underlying C++ source code for a variety of different platforms and CPU architectures. Our testing has mostly been done on Windows, Ubuntu and Arch Linux. If your machine is incompatible with any of the Python wheels, the full source code can be found in the source distribution, as well as in this GitHub repo. You will need the libraries [Catch2](https://github.com/catchorg/Catch2) and [pybind11](https://github.com/pybind/pybind11).
 
-If you are unable to build the code yourself, or if you have any other questions, contact the developers at ming_yin_2@sfu.ca.
+If you are unable to build the code yourself, or if you have any other questions, contact the developers at ming_yin_2[at]sfu.ca.
