@@ -211,3 +211,8 @@ bool fst::is_stabiliser_state(const std::vector<std::complex<float>> &statevecto
 {
 	return stabiliser_from_statevector_internal<false, false>(statevector);
 }
+
+fst::Stabiliser_State fst::stab_in_the_dark(const std::vector<std::complex<float>> &statevector)
+{
+	return stabiliser_from_statevector(statevector, true);
+}

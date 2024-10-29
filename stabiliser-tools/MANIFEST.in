@@ -1,0 +1,2 @@
+include src/stab_tools/*.so src/stab_tools/*.dylib src/stab_tools/*.pyd src/stab_tools/*.exp src/stab_tools/*.lib src/stab_tools/*.dll
+recursive-include src *.cc *.h
