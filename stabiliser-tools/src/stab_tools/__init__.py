@@ -33,4 +33,4 @@ if sys.platform in ['linux', 'darwin']:  # TODO Check
                   file=sys.stderr)
 
 from _stab_tools import *
-del os, sys, PATH_TO_LIBRARY
+del os, sys, PATH_TO_LIBRARY, ENV

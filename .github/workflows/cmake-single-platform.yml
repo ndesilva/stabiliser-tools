@@ -210,7 +210,10 @@ jobs:
   #       packages-dir: stabiliser-tools/dist/
 
   publish-to-pypi:
-    name: Publish Python 🐍 distribution 📦 to PyPI
+    name: >-
+      Publish Python 🐍 distribution 📦 to PyPI; 
+      Sign the Python 🐍 distribution 📦 with Sigstore
+      and upload them to GitHub Release
     needs:
     - cmake_and_build
     runs-on: ubuntu-latest
@@ -225,7 +228,8 @@ jobs:
       url: https://pypi.org/p/stabiliser-tools
 
     permissions:
-      id-token: write  # IMPORTANT: mandatory for trusted publishing
+      contents: write  # IMPORTANT: mandatory for making GitHub Releases
+      id-token: write  # IMPORTANT: mandatory for trusted publishing, sigstore
 
     steps:
     - name: Download dist files
@@ -237,30 +241,6 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         packages-dir: stabiliser-tools/dist/
-
-  github-release:
-    name: >-
-      Sign the Python 🐍 distribution 📦 with Sigstore
-      and upload them to GitHub Release
-    needs:
-    - publish-to-pypi
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest, macos-13]
-        python-version : ["3.8", "3.9", "3.10", "3.11", "3.x"]
-
-    permissions:
-      contents: write  # IMPORTANT: mandatory for making GitHub Releases
-      id-token: write  # IMPORTANT: mandatory for sigstore
-
-    steps:
-    - name: Download all the dists
-      uses: actions/download-artifact@v3
-      with:
-        name: python-package-distributions, os ${{ matrix.os }}, python ver ${{matrix.python-version}}
-        path: stabiliser-tools/dist/
     - name: Sign the dists with Sigstore
       uses: sigstore/gh-action-sigstore-python@v2.1.1
       with:
@@ -285,3 +265,51 @@ jobs:
         gh release upload
         '${{ github.ref_name }}' stabiliser-tools/dist/**
         --repo '${{ github.repository }}'
+
+  # github-release:
+  #   name: >-
+  #     Sign the Python 🐍 distribution 📦 with Sigstore
+  #     and upload them to GitHub Release
+  #   needs:
+  #   - publish-to-pypi
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: [ubuntu-latest, macos-latest, windows-latest, macos-13]
+  #       python-version : ["3.8", "3.9", "3.10", "3.11", "3.x"]
+
+  #   permissions:
+  #     contents: write  # IMPORTANT: mandatory for making GitHub Releases
+  #     id-token: write  # IMPORTANT: mandatory for sigstore
+
+  #   steps:
+  #   - name: Download all the dists
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: python-package-distributions, os ${{ matrix.os }}, python ver ${{matrix.python-version}}
+  #       path: stabiliser-tools/dist/
+  #   - name: Sign the dists with Sigstore
+  #     uses: sigstore/gh-action-sigstore-python@v2.1.1
+  #     with:
+  #       inputs: >-
+  #         ./stabiliser-tools/dist/*.tar.gz
+  #         ./stabiliser-tools/dist/*.whl
+  #   - name: Create GitHub Release
+  #     env:
+  #       GITHUB_TOKEN: ${{ github.token }}
+  #     run: >-
+  #       gh release create
+  #       '${{ github.ref_name }}'
+  #       --repo '${{ github.repository }}'
+  #       --notes ""
+  #   - name: Upload artifact signatures to GitHub Release
+  #     env:
+  #       GITHUB_TOKEN: ${{ github.token }}
+  #     # Upload to GitHub Release using the `gh` CLI.
+  #     # `dist/` contains the built packages, and the
+  #     # sigstore-produced signatures and certificates.
+  #     run: >-
+  #       gh release upload
+  #       '${{ github.ref_name }}' stabiliser-tools/dist/**
+  #       --repo '${{ github.repository }}'
