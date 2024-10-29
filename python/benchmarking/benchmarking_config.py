@@ -1,16 +1,16 @@
 """We have the following benchmarks:
 
 1. Testing S_V
-2. S_V -> succinct representation
-3. Succinct representation -> S_V
-4. S_P -> succinct representation
-5. Succinct representation -> S_P
-6. S_V -> S_P
-7. S_P -> S_V
+2. S_V to succinct representation
+3. Succinct representation to S_V
+4. S_P to succinct representation
+5. Succinct representation to S_P
+6. S_V to S_P
+7. S_P to S_V
 
 8. Testing C_U
-9. C_U -> succinct representation
-10. Succinct representation -> C_U
+9. C_U to succinct representation
+10. Succinct representation to C_U
 """
 
 import generators as gs
@@ -117,7 +117,7 @@ configs = [
     },
     
     {
-        "pre_string": "S_V -> succinct representation",
+        "pre_string": "S_V to succinct representation",
         "title": r"$[S_V]$ to succinct rep",
         "functions_to_time": [
             our_S_V_to_succinct,
@@ -139,7 +139,7 @@ configs = [
     },
 
     {
-        "pre_string": "Succinct representation -> S_V",
+        "pre_string": "Succinct representation to S_V",
         "title": r"Succinct rep to $[S_V]$",
         "functions_to_time": [
             our_succinct_to_S_V,
@@ -161,7 +161,7 @@ configs = [
     },
 
     {
-        "pre_string": "S_P -> succinct representation",
+        "pre_string": "S_P to succinct representation",
         "title": r"$[S_P]$ to succinct rep",
         "functions_to_time": [
             our_check_matrix_to_succinct
@@ -181,7 +181,7 @@ configs = [
     },
 
     {
-        "pre_string": "Succinct representation -> S_P",
+        "pre_string": "Succinct representation to S_P",
         "title": r"Succinct rep to $[S_P]$",
         "functions_to_time": [
             our_succinct_to_check_matrix
@@ -201,7 +201,7 @@ configs = [
     },
 
     {
-        "pre_string": "S_V -> S_P",
+        "pre_string": "S_V to S_P",
         "title": r"$[S_V]$ to $[S_P]$",
         "functions_to_time": [
             our_S_V_to_check_matrix,
@@ -223,7 +223,7 @@ configs = [
     },
 
     {
-        "pre_string": "S_P -> S_V",
+        "pre_string": "S_P to S_V",
         "title": r"$[S_P]$ to $[S_V]$",
         "functions_to_time": [
             our_check_matrix_to_statevector,
@@ -269,7 +269,7 @@ configs = [
     },
 
     {
-        "pre_string": "C_U -> succinct representation",
+        "pre_string": "C_U to succinct representation",
         "title": r"$[C_U]$ to succinct rep",
         "functions_to_time": [
             our_C_U_converter,
@@ -293,7 +293,7 @@ configs = [
     },
 
     {
-        "pre_string": "Succinct representation -> C_U",
+        "pre_string": "Succinct representation to C_U",
         "title": r"Succinct rep to $[C_U]$",
         "functions_to_time": [
             our_succinct_to_C_U,
