@@ -1,6 +1,7 @@
 # `stabiliser-tools`: Fast checks and conversions for stabiliser states, Cliffords and Paulis
 
 **[Paper](https://arxiv.org/abs/2311.10357)**
+
 **[PyPI project paper](https://pypi.org/project/stabiliser-tools/)**
 
 This is a Python wrapper for our C++ library of fast algorithms for converting between classical specifications of stabiliser states and Clifford gates.
