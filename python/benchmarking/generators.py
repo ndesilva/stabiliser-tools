@@ -1,6 +1,7 @@
-import numpy as np
 import random
+import stim
 import sys
+import numpy as np
 import generator_dependencies.randstab as rs
 import scipy.stats as sts
 import qiskit.quantum_info as qi
@@ -9,7 +10,7 @@ from typing import Tuple
 
 PATH_TO_LIBRARY = './build/ninja-multi-vcpkg/cpp/src/Release'
 sys.path.append(PATH_TO_LIBRARY)
-from fast import Pauli, Stabiliser_State
+import fast as fst # type: ignore
 
 def random_unitary(n: int) -> np.ndarray:
     return sts.unitary_group.rvs(1 << n)
@@ -21,7 +22,7 @@ def random_pauli_matrix(n: int) -> np.ndarray:
     p = random.randrange(1 << n)
     q = random.randrange(1 << n)
 
-    return Pauli(n, p, q, s, t).generate_matrix()
+    return fst.Pauli(n, p, q, s, t).generate_matrix()
 
 
 def random_almost_pauli_matrix(n: int) -> np.ndarray:
@@ -61,7 +62,7 @@ def random_almost_stab_state(n: int) -> np.ndarray:
 
 
 def random_full_support_stab_state(n: int) -> np.ndarray:
-    stab = Stabiliser_State(n)
+    stab = fst.Stabiliser_State(n)
     stab.basis_vectors = [1 << k for k in range(n)]
     stab.dim = n
     stab.imaginary_part = random.randrange(1 << n)
@@ -145,3 +146,71 @@ def modify_random_matrix_entry(n: int, matrix: np.ndarray) -> None:
 def modify_random_column(n: int, matrix: np.ndarray) -> None:
     j = random.randrange(1 << n)
     matrix[:, j] *= 1j
+
+
+def rand_s_v(n: int) -> np.ndarray:
+    func = random.sample(
+        [random_stab_state, random_almost_stab_state], 1)[0]
+    return func(n)
+
+
+def rand_s_v_to_succinct(n: int) -> np.ndarray | Tuple[np.ndarray, bool]:
+    # func = random.sample(
+    #     [random_stab_state_with_assump, computational_zero, random_full_support_stab_state], 1)[0]
+    func = random_stab_state_with_assump
+    return func(n)
+
+
+def rand_succinct(n: int) -> Tuple[fst.Stabiliser_State, stim.Tableau]:
+    var = rand_s_v_to_succinct(n)
+    if type(var) is tuple:
+        statevector = var[0]
+    else:
+        statevector = var
+    our_succinct = fst.stabiliser_state_from_statevector(statevector, assume_valid=True)
+    stim_succinct = stim.Tableau.from_state_vector(statevector, endian='big')
+    return our_succinct, stim_succinct
+
+
+def rand_our_succinct(n: int) -> fst.Stabiliser_State:
+    var = rand_s_v_to_succinct(n)
+    if type(var) is tuple:
+        statevector = var[0]
+    else:
+        statevector = var
+    our_succinct = fst.stabiliser_state_from_statevector(statevector, assume_valid=True)
+    return our_succinct
+
+
+def rand_check_matrix(n: int) -> Tuple[fst.Check_Matrix, stim.Tableau]:
+    statevector = random_stab_state_with_assump(n)[0]
+    our_check_matrix = fst.Check_Matrix(fst.stabiliser_state_from_statevector(statevector, assume_valid=True))
+    stim_check_matrix = stim.Tableau.from_state_vector(statevector, endian='big')
+    return our_check_matrix, stim_check_matrix
+
+
+def rand_our_check_matrix(n: int) -> fst.Check_Matrix:
+    statevector = random_stab_state(n)
+    return fst.Check_Matrix(fst.stabiliser_state_from_statevector(statevector, assume_valid=True))
+
+
+def rand_clifford_test(n: int) -> np.ndarray:
+    func = random.sample(
+        [random_clifford, random_almost_clifford], 1)[0]
+    return func(n)
+
+
+def rand_clifford_matrix(n: int) -> np.ndarray | Tuple[np.ndarray, bool]:
+    # func = random.sample(
+    #     [random_clifford_with_assumption, get_identity_matrix, 
+    #      get_Hadamard_matrix, get_anti_identiy_matrix], 1)[0]
+    func = random_clifford_with_assumption
+    return func(n)
+
+
+def rand_clifford_succinct(n: int) -> Tuple[fst.Clifford, qi.Clifford, stim.Tableau]:
+    qiskit_clifford = qi.random_clifford(n)
+    mat = qiskit_clifford.to_matrix()
+    our_clifford = fst.clifford_from_matrix(mat)
+    stim_clifford = stim.Tableau.from_unitary_matrix(mat, endian='big')
+    return our_clifford, qiskit_clifford, stim_clifford
