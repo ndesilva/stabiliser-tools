@@ -8,26 +8,26 @@ Available classes (type 'help(stab_tools.<class>)' to see accessible functions a
 
 Examples
 --------
-\>>> import stab_tools
-\>>> import numpy as np
-\>>> v = np.array([0, 1, 0, 0, 0, 0, 1, 0]) / np.sqrt(2)
-\>>> stab_tools.is_stabiliser_state(v)
+>>> import stab_tools
+>>> import numpy as np
+>>> v = np.array([0, 1, 0, 0, 0, 0, 1, 0]) / np.sqrt(2)
+>>> stab_tools.is_stabiliser_state(v)
 True
-\>>> s = stab_tools.stabiliser_state_from_statevector(v)
-\>>> paulis = stab_tools.Check_Matrix(s).get_paulis()
-\>>> paulis[0].get_matrix()
+>>> s = stab_tools.stabiliser_state_from_statevector(v)
+>>> paulis = stab_tools.Check_Matrix(s).get_paulis()
+>>> paulis[0].get_matrix()
 [[0j, 0j, 0j, 0j, 0j, 0j, 0j, (1-0j)], [0j, 0j, 0j, 0j, 0j, 0j, (1-0j), 0j], [0j, 0j, 0j, 0j, 0j, (1-0j), 0j, 0j], [0j, 0j, 0j, 0j, (1-0j), 0j, 0j, 0j], [0j, 0j, 0j, (1-0j), 0j, 0j, 0j, 0j], [0j, 0j, (1-0j), 0j, 0j, 0j, 0j, 0j], [0j, (1-0j), 0j, 0j, 0j, 0j, 0j, 0j], [(1-0j), 0j, 0j, 0j, 0j, 0j, 0j, 0j]]
-\>>> pauli_xs = [stab_tools.Pauli(3, 2**n, 0, 0, 0) for n in range(3)]
-\>>> pauli_xs[0].get_matrix()
+>>> pauli_xs = [stab_tools.Pauli(3, 2**n, 0, 0, 0) for n in range(3)]
+>>> pauli_xs[0].get_matrix()
 [[0j, (1-0j), 0j, 0j, 0j, 0j, 0j, 0j], [(1-0j), 0j, 0j, 0j, 0j, 0j, 0j, 0j], [0j, 0j, 0j, (1-0j), 0j, 0j, 0j, 0j], [0j, 0j, (1-0j), 0j, 0j, 0j, 0j, 0j], [0j, 0j, 0j, 0j, 0j, (1-0j), 0j, 0j], [0j, 0j, 0j, 0j, (1-0j), 0j, 0j, 0j], [0j, 0j, 0j, 0j, 0j, 0j, 0j, (1-0j)], [0j, 0j, 0j, 0j, 0j, 0j, (1-0j), 0j]]
-\>>> H = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
-\>>> H2 = np.kron(H, H)
-\>>> H2
+>>> H = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
+>>> H2 = np.kron(H, H)
+>>> H2
 array([[ 0.5,  0.5,  0.5,  0.5],
        [ 0.5, -0.5,  0.5, -0.5],
        [ 0.5,  0.5, -0.5, -0.5],
        [ 0.5, -0.5, -0.5,  0.5]])
-\>>> stab_tools.is_clifford_matrix(H2)
+>>> stab_tools.is_clifford_matrix(H2)
 True
 """
 
