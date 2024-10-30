@@ -1,3 +1,9 @@
 /.vscode
+/.vs
 **/__pycache__
 .spyproject
+CMakeUserPresets.json
+/build
+/vcpkg_installed
+/out
+**/venv*

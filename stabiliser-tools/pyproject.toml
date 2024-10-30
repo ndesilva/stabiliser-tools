@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stabiliser-tools"
+version = "1.0.3"
+description = "Fast algorithms for verifying and converting specifications of stabiliser states and Clifford gates."
+readme = "README.md"
+dependencies = []
+authors = [{ name = "Wilfred Salmon" },
+           { name = "Nadish de Silva" },
+           { name = "Ming Yin" }]
+# maintainers = [{ name = "Ming Yin", email = "ming_yin_2@sfu.ca" }]
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3"
+]
+keywords = []
+requires-python = ">=3.8"
+
+[project.urls]
+Homepage = "https://github.com/ndesilva/stabiliser-tools"
+
+# [project.scripts]

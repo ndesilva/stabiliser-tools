@@ -1,0 +1,278 @@
+# Copyright (c) 2021-2022-2023-2024 Luca Cappa
+# Released under the term specified in file LICENSE.txt
+# SPDX short identifier: MIT
+
+# A "pure" GitHub workflow using CMake, Ninja and vcpkg to build a C/C++ codebase.
+# It leverages both CMakePresets.json and vcpkg.json.
+# It is called "pure workflow" because it is an example which minimizes the usage of
+# custom GitHub Actions, but leverages directly the tools that could be easily run on
+# your development machines (i.e. CMake, vcpkg, Ninja) to ensure a perfectly identical
+# and reproducible local build (on your development machine) and a remote build on
+# build agents.
+name: hosted-pure-workflow
+on:
+  # push:
+  pull_request:
+    branches: 
+    - pypi
+  workflow_dispatch:
+  # schedule:
+  # - cron: '0 1 * * *'
+
+jobs:
+  cmake_and_build:
+    name: ${{ matrix.os }}-python-${{matrix.python-version}}-${{ github.workflow }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest, macos-13] # macos-latest uses arm, macos-13 uses intel x86
+        # os: [macos-latest]
+        python-version : ["3.8", "3.9", "3.10", "3.11", "3.x"]
+        # include:
+        #   - os: windows-latest
+        #     triplet: x64-windows
+        #   - os: ubuntu-latest
+        #     triplet: x64-linux
+        #   - os: macos-latest
+        #     triplet: x64-osx
+    env:
+      # Indicates the location of the vcpkg as a Git submodule of the project repository.
+      # Not using "VCPKG_ROOT" because a variable with the same name is defined in the VS's
+      # Developer Command Prompt environment in VS 2022 17.6, which would override this one 
+      # if it had the same name.
+      _VCPKG_: ${{ github.workspace }}/extern/vcpkg
+      # Tells vcpkg where binary packages are stored.
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/extern/vcpkg/bincache
+      # Let's use GitHub Action cache as storage for the vcpkg Binary Caching feature.
+      VCPKG_BINARY_SOURCES: 'clear;x-gha,readwrite'
+
+    steps:
+    # Set env vars needed for vcpkg to leverage the GitHub Action cache as a storage
+    # for Binary Caching.
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: "Create directory '${{ env.VCPKG_DEFAULT_BINARY_CACHE }}'"
+        run: mkdir -p $VCPKG_DEFAULT_BINARY_CACHE
+        shell: bash
+
+      # Get the correct python version
+      - name: Set up python ${{matrix.python-version}}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{matrix.python-version}}
+
+      # Setup the build machine with the most recent versions of CMake and Ninja. Both are cached if not already: on subsequent runs both will be quickly restored from GitHub cache service.
+      - uses: lukka/get-cmake@latest
+
+      # Restore vcpkg from the GitHub Action cache service. Note that packages are restored by vcpkg's binary caching
+      # when it is being run afterwards by CMake.
+      - name: Restore vcpkg
+        uses: actions/cache@v4
+        with:
+          # The first path is the location of vcpkg: it contains the vcpkg executable and data files, as long as the
+          # built package archives (aka binary cache) which are located by VCPKG_DEFAULT_BINARY_CACHE env var.
+          # The other paths starting with '!' are exclusions: they contain termporary files generated during the build of the installed packages.
+          path: |
+            ${{ env._VCPKG_ }}
+            !${{ env._VCPKG_ }}/buildtrees
+            !${{ env._VCPKG_ }}/packages
+            !${{ env._VCPKG_ }}/downloads
+            !${{ env._VCPKG_ }}/installed
+          # The key is composed in a way that it gets properly invalidated whenever a different version of vcpkg is being used.
+          key: |
+            ${{ hashFiles( '.git/modules/vcpkg/HEAD' )}}
+
+      # On Windows runners, let's ensure to have the Developer Command Prompt environment setup correctly.
+      # As used here the Developer Command Prompt created is targeting x64 and using the default the Windows SDK.
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      # Run CMake to generate Ninja project files, using the vcpkg's toolchain file to resolve and install
+      # the dependencies as specified in vcpkg.json. Note that the vcpkg's toolchain is specified
+      # in the CMakePresets.json file.
+      # This step also runs vcpkg with Binary Caching leveraging GitHub Action cache to
+      # store the built packages artifacts.
+      - name: Restore from cache the dependencies and generate project files
+        run: |
+          cmake --preset ninja-multi-vcpkg
+
+      # Build (Release configuration only) the whole project with Ninja (which is spawn by CMake).
+      #
+      # Note: if the preset misses the "configuration", it is possible to explicitly select the
+      # configuration with the `--config` flag, e.g.:
+      # run: cmake --build --preset ninja-vcpkg --config Release
+      - name: Build (Release configuration)
+        run: |
+          cmake --build --preset ninja-vcpkg-release
+
+      # Test the whole project with CTest, again Release configuration only.
+      - name: Test (Release configuration)
+        run: |
+          ctest --preset test-release
+
+      # Save the build folder
+      - name: Save compiled python module
+        uses: actions/upload-artifact@v4
+        with:
+          name: python module, os ${{ matrix.os }}, python ver ${{matrix.python-version}}
+          path: ./build/ninja-multi-vcpkg/cpp/src/Release
+
+      # Build distribution 📦
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{matrix.python-version}}
+      - name: Install pypa/build
+        run: >-
+          python3 -m
+          pip install
+          build wheel
+          --user
+      - name: Download binary files
+        uses: actions/download-artifact@v4
+        with:
+          name: python module, os ${{ matrix.os }}, python ver ${{matrix.python-version}}
+          path: stabiliser-tools/src/stab_tools
+      - name: Copy source files, then build a binary wheel and a source tarball
+        run: >-
+          mkdir stabiliser-tools/src/clifford stabiliser-tools/src/pauli stabiliser-tools/src/stabiliser_state stabiliser-tools/src/util;
+          cp cpp/src/*.{h,cpp} stabiliser-tools/src/;
+          cp cpp/src/clifford/*.{h,cpp} stabiliser-tools/src/clifford/;
+          cp cpp/src/pauli/*.{h,cpp} stabiliser-tools/src/pauli/;
+          cp cpp/src/stabiliser_state/*.{h,cpp} stabiliser-tools/src/stabiliser_state/;
+          cp cpp/src/util/*.h stabiliser-tools/src/util/;
+          python3 -m build stabiliser-tools/
+        if: ${{matrix.os == 'ubuntu-latest' && matrix.python-version == '3.x'}}
+      - name: Build a binary wheel only
+        run: python3 -m build --wheel stabiliser-tools/
+        if: ${{!(matrix.os == 'ubuntu-latest' && matrix.python-version == '3.x')}}
+      - name: Change 'linux' to 'manylinux'
+        run: for file in $(find stabiliser-tools/dist/ -name "*linux_x86_64.whl"); do mv $file `echo $file | sed s/linux_x86_64.whl$/manylinux2014_x86_64.whl/`; done
+        if: ${{matrix.os == 'ubuntu-latest'}}
+      - name: Rename macos wheel based on CPU architecture (arm)
+        run: for file in $(find stabiliser-tools/dist/ -name "*universal2.whl"); do mv $file `echo $file | sed s/universal2.whl$/arm64.whl/`; done
+        if: ${{matrix.os == 'macos-latest'}}
+      - name: Rename macos wheel based on CPU architecture (intel)
+        run: for file in $(find stabiliser-tools/dist/ -name "*universal2.whl"); do mv $file `echo $file | sed s/universal2.whl$/x86_64.whl/`; done
+        if: ${{matrix.os == 'macos-13'}}
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions, os ${{ matrix.os }}, python ver ${{matrix.python-version}}
+          path: stabiliser-tools/dist/
+
+  # publish-to-testpypi:
+  #   name: Publish Python 🐍 distribution 📦 to TestPyPI
+  #   needs:
+  #   - cmake_and_build
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: [ubuntu-latest, macos-latest, windows-latest, macos-13]
+  #       # os: [macos-latest]
+  #       python-version : ["3.8", "3.9", "3.10", "3.11", "3.x"]
+  #       # python-version : ["3.9"]
+  #       # include:
+  #       #   - os: windows-latest
+  #       #     triplet: x64-windows
+  #       #   - os: ubuntu-latest
+  #       #     triplet: x64-linux
+  #       #   - os: macos-latest
+  #       #     triplet: x64-osx
+
+  #   environment:
+  #     name: testpypi
+  #     url: https://test.pypi.org/p/stabiliser-tools
+
+  #   permissions:
+  #     id-token: write  # IMPORTANT: mandatory for trusted publishing
+
+  #   steps:
+  #   - name: Download dist files
+  #     uses: actions/download-artifact@v4
+  #     with:
+  #       name: python-package-distributions, os ${{ matrix.os }}, python ver ${{matrix.python-version}}
+  #       path: stabiliser-tools/dist/
+  #   - name: Publish distribution 📦 to TestPyPI
+  #     uses: pypa/gh-action-pypi-publish@release/v1
+  #     with:
+  #       repository-url: https://test.pypi.org/legacy/
+  #       packages-dir: stabiliser-tools/dist/
+  
+  create-new-github-release:
+    name: Create new tag for GitHub Release
+    needs: cmake_and_build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Create GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      run: >-
+        gh release create
+        'stabiliser-tools-1.0.3'
+        --repo '${{ github.repository }}'
+        --notes ""
+
+  publish-to-pypi:
+    name: >-
+      Publish Python 🐍 distribution 📦 to PyPI; 
+      Sign the Python 🐍 distribution 📦 with Sigstore
+      and upload them to GitHub Release
+    needs:
+    - cmake_and_build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest, macos-13]
+        python-version : ["3.8", "3.9", "3.10", "3.11", "3.x"]
+
+    environment:
+      name: pypi
+      url: https://pypi.org/p/stabiliser-tools
+
+    permissions:
+      contents: write  # IMPORTANT: mandatory for making GitHub Releases
+      id-token: write  # IMPORTANT: mandatory for trusted publishing, sigstore
+
+    steps:
+    - name: Download dist files
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions, os ${{ matrix.os }}, python ver ${{matrix.python-version}}
+        path: stabiliser-tools/dist/
+    - name: Publish distribution 📦 to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        packages-dir: stabiliser-tools/dist/
+    - name: Sign the dists with Sigstore
+      uses: sigstore/gh-action-sigstore-python@v2.1.1
+      with:
+        inputs: >-
+          ./stabiliser-tools/dist/*.tar.gz
+          ./stabiliser-tools/dist/*.whl
+      if: ${{matrix.os == 'ubuntu-latest' && matrix.python-version == '3.x'}}
+    - name: Sign the dists with Sigstore
+      uses: sigstore/gh-action-sigstore-python@v2.1.1
+      with:
+        inputs: ./stabiliser-tools/dist/*.whl
+      if: ${{!(matrix.os == 'ubuntu-latest' && matrix.python-version == '3.x')}}
+    - name: Upload artifact signatures to GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      # Upload to GitHub Release using the `gh` CLI.
+      # `dist/` contains the built packages, and the
+      # sigstore-produced signatures and certificates.
+      run: >-
+        gh release upload
+        'stabiliser-tools-1.0.3' stabiliser-tools/dist/**
+        --repo '${{ github.repository }}'
