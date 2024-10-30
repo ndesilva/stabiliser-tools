@@ -46,6 +46,8 @@ if sys.platform in ['linux', 'darwin']:  # TODO Check
                 ENV = os.environ['LD_LIBRARY_PATH']
             case 'darwin':
                 ENV = os.environ['LD_LIBRARY_PATH'] + os.environ['DYLD_LIBRARY_PATH'] + os.environ['LD_LIBRARY_PATH']
+            case _:
+                ENV = ''
         if PATH_TO_LIBRARY not in ENV:
             raise ImportError
     except (KeyError, ImportError):

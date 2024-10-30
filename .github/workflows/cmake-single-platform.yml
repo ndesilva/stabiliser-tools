@@ -218,7 +218,7 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
       run: >-
         gh release create
-        'stabiliser-tools-1.0.3'
+        'stabiliser-tools-1.0.4'
         --repo '${{ github.repository }}'
         --notes ""
 
@@ -274,5 +274,5 @@ jobs:
       # sigstore-produced signatures and certificates.
       run: >-
         gh release upload
-        'stabiliser-tools-1.0.3' stabiliser-tools/dist/**
+        'stabiliser-tools-1.0.4' stabiliser-tools/dist/**
         --repo '${{ github.repository }}'
