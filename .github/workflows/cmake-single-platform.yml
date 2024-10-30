@@ -208,17 +208,17 @@ jobs:
   #       repository-url: https://test.pypi.org/legacy/
   #       packages-dir: stabiliser-tools/dist/
   
-  #  create-new-github-release:
-  #    name: Create new tag for GitHub Release
-  #    steps:
-  #    - name: Create GitHub Release
-  #      env:
-  #        GITHUB_TOKEN: ${{ github.token }}
-  #      run: >-
-  #        gh release create
-  #        'stabiliser-tools-1.0.2'
-  #        --repo '${{ github.repository }}'
-  #        --notes ""
+  create-new-github-release:
+    name: Create new tag for GitHub Release
+    steps:
+    - name: Create GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      run: >-
+        gh release create
+        'stabiliser-tools-1.0.3'
+        --repo '${{ github.repository }}'
+        --notes ""
 
   publish-to-pypi:
     name: >-
@@ -248,10 +248,10 @@ jobs:
       with:
         name: python-package-distributions, os ${{ matrix.os }}, python ver ${{matrix.python-version}}
         path: stabiliser-tools/dist/
-#    - name: Publish distribution 📦 to PyPI
-#      uses: pypa/gh-action-pypi-publish@release/v1
-#      with:
-#        packages-dir: stabiliser-tools/dist/
+    - name: Publish distribution 📦 to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        packages-dir: stabiliser-tools/dist/
     - name: Sign the dists with Sigstore
       uses: sigstore/gh-action-sigstore-python@v2.1.1
       with:
@@ -272,5 +272,5 @@ jobs:
       # sigstore-produced signatures and certificates.
       run: >-
         gh release upload
-        'stabiliser-tools-1.0.2' stabiliser-tools/dist/**
+        'stabiliser-tools-1.0.3' stabiliser-tools/dist/**
         --repo '${{ github.repository }}'
