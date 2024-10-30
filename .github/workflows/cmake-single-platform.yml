@@ -210,6 +210,8 @@ jobs:
   
   create-new-github-release:
     name: Create new tag for GitHub Release
+    needs: cmake_and_build
+    runs-on: ubuntu-latest
     steps:
     - name: Create GitHub Release
       env:
