@@ -7,3 +7,5 @@ CMakeUserPresets.json
 /vcpkg_installed
 /out
 **/venv*
+Stabiliser-tools-test.ipynb
+/stim
