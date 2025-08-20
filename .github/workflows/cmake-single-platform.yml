@@ -11,10 +11,12 @@
 # build agents.
 name: hosted-pure-workflow
 on:
-  # push:
-  pull_request:
-    branches: 
-    - bug_fixing
+  push:
+    branches:
+    - master
+  # pull_request:
+  #   branches: 
+  #   - bug_fixing
   workflow_dispatch:
   # schedule:
   # - cron: '0 1 * * *'
