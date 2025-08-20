@@ -255,18 +255,18 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         packages-dir: stabiliser-tools/dist/
-    - name: Sign the dists with Sigstore
-      uses: sigstore/gh-action-sigstore-python@v2.1.1
-      with:
-        inputs: >-
-          ./stabiliser-tools/dist/*.tar.gz
-          ./stabiliser-tools/dist/*.whl
-      if: ${{matrix.os == 'ubuntu-latest' && matrix.python-version == '3.x'}}
-    - name: Sign the dists with Sigstore
-      uses: sigstore/gh-action-sigstore-python@v2.1.1
-      with:
-        inputs: ./stabiliser-tools/dist/*.whl
-      if: ${{!(matrix.os == 'ubuntu-latest' && matrix.python-version == '3.x')}}
+#     - name: Sign the dists with Sigstore
+#       uses: sigstore/gh-action-sigstore-python@v2.1.1
+#       with:
+#         inputs: >-
+#           ./stabiliser-tools/dist/*.tar.gz
+#           ./stabiliser-tools/dist/*.whl
+#       if: ${{matrix.os == 'ubuntu-latest' && matrix.python-version == '3.x'}}
+#     - name: Sign the dists with Sigstore
+#       uses: sigstore/gh-action-sigstore-python@v2.1.1
+#       with:
+#         inputs: ./stabiliser-tools/dist/*.whl
+#       if: ${{!(matrix.os == 'ubuntu-latest' && matrix.python-version == '3.x')}}
     - name: Upload artifact signatures to GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
