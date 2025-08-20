@@ -14,7 +14,7 @@ on:
   # push:
   pull_request:
     branches: 
-    - pypi
+    - bug_fixing
   workflow_dispatch:
   # schedule:
   # - cron: '0 1 * * *'

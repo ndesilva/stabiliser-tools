@@ -4,6 +4,7 @@
 #include "pauli/pauli.h"
 
 #include <cmath>
+// #include <iostream>
 
 namespace fst
 {
@@ -32,6 +33,7 @@ namespace fst
 
 	void Stabiliser_State::set_support_from_cm(const Check_Matrix &check_matrix)
 	{
+		// std::cout << "dim of V is " << dim << "\n";
 		basis_vectors.reserve(dim);
 
 		for (const auto &pauli : check_matrix.get_x_stabilisers())
