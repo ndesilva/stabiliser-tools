@@ -11,10 +11,12 @@
 # build agents.
 name: hosted-pure-workflow
 on:
-  # push:
-  pull_request:
-    branches: 
-    - bug_fixing
+  push:
+    branches:
+    - master
+  # pull_request:
+  #   branches: 
+  #   - bug_fixing
   workflow_dispatch:
   # schedule:
   # - cron: '0 1 * * *'
@@ -28,7 +30,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest, macos-13] # macos-latest uses arm, macos-13 uses intel x86
         # os: [macos-latest]
-        python-version : ["3.8", "3.9", "3.10", "3.11", "3.x"]
+        # python-version : ["3.8", "3.9", "3.10", "3.11", "3.x"]
+        python-version: ["3.12"]
         # include:
         #   - os: windows-latest
         #     triplet: x64-windows
@@ -208,32 +211,34 @@ jobs:
   #       repository-url: https://test.pypi.org/legacy/
   #       packages-dir: stabiliser-tools/dist/
   
-  create-new-github-release:
-    name: Create new tag for GitHub Release
-    needs: cmake_and_build
-    runs-on: ubuntu-latest
-    steps:
-    - name: Create GitHub Release
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-      run: >-
-        gh release create
-        'stabiliser-tools-1.0.5'
-        --repo '${{ github.repository }}'
-        --notes ""
+  # create-new-github-release:
+  #   name: Create new tag for GitHub Release
+  #   needs: cmake_and_build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Create GitHub Release
+  #     env:
+  #       GITHUB_TOKEN: ${{ github.token }}
+  #     run: >-
+  #       gh release create
+  #       'stabiliser-tools-1.0.6'
+  #       --repo '${{ github.repository }}'
+  #       --notes ""
 
   publish-to-pypi:
     name: >-
       Publish Python 🐍 distribution 📦 to PyPI; 
       Sign the Python 🐍 distribution 📦 with Sigstore
       and upload them to GitHub Release
-    needs: create-new-github-release
+    # needs: create-new-github-release
+    needs: cmake_and_build
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest, macos-13]
-        python-version : ["3.8", "3.9", "3.10", "3.11", "3.x"]
+        # python-version : ["3.8", "3.9", "3.10", "3.11", "3.x"]
+        python-version: ["3.12"]
 
     environment:
       name: pypi
@@ -253,18 +258,6 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         packages-dir: stabiliser-tools/dist/
-    - name: Sign the dists with Sigstore
-      uses: sigstore/gh-action-sigstore-python@v2.1.1
-      with:
-        inputs: >-
-          ./stabiliser-tools/dist/*.tar.gz
-          ./stabiliser-tools/dist/*.whl
-      if: ${{matrix.os == 'ubuntu-latest' && matrix.python-version == '3.x'}}
-    - name: Sign the dists with Sigstore
-      uses: sigstore/gh-action-sigstore-python@v2.1.1
-      with:
-        inputs: ./stabiliser-tools/dist/*.whl
-      if: ${{!(matrix.os == 'ubuntu-latest' && matrix.python-version == '3.x')}}
     - name: Upload artifact signatures to GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
@@ -273,5 +266,5 @@ jobs:
       # sigstore-produced signatures and certificates.
       run: >-
         gh release upload
-        'stabiliser-tools-1.0.5' stabiliser-tools/dist/**
+        'stabiliser-tools-1.0.6' stabiliser-tools/dist/**
         --repo '${{ github.repository }}'
