@@ -231,6 +231,7 @@ jobs:
       Sign the Python 🐍 distribution 📦 with Sigstore
       and upload them to GitHub Release
     # needs: create-new-github-release
+    needs: cmake_and_build
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
