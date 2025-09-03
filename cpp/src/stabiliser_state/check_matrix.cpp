@@ -3,6 +3,9 @@
 #include "util/f2_helper.h"
 
 #include <stdexcept>
+#include <iostream>
+
+using namespace std;
 
 namespace fst
 {
@@ -204,6 +207,7 @@ namespace fst
 
         for (const auto & pauli : x_stabilisers)
         {
+            cout << "pivot_marker: " << pivot_marker << "\n";
             pivot_marker ^= integral_pow_2((std::size_t) integral_log_2(pauli->x_vector));
         }
 
@@ -215,7 +219,9 @@ namespace fst
         for (const auto & pauli : z_only_stabilisers)
         {
             // Anding with the pivot marker sets all x-stabiliser pivot columns to zero, leaving just the z part
-            z_only_pivots.push_back( integral_log_2( pauli->z_vector & pivot_marker) );
+            cout << "About to do z_vector & pivot_marker with the following data: " << pauli->z_vector << " " << pivot_marker << "\n";
+            cout << "Result is " << (pauli->z_vector & pivot_marker) << "\n";
+            z_only_pivots.push_back( integral_log_2(pauli->z_vector & pivot_marker) );
         }
     }
 }

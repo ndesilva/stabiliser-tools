@@ -26,19 +26,18 @@ namespace fst
 
 		check_matrix.row_reduce();
 		dim = check_matrix.get_x_stabilisers().size();
-		cout << "dim of V is " << dim << endl;
-		cout << "Currently, shift is " << shift << endl;
+		cout << "dim of V is " << dim << "\n";
+		cout << "Currently, shift is " << shift << "\n";
 
 		set_support_from_cm(check_matrix);
 		string basis_vecs("");
-		cout << basis_vectors.size() << endl;
 		for (std::size_t num : basis_vectors)
 		{
 			basis_vecs += to_string(num);
-			basis_vecs += "\t";
+			basis_vecs += " ";
 		}
-		cout << "Basis vectors: " << basis_vecs << endl;
-		cout << "Shift: " << shift << endl;
+		cout << "Basis vectors: " << basis_vecs << "\n";
+		cout << "Shift: " << shift << "\n";
 
 		set_linear_and_quadratic_forms_from_cm(check_matrix);
 
@@ -58,6 +57,9 @@ namespace fst
 
 		for (std::size_t i = 0; i < number_qubits - dim; i++)
 		{
+			cout << "z_only_pivot: " << check_matrix.get_z_only_pivots()[i] << "\n";
+			cout << "z vector: " << check_matrix.get_z_only_stabilisers()[i]->z_vector << "\n";
+			cout << "sign bit: " << check_matrix.get_z_only_stabilisers()[i]->sign_bit << "\n";
 			shift |= integral_pow_2( check_matrix.get_z_only_pivots()[i] ) * (check_matrix.get_z_only_stabilisers()[i]->sign_bit);
 		}
 	}
