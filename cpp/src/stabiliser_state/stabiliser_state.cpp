@@ -4,7 +4,9 @@
 #include "pauli/pauli.h"
 
 #include <cmath>
-// #include <iostream>
+#include <iostream>
+
+using namespace std;
 
 namespace fst
 {
@@ -24,8 +26,20 @@ namespace fst
 
 		check_matrix.row_reduce();
 		dim = check_matrix.get_x_stabilisers().size();
+		cout << "dim of V is " << dim << endl;
+		cout << "Currently, shift is " << shift << endl;
 
 		set_support_from_cm(check_matrix);
+		string basis_vecs("");
+		cout << basis_vectors.size() << endl;
+		for (std::size_t num : basis_vectors)
+		{
+			basis_vecs += to_string(num);
+			basis_vecs += "\t";
+		}
+		cout << "Basis vectors: " << basis_vecs << endl;
+		cout << "Shift: " << shift << endl;
+
 		set_linear_and_quadratic_forms_from_cm(check_matrix);
 
 		row_reduced = true;
@@ -33,7 +47,6 @@ namespace fst
 
 	void Stabiliser_State::set_support_from_cm(const Check_Matrix &check_matrix)
 	{
-		// std::cout << "dim of V is " << dim << "\n";
 		basis_vectors.reserve(dim);
 
 		for (const auto &pauli : check_matrix.get_x_stabilisers())

@@ -2,6 +2,7 @@
 #define _FAST_STABILISER_STABILISER_STATE_H
 
 #include "pauli/pauli.h"
+// #include "../pauli/pauli.h"
 
 #include <vector>
 #include <complex>
