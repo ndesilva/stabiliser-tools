@@ -202,8 +202,8 @@ namespace fst
 
     void Check_Matrix::set_z_only_pivots()
     {
-        // Create a vector with 1s in all the (x_stabiliser) pivot indicies, and zeros elsewhere
-        std::size_t pivot_marker;
+        // Create a vector with 1s in all the (x_stabiliser) pivot indices, and zeros elsewhere
+        std::size_t pivot_marker = 0;
 
         for (const auto & pauli : x_stabilisers)
         {
