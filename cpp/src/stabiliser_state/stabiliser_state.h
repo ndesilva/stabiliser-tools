@@ -2,7 +2,6 @@
 #define _FAST_STABILISER_STABILISER_STATE_H
 
 #include "pauli/pauli.h"
-// #include "../pauli/pauli.h"
 
 #include <vector>
 #include <complex>
@@ -12,6 +11,8 @@
 // TODO: make quadratic_form opaque so it behaves as you expect (and reduce copying)
 namespace fst
 {
+	extern bool verbose;
+
 	struct Check_Matrix;
 
 	/// The class used to represent a stabiliser state

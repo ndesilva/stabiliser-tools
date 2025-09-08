@@ -2,7 +2,6 @@
 #define _FAST_STABILISER_CHECK_MATRIX_H
 
 #include "pauli/pauli.h"
-// #include "../pauli/pauli.h"
 
 #include <vector>
 #include <complex>
