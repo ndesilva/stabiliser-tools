@@ -12,8 +12,8 @@
 name: hosted-pure-workflow
 on:
   push:
-    branches:
-    - bug_fixing
+  #   branches:
+  #   - bug_fixing
   workflow_dispatch:
   # schedule:
   # - cron: '0 1 * * *'
