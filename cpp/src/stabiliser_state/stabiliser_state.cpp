@@ -10,7 +10,7 @@ using namespace std;
 
 namespace fst
 {
-	bool verbose = true;
+	bool verbose = false;
 
 	Stabiliser_State::Stabiliser_State(const std::size_t number_qubits, const std::size_t dim)
 		: number_qubits(number_qubits), dim(dim)
@@ -69,8 +69,8 @@ namespace fst
 		{
 			if (verbose)
 			{
-				cout << "z_only_pivot: " << check_matrix.get_z_only_pivots()[i] << "\n";
 				cout << "z vector: " << check_matrix.get_z_only_stabilisers()[i]->z_vector << "\n";
+				cout << "z_only_pivot: " << check_matrix.get_z_only_pivots()[i] << "\n";
 				cout << "sign bit: " << check_matrix.get_z_only_stabilisers()[i]->sign_bit << "\n";
 			}
 			
