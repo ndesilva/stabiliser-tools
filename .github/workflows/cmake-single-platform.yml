@@ -11,7 +11,7 @@
 # build agents.
 name: hosted-pure-workflow
 on:
-  push:
+  # push:
   #   branches:
   #   - bug_fixing
   workflow_dispatch:
