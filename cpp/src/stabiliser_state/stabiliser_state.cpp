@@ -4,10 +4,14 @@
 #include "pauli/pauli.h"
 
 #include <cmath>
-// #include <iostream>
+#include <iostream>
+
+using namespace std;
 
 namespace fst
 {
+	bool verbose = false;
+
 	Stabiliser_State::Stabiliser_State(const std::size_t number_qubits, const std::size_t dim)
 		: number_qubits(number_qubits), dim(dim)
 	{
@@ -25,7 +29,26 @@ namespace fst
 		check_matrix.row_reduce();
 		dim = check_matrix.get_x_stabilisers().size();
 
+		if (verbose)
+		{
+			cout << "dim of V is " << dim << "\n";
+			cout << "Currently, shift is " << shift << "\n";
+		}
+
 		set_support_from_cm(check_matrix);
+		string basis_vecs("");
+		for (std::size_t num : basis_vectors)
+		{
+			basis_vecs += to_string(num);
+			basis_vecs += " ";
+		}
+
+		if (verbose)
+		{
+			cout << "Basis vectors: " << basis_vecs << "\n";
+			cout << "Shift: " << shift << "\n";
+		}
+
 		set_linear_and_quadratic_forms_from_cm(check_matrix);
 
 		row_reduced = true;
@@ -33,7 +56,6 @@ namespace fst
 
 	void Stabiliser_State::set_support_from_cm(const Check_Matrix &check_matrix)
 	{
-		// std::cout << "dim of V is " << dim << "\n";
 		basis_vectors.reserve(dim);
 
 		for (const auto &pauli : check_matrix.get_x_stabilisers())
@@ -45,6 +67,13 @@ namespace fst
 
 		for (std::size_t i = 0; i < number_qubits - dim; i++)
 		{
+			if (verbose)
+			{
+				cout << "z vector: " << check_matrix.get_z_only_stabilisers()[i]->z_vector << "\n";
+				cout << "z_only_pivot: " << check_matrix.get_z_only_pivots()[i] << "\n";
+				cout << "sign bit: " << check_matrix.get_z_only_stabilisers()[i]->sign_bit << "\n";
+			}
+			
 			shift |= integral_pow_2( check_matrix.get_z_only_pivots()[i] ) * (check_matrix.get_z_only_stabilisers()[i]->sign_bit);
 		}
 	}
