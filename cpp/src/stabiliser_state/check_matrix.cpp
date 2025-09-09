@@ -3,6 +3,9 @@
 #include "util/f2_helper.h"
 
 #include <stdexcept>
+#include <iostream>
+
+using namespace std;
 
 namespace fst
 {
@@ -199,23 +202,41 @@ namespace fst
 
     void Check_Matrix::set_z_only_pivots()
     {
-        // Create a vector with 1s in all the (x_stabiliser) pivot indicies, and zeros elsewhere
-        std::size_t pivot_marker;
+        // Ming is testing some code that he believes is simpler and does the job correctly
 
-        for (const auto & pauli : x_stabilisers)
-        {
-            pivot_marker ^= integral_pow_2((std::size_t) integral_log_2(pauli->x_vector));
-        }
+        // // Create a vector with 1s in all the (x_stabiliser) pivot indices, and zeros elsewhere
+        // std::size_t pivot_marker = 0;
 
-        // Flip all of the bits in the pivot marker
-        pivot_marker ^= (integral_pow_2(number_qubits) - 1);
+        // for (const auto & pauli : x_stabilisers)
+        // {
+        //     if (verbose)
+        //     {
+        //         cout << "pivot_marker: " << pivot_marker << "\n";
+        //     }
+        //     pivot_marker ^= integral_pow_2((std::size_t) integral_log_2(pauli->x_vector));
+        // }
+
+        // // Flip all of the bits in the pivot marker
+        // pivot_marker ^= (integral_pow_2(number_qubits) - 1);
 
         z_only_pivots.reserve(z_only_stabilisers.size());
 
         for (const auto & pauli : z_only_stabilisers)
         {
-            // Anding with the pivot marker sets all x-stabiliser pivot columns to zero, leaving just the z part
-            z_only_pivots.push_back( integral_log_2( pauli->z_vector & pivot_marker) );
+            // // Anding with the pivot marker sets all x-stabiliser pivot columns to zero, leaving just the z part
+            // if (verbose)
+            // {
+            //     cout << "About to do z_vector & pivot_marker with the following data: " << pauli->z_vector << " " << pivot_marker << "\n";
+            //     cout << "Result is " << (pauli->z_vector & pivot_marker) << "\n";
+            // }
+
+            if (verbose)
+            {
+                cout << "pivot is " << integral_log_2(pauli->z_vector) << "\n";
+            }
+
+            // z_only_pivots.push_back( integral_log_2(pauli->z_vector & pivot_marker) );
+            z_only_pivots.push_back( integral_log_2(pauli->z_vector) );
         }
     }
 }
